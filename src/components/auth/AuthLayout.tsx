@@ -1,27 +1,26 @@
-import React from 'react'
+import { ReactNode } from 'react'
 import './AuthLayout.css'
 
 interface AuthLayoutProps {
-  children: React.ReactNode
-  title: string
-  subtitle?: string
+  children: ReactNode
 }
 
-const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitle }) => {
+export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
-    <div className="auth-layout">
-      <div className="auth-container">
-        <div className="auth-header">
-          <h1>{title}</h1>
-          {subtitle && <p className="subtitle">{subtitle}</p>}
+    <div className="auth-container">
+      <div className="auth-form-section">
+        <div className="auth-logo">
+          <h1>LUCERO</h1>
         </div>
-        <div className="auth-content">
-          {children}
+        {children}
+      </div>
+      <div className="auth-illustration-section">
+        {/* You can add your own illustration here */}
+        <div className="illustration-placeholder">
+          <h2>Welcome to LUCERO</h2>
+          <p>Your learning journey starts here!</p>
         </div>
       </div>
     </div>
   )
 }
-
-export default AuthLayout
-
