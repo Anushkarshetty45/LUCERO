@@ -60,7 +60,7 @@ export default function LoginForm({ onToggle }: { onToggle: () => void }) {
           <label>Email</label>
           <input
             type="email"
-            placeholder="alice@example.com"
+            placeholder="lucero@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required

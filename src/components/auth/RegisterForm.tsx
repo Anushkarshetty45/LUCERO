@@ -79,7 +79,7 @@ export default function RegisterForm({ onToggle }: { onToggle: () => void }) {
             <label>First Name</label>
             <input
               type="text"
-              placeholder="Jens"
+              placeholder="Luna"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               required
@@ -89,7 +89,7 @@ export default function RegisterForm({ onToggle }: { onToggle: () => void }) {
             <label>Last Name</label>
             <input
               type="text"
-              placeholder="Jensen"
+              placeholder="Quinn"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               required
@@ -101,7 +101,7 @@ export default function RegisterForm({ onToggle }: { onToggle: () => void }) {
           <label>Email</label>
           <input
             type="email"
-            placeholder="alice@example.com"
+            placeholder="lucero@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -137,17 +137,6 @@ export default function RegisterForm({ onToggle }: { onToggle: () => void }) {
               onChange={(e) => setAcceptTerms(e.target.checked)}
             />
             I accept <a href="/terms">Terms of Use</a> and <a href="/privacy">Privacy Policy</a>
-          </label>
-        </div>
-
-        <div className="checkbox-group">
-          <label>
-            <input
-              type="checkbox"
-              checked={subscribe}
-              onChange={(e) => setSubscribe(e.target.checked)}
-            />
-            Keep me up to date with new features & promotions
           </label>
         </div>
 
