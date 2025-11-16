@@ -6,7 +6,7 @@
 /* Left side - Logo section */
 .auth-logo-section {
   flex:30%;
-  background: #000;
+  background: #0e0000;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -44,7 +44,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: #f8f9fa;
+  background: #afb5b9;
   overflow-y: auto;
 }
 
