@@ -1,2 +1,41 @@
+.auth-container {
+  display: flex;
+  min-height: 100vh;
+}
 
+.auth-form-section {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  background: #f8f9fa;
+}
+
+.auth-logo h1 {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 40px;
+}
+
+.auth-illustration-section {
+  flex: 1;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.illustration-placeholder {
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .auth-container {
+    flex-direction: column;
+  }
+  
+  .auth-illustration-section {
+    display: none;
+  }
+}
 
