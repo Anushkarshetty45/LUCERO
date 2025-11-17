@@ -130,15 +130,22 @@ export default function RegisterForm({ onToggle }: { onToggle: () => void }) {
         </div>
 
         <div className="checkbox-group">
-          <label>
-            <input
-              type="checkbox"
-              checked={acceptTerms}
-              onChange={(e) => setAcceptTerms(e.target.checked)}
-            />
-            I accept <a href="/terms">Terms of Use</a> and <a href="/privacy">Privacy Policy</a>
-          </label>
-        </div>
+  <label>
+    <input
+      type="checkbox"
+      checked={acceptTerms}
+      onChange={(e) => setAcceptTerms(e.target.checked)}
+    />
+    I accept{' '}
+    <a href="/terms" target="_blank" rel="noopener noreferrer">
+      Terms of Use
+    </a>{' '}
+    and{' '}
+    <a href="/privacy" target="_blank" rel="noopener noreferrer">
+      Privacy Policy
+    </a>
+  </label>
+</div>
 
         <button type="submit" className="btn-primary" disabled={loading}>
           {loading ? 'Creating account...' : 'Get started'}
