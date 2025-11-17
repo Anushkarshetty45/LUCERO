@@ -48,7 +48,7 @@ export default function Terms() {
 
           <h3>3.2 Account Eligibility</h3>
           <p>
-            You must be at least 13 years old to create an account. If you are under 18, you must have 
+            Anyone who is willing to learn can create an account. If you are under 18, you must have 
             parental or guardian consent to use LUCERO.
           </p>
 
