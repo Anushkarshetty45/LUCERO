@@ -1,16 +1,34 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useAuth } from './hooks/useAuth'
 import Auth from './pages/Auth'
-import './App.css'
+import Dashboard from './pages/Dashboard'
+import Home from './pages/Home'
+import Terms from './pages/Terms'
+import Privacy from './pages/Privacy'
 
 function App() {
+  const { user, loading } = useAuth()
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
+
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/auth" />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="*" element={<div>404 - Page not found</div>} />
+        <Route path="/" element={<Home />} />
+        <Route 
+          path="/auth" 
+          element={user ? <Navigate to="/dashboard" /> : <Auth />} 
+        />
+        <Route 
+          path="/dashboard" 
+          element={user ? <Dashboard /> : <Navigate to="/auth" />} 
+        />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
       </Routes>
-    </Router>
+    </BrowserRouter>
   )
 }
 
