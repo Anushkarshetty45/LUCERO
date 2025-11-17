@@ -5,6 +5,8 @@ import Dashboard from './pages/Dashboard'
 import Home from './pages/Home'
 import Terms from './pages/Terms'
 import Privacy from './pages/Privacy'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 
 function App() {
   const { user, loading } = useAuth()
@@ -27,6 +29,8 @@ function App() {
         />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   )
