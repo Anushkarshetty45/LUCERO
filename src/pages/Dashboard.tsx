@@ -28,9 +28,24 @@ export default function Dashboard() {
     try {
       setLoading(true)
       
-      // Load profile
-      const profileData = await getProfile(user!.id)
-      setProfile(profileData)
+      // Load profile (or create a default one if missing)
+      try {
+        const profileData = await getProfile(user!.id)
+        setProfile(profileData)
+      } catch (error: any) {
+        console.log('Profile not found, using default')
+        // Use user email data as fallback
+        setProfile({
+          id: user!.id,
+          email: user!.email || '',
+          first_name: user!.user_metadata?.first_name || 'there',
+          last_name: user!.user_metadata?.last_name || '',
+          full_name: user!.user_metadata?.full_name || 'User',
+          avatar_url: user!.user_metadata?.avatar_url || '',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+      }
       
       // Load courses
       const coursesData = await getCourses(user!.id)
