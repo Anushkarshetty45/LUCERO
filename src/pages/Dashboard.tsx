@@ -72,8 +72,17 @@ export default function Dashboard() {
   }
 
   const handleSignOut = async () => {
-    await signOut()
-    navigate('/auth')
+    console.log('🚪 Signing out...')
+    try {
+      await signOut()
+      console.log('✅ Sign out successful')
+      // Force redirect with window.location for reliable logout
+      window.location.href = '/auth'
+    } catch (error) {
+      console.error('❌ Sign out error:', error)
+      // Force redirect anyway
+      window.location.href = '/auth'
+    }
   }
 
   const handleCourseCreated = () => {
