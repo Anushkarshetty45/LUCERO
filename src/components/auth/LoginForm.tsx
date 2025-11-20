@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../../services/supabase'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import './AuthForms.css'
 
 export default function LoginForm({ onToggle }: { onToggle: () => void }) {
@@ -16,32 +16,39 @@ export default function LoginForm({ onToggle }: { onToggle: () => void }) {
     setLoading(true)
     setError('')
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    })
+    console.log('🔑 Attempting login with:', email)
 
-    if (error) {
-      setError(error.message)
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      })
+
+      if (error) {
+        console.error('❌ Login error:', error)
+        setError(error.message)
+        setLoading(false)
+      } else {
+        console.log('✅ Login successful!')
+        console.log('👤 User:', data.user?.email)
+        console.log('🔑 Session:', data.session ? 'Active' : 'None')
+        
+        // Force redirect to dashboard
+        console.log('🎉 Redirecting to dashboard...')
+        setTimeout(() => {
+          window.location.href = '/dashboard'
+        }, 500)
+      }
+    } catch (err: any) {
+      console.error('💥 Login error:', err)
+      setError(err?.message || 'Login failed. Please try again.')
       setLoading(false)
-    } else {
-      navigate('/dashboard')
     }
   }
 
   const handleGoogleSignIn = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: window.location.origin + '/dashboard'
-      }
-    })
-    if (error) setError(error.message)
-  }
-
-  const handleGitHubSignIn = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'github',
       options: {
         redirectTo: window.location.origin + '/dashboard'
       }
@@ -88,7 +95,7 @@ export default function LoginForm({ onToggle }: { onToggle: () => void }) {
         </div>
 
         <div className="forgot-password">
-          <a href="/reset-password">Forgot password?</a>
+          <Link to="/forgot-password">Forgot password?</Link>
         </div>
 
         <button type="submit" className="btn-primary" disabled={loading}>
@@ -101,9 +108,6 @@ export default function LoginForm({ onToggle }: { onToggle: () => void }) {
       <div className="social-auth">
         <button onClick={handleGoogleSignIn} className="btn-social">
           <img src="/google-icon.svg" alt="Google" /> Google
-        </button>
-        <button onClick={handleGitHubSignIn} className="btn-social">
-          <img src="/github-icon.svg" alt="GitHub" /> GitHub
         </button>
       </div>
 
