@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
 import Auth from './pages/Auth'
 import Dashboard from './pages/Dashboard'
+import Course from './pages/Course'
 import Home from './pages/Home'
 import Terms from './pages/Terms'
 import Privacy from './pages/Privacy'
@@ -26,6 +27,10 @@ function App() {
         <Route 
           path="/dashboard" 
           element={user ? <Dashboard /> : <Navigate to="/auth" />} 
+        />
+        <Route 
+          path="/course/:courseId" 
+          element={user ? <Course /> : <Navigate to="/auth" />} 
         />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
