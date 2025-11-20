@@ -18,6 +18,8 @@ export default function RegisterForm({ onToggle }: { onToggle: () => void }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    console.log('🚀 Starting registration...')
+    
     if (!acceptTerms) {
       setError('Please accept the terms of use')
       return
@@ -26,40 +28,60 @@ export default function RegisterForm({ onToggle }: { onToggle: () => void }) {
     setLoading(true)
     setError('')
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-          full_name: `${firstName} ${lastName}`
+    try {
+      console.log('📧 Signing up with email:', email)
+      
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+            full_name: `${firstName} ${lastName}`
+          },
+          emailRedirectTo: window.location.origin + '/dashboard'
+        }
+      })
+
+      console.log('📦 Signup response:', { data, error })
+
+      if (error) {
+        console.error('❌ Signup error:', error)
+        setError(error.message)
+        setLoading(false)
+      } else {
+        console.log('✅ Signup successful!')
+        console.log('👤 User:', data.user?.email)
+        console.log('🔑 Session:', data.session ? 'Active' : 'Pending confirmation')
+        
+        // Check if email confirmation is required
+        if (data?.user && !data.session) {
+          // Email confirmation required
+          console.log('📧 Email confirmation required')
+          setLoading(false)
+          alert(`✅ Account created! Please check your email (${email}) to verify your account.`)
+          onToggle() // Switch to login form
+        } else if (data?.session) {
+          // User is auto-logged in - wait a moment for auth state to update
+          console.log('🎉 Registration complete, redirecting to dashboard...')
+          setTimeout(() => {
+            window.location.href = '/dashboard'
+          }, 500)
+        } else {
+          setLoading(false)
         }
       }
-    })
-
-    if (error) {
-      setError(error.message)
+    } catch (err: any) {
+      console.error('💥 Unexpected error:', err)
+      setError(err?.message || 'An unexpected error occurred. Please try again.')
       setLoading(false)
-    } else {
-      // Success - user will be auto-logged in
-      navigate('/dashboard')
     }
   }
 
   const handleGoogleSignUp = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: window.location.origin + '/dashboard'
-      }
-    })
-    if (error) setError(error.message)
-  }
-
-  const handleGitHubSignUp = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'github',
       options: {
         redirectTo: window.location.origin + '/dashboard'
       }
@@ -130,22 +152,33 @@ export default function RegisterForm({ onToggle }: { onToggle: () => void }) {
         </div>
 
         <div className="checkbox-group">
-  <label>
-    <input
-      type="checkbox"
-      checked={acceptTerms}
-      onChange={(e) => setAcceptTerms(e.target.checked)}
-    />
-    I accept{' '}
-    <a href="/terms" target="_blank" rel="noopener noreferrer">
-      Terms of Use
-    </a>{' '}
-    and{' '}
-    <a href="/privacy" target="_blank" rel="noopener noreferrer">
-      Privacy Policy
-    </a>
-  </label>
-</div>
+          <label>
+            <input
+              type="checkbox"
+              checked={acceptTerms}
+              onChange={(e) => setAcceptTerms(e.target.checked)}
+            />
+            I accept{' '}
+            <a href="/terms" target="_blank" rel="noopener noreferrer">
+              Terms of Use
+            </a>{' '}
+            and{' '}
+            <a href="/privacy" target="_blank" rel="noopener noreferrer">
+              Privacy Policy
+            </a>
+          </label>
+        </div>
+
+        <div className="checkbox-group">
+          <label>
+            <input
+              type="checkbox"
+              checked={subscribe}
+              onChange={(e) => setSubscribe(e.target.checked)}
+            />
+            Keep me up to date with new features & promotions
+          </label>
+        </div>
 
         <button type="submit" className="btn-primary" disabled={loading}>
           {loading ? 'Creating account...' : 'Get started'}
@@ -157,9 +190,6 @@ export default function RegisterForm({ onToggle }: { onToggle: () => void }) {
       <div className="social-auth">
         <button onClick={handleGoogleSignUp} className="btn-social">
           <img src="/google-icon.svg" alt="Google" /> Google
-        </button>
-        <button onClick={handleGitHubSignUp} className="btn-social">
-          <img src="/github-icon.svg" alt="GitHub" /> GitHub
         </button>
       </div>
 
