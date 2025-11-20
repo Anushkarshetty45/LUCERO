@@ -157,7 +157,7 @@ export default function Course() {
           courseTitle={course.title}
           courseSubject={course.subject}
           onClose={() => setShowAddTopic(false)}
-          onSuccess={(newLesson) => {
+          onSuccess={(newLesson: Lesson) => {
             setLessons([...lessons, newLesson])
             setSelectedLesson(newLesson)
             setShowAddTopic(false)
