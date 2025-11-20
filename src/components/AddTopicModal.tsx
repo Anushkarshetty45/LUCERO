@@ -24,38 +24,104 @@ export default function AddTopicModal({
   const [generatingNotes, setGeneratingNotes] = useState(false)
 
   const generateNotes = async (topic: string): Promise<string> => {
-    // For now, return a template
-    // TODO: Replace with actual AI API call (OpenAI/Gemini)
+    const apiKey = process.env.REACT_APP_GEMINI_API_KEY
     
-    return `
-      <h2>${topic}</h2>
-      
-      <h3>Overview</h3>
-      <p>This is a comprehensive guide to understanding ${topic} in the context of ${courseSubject}.</p>
-      
-      <h3>Key Concepts</h3>
-      <ul>
-        <li><strong>Concept 1:</strong> Introduction to the fundamental principles</li>
-        <li><strong>Concept 2:</strong> Understanding the core components</li>
-        <li><strong>Concept 3:</strong> Practical applications and examples</li>
-      </ul>
-      
-      <h3>Detailed Explanation</h3>
-      <p>${topic} is an important topic in ${courseSubject}. It covers various aspects that are essential for understanding the subject matter.</p>
-      
-      <h3>Examples</h3>
-      <p>Example 1: A practical demonstration of ${topic}</p>
-      <p>Example 2: Real-world application scenarios</p>
-      
-      <h3>Key Takeaways</h3>
-      <ul>
-        <li>Understanding the basics of ${topic}</li>
-        <li>Applying concepts in practical scenarios</li>
-        <li>Building upon foundational knowledge</li>
-      </ul>
-      
-      <p><em>Note: These are template notes. To enable AI-powered note generation, you need to integrate an AI API (OpenAI, Gemini, etc.)</em></p>
-    `
+    if (!apiKey) {
+      throw new Error('Gemini API key not found. Please add REACT_APP_GEMINI_API_KEY to your .env file')
+    }
+
+    const prompt = `You are an expert educator creating comprehensive study notes. Generate detailed, in-depth notes about "${topic}" for a "${courseSubject}" course titled "${courseTitle}".
+
+Please provide:
+
+1. **Introduction**: A thorough introduction explaining what ${topic} is and why it's important in ${courseSubject}
+
+2. **Fundamental Concepts**: Break down the core concepts in detail with clear explanations
+
+3. **Detailed Explanation**: Provide a deep, comprehensive explanation with:
+   - Historical background or context
+   - Step-by-step breakdown of how it works
+   - Scientific/theoretical foundations
+   - Real-world applications and examples
+   - Common misconceptions and clarifications
+
+4. **Key Principles and Laws**: List and explain any important principles, laws, or rules related to this topic
+
+5. **Examples and Case Studies**: Provide at least 3-4 detailed, practical examples with explanations
+
+6. **Diagrams and Visualizations**: Describe what diagrams or visual aids would help understand this topic
+
+7. **Practice Problems**: Suggest 2-3 practice questions or problems to test understanding
+
+8. **Common Mistakes**: List common errors or misunderstandings students have about this topic
+
+9. **Advanced Concepts**: Introduce related advanced topics for further study
+
+10. **Summary**: A comprehensive summary of key takeaways
+
+Format the response in clean HTML with proper headings (h3, h4), paragraphs, lists, and emphasis where appropriate. Make it detailed, educational, and easy to understand. Aim for at least 800-1000 words of content.`
+
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{
+                text: prompt
+              }]
+            }],
+            generationConfig: {
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 2048,
+            }
+          })
+        }
+      )
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error?.message || 'Failed to generate notes')
+      }
+
+      const data = await response.json()
+      const generatedText = data.candidates[0].content.parts[0].text
+
+      // Convert markdown-style formatting to HTML
+      let htmlContent = generatedText
+        // Convert **bold** to <strong>
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        // Convert *italic* to <em>
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        // Convert ### Heading to <h3>
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+        // Convert ## Heading to <h2>
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        // Convert # Heading to <h1>
+        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+        // Convert numbered lists
+        .replace(/^\d+\.\s+(.*$)/gim, '<li>$1</li>')
+        // Convert bullet points
+        .replace(/^[-*]\s+(.*$)/gim, '<li>$1</li>')
+        // Wrap consecutive <li> in <ul>
+        .replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>')
+        // Convert double line breaks to paragraphs
+        .replace(/\n\n/g, '</p><p>')
+        // Wrap in paragraph tags
+        .replace(/^(?!<[hul])/gim, '<p>')
+        .replace(/(?<![>])$/gim, '</p>')
+
+      return `<h2>${topic}</h2>${htmlContent}`
+    } catch (error: any) {
+      console.error('AI Generation Error:', error)
+      throw new Error('Failed to generate notes with AI: ' + error.message)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
