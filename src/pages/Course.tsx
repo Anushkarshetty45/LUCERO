@@ -179,6 +179,16 @@ export default function Course() {
           }}
         />
       )}
+
+      {/* Notes Modal */}
+      {showNotes && user && (
+        <NotesModal
+          userId={user.id}
+          courseId={courseId!}
+          courseTitle={course.title}
+          onClose={() => setShowNotes(false)}
+        />
+      )}
     </div>
   )
 }
