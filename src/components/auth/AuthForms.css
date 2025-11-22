@@ -31,7 +31,7 @@
 .form-group input {
   width: 100%;
   padding: 12px 16px;
-  border: 1px solid #ddd;
+  border: 1px solid #F4E3B2;
   border-radius: 8px;
   font-size: 16px;
   transition: border-color 0.2s;
@@ -91,18 +91,18 @@
 }
 
 .btn-primary:hover {
-  background: #333;
+  background: #45462A;
 }
 
 .btn-primary:disabled {
-  background: #999;
+  background: #947268;
   cursor: not-allowed;
 }
 
 .divider {
   text-align: center;
   margin: 24px 0;
-  color: #666;
+  color: #947268;
   font-size: 14px;
 }
 
@@ -114,7 +114,7 @@
 .btn-social {
   flex: 1;
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid #F4E3B2;
   background: white;
   border-radius: 8px;
   cursor: pointer;
@@ -166,7 +166,7 @@
 }
 
 .forgot-password a {
-  color: #666;
+  color: #947268;
   font-size: 14px;
   text-decoration: none;
 }
