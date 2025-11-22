@@ -30,36 +30,109 @@ export default function AddTopicModal({
       throw new Error('Gemini API key not found. Please add REACT_APP_GEMINI_API_KEY to your .env file')
     }
 
-    const prompt = `You are an expert educator creating comprehensive study notes. Generate detailed, in-depth notes about "${topic}" for a "${courseSubject}" course titled "${courseTitle}".
+    const prompt = `You are a world-class educator and subject matter expert. Create EXTREMELY DETAILED, COMPREHENSIVE study notes about "${topic}" for a "${courseSubject}" course titled "${courseTitle}".
 
-Please provide:
+REQUIREMENTS:
+- Length: Minimum 1500-2000 words
+- Depth: Explain as if teaching a complete beginner AND providing advanced insights
+- Organization: Use clear hierarchical structure with multiple levels of headings
+- Examples: Provide multiple real-world examples for every concept
 
-1. **Introduction**: A thorough introduction explaining what ${topic} is and why it's important in ${courseSubject}
+STRUCTURE YOUR RESPONSE AS FOLLOWS:
 
-2. **Fundamental Concepts**: Break down the core concepts in detail with clear explanations
+# ${topic}
 
-3. **Detailed Explanation**: Provide a deep, comprehensive explanation with:
-   - Historical background or context
-   - Step-by-step breakdown of how it works
-   - Scientific/theoretical foundations
-   - Real-world applications and examples
-   - Common misconceptions and clarifications
+## 1. Introduction & Overview
+- What is ${topic}? (detailed definition)
+- Why is this important in ${courseSubject}?
+- Historical context and evolution
+- How it connects to other concepts in ${courseTitle}
+- Prerequisites needed to understand this topic
 
-4. **Key Principles and Laws**: List and explain any important principles, laws, or rules related to this topic
+## 2. Core Concepts & Fundamentals
+Break down into multiple subsections (use ### for each):
+- Define every key term and concept
+- Explain the underlying principles
+- Show the logical progression of ideas
+- Use analogies to explain complex concepts
+- Provide visual descriptions
 
-5. **Examples and Case Studies**: Provide at least 3-4 detailed, practical examples with explanations
+## 3. Deep Dive: How It Works
+Provide a comprehensive, step-by-step explanation:
+- The mechanism/process in detail
+- Why it works this way
+- Theoretical foundations
+- Mathematical/logical frameworks (if applicable)
+- Edge cases and special conditions
 
-6. **Diagrams and Visualizations**: Describe what diagrams or visual aids would help understand this topic
+## 4. Real-World Applications
+Provide 5-7 detailed examples:
+- Practical use cases
+- Industry applications
+- Daily life examples
+- Case studies
+- Success stories
+- Each example should be 2-3 paragraphs
 
-7. **Practice Problems**: Suggest 2-3 practice questions or problems to test understanding
+## 5. Types/Categories/Classifications
+If applicable, break down different types or categories:
+- Complete classification
+- Comparison between different types
+- When to use each type
+- Advantages and disadvantages of each
 
-8. **Common Mistakes**: List common errors or misunderstandings students have about this topic
+## 6. Implementation/Practice
+- Step-by-step guide for practical application
+- Code examples (if applicable)
+- Procedures and methodologies
+- Best practices
+- Tips and tricks
 
-9. **Advanced Concepts**: Introduce related advanced topics for further study
+## 7. Common Challenges & Solutions
+- 5-7 common mistakes beginners make
+- Why these mistakes happen
+- How to avoid them
+- How to fix them
+- Debugging strategies
 
-10. **Summary**: A comprehensive summary of key takeaways
+## 8. Advanced Topics & Extensions
+- Related advanced concepts
+- Next steps for deeper learning
+- Current research or developments
+- Future trends
+- Connections to other topics
 
-Format the response in clean HTML with proper headings (h3, h4), paragraphs, lists, and emphasis where appropriate. Make it detailed, educational, and easy to understand. Aim for at least 800-1000 words of content.`
+## 9. Practice & Assessment
+Provide:
+- 3 easy practice questions
+- 3 medium difficulty questions  
+- 2 challenging questions
+- Include hints and approaches for each
+
+## 10. Key Takeaways & Summary
+- 10-15 bullet points summarizing everything
+- Most important concepts to remember
+- Quick reference guide
+- Study tips for this topic
+
+## 11. Additional Resources
+- Recommended readings
+- Videos to watch
+- Tools and software
+- Websites and documentation
+
+FORMAT INSTRUCTIONS:
+- Use ### for main sections
+- Use #### for subsections
+- Use **bold** for important terms
+- Use *italic* for emphasis
+- Use bullet points extensively
+- Use numbered lists for sequences
+- Add code blocks if showing code
+- Make it visually organized and scannable
+- Use tables if comparing concepts
+
+Write in a clear, engaging, conversational but professional tone. Explain complex ideas simply without dumbing them down. Be thorough and leave no concept unexplained.`
 
     try {
       const response = await fetch(
@@ -79,7 +152,7 @@ Format the response in clean HTML with proper headings (h3, h4), paragraphs, lis
               temperature: 0.7,
               topK: 40,
               topP: 0.95,
-              maxOutputTokens: 2048,
+              maxOutputTokens: 8192,
             }
           })
         }
