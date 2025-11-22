@@ -155,6 +155,14 @@ export default function Course() {
             </div>
           )}
         </main>
+        {showNotes && user && (
+  <NotesModal
+    userId={user.id}
+    courseId={courseId!}
+    courseTitle={course.title}
+    onClose={() => setShowNotes(false)}
+  />
+)}
       </div>
 
       {/* Add Topic Modal */}
