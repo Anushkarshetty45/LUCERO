@@ -70,6 +70,7 @@ export interface Profile {
     id: string
     user_id: string
     course_id: string
+    topic: string
     content: string
     created_at: string
     updated_at: string
