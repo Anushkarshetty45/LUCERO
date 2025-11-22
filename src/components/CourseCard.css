@@ -44,7 +44,7 @@
   
   .course-description {
     font-size: 14px;
-    color: #666;
+    color: #947268;
     margin-bottom: 16px;
     line-height: 1.5;
     display: -webkit-box;
@@ -68,7 +68,7 @@
   
   .stat-label {
     font-size: 12px;
-    color: #999;
+    color: #947268;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -76,7 +76,7 @@
   .stat-value {
     font-size: 24px;
     font-weight: 700;
-    color: #333;
+    color: #45462A;
   }
   
   .course-progress {
@@ -96,14 +96,14 @@
   
   .course-progress .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #6C5CE7, #A29BFE);
+    background: linear-gradient(90deg, #74070E, #947268);
     transition: width 0.3s;
   }
   
   .progress-text {
     font-size: 14px;
     font-weight: 600;
-    color: #6C5CE7;
+    color: #74070E;
     min-width: 40px;
     text-align: right;
   }
@@ -117,7 +117,7 @@
   .btn-open {
     flex: 1;
     padding: 10px;
-    background: #6C5CE7;
+    background: #74070E;
     color: white;
     border: none;
     border-radius: 6px;
@@ -127,13 +127,14 @@
   }
   
   .btn-open:hover {
-    background: #5849c7;
+    background: #310E10;
+    transform: translateY(-2px);
   }
   
   .btn-menu {
     width: 40px;
     padding: 10px;
-    background: #f8f9fa;
+    background: #F4E3B2;
     border: none;
     border-radius: 6px;
     font-size: 20px;
@@ -171,11 +172,11 @@
   }
   
   .course-menu button:hover {
-    background: #f8f9fa;
+    background: #F4E3B2;
   }
   
   .course-menu .delete-btn {
-    color: #E17055;
+    color: #74070E;
   }
   
   /* Delete Confirmation Modal */
@@ -207,7 +208,7 @@
   
   .delete-confirm-modal p {
     font-size: 16px;
-    color: #666;
+    color: #947268;
     margin-bottom: 24px;
     line-height: 1.5;
   }
@@ -229,8 +230,8 @@
   }
   
   .btn-cancel {
-    background: #f8f9fa;
-    color: #333;
+    background: #F4E3B2;
+    color: #45462A;
   }
   
   .btn-cancel:hover {
@@ -238,10 +239,10 @@
   }
   
   .btn-delete {
-    background: #E17055;
+    background: #74070E;
     color: white;
   }
   
   .btn-delete:hover {
-    background: #d35940;
+    background: #310E10;
   }
