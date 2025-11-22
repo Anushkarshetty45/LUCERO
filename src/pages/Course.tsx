@@ -70,6 +70,12 @@ export default function Course() {
       </div>
     )
   }
+<button 
+  className="btn-notes"
+  onClick={() => setShowNotes(true)}
+>
+  📝 My Notes
+</button>
 
   return (
     <div className="course-page">
