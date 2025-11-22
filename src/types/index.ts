@@ -65,3 +65,12 @@ export interface Profile {
     completed_lessons: number
     progress_percentage: number
   }
+
+  export interface UserNote {
+    id: string
+    user_id: string
+    course_id: string
+    content: string
+    created_at: string
+    updated_at: string
+  }
