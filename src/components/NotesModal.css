@@ -20,12 +20,12 @@
 .notes-header h2 {
   margin: 0 0 8px 0;
   font-size: 24px;
-  color: #333;
+  color: #45462A;
 }
 
 .course-name {
   margin: 0;
-  color: #666;
+  color: #947268;
   font-size: 14px;
 }
 
@@ -33,7 +33,7 @@
   background: none;
   border: none;
   font-size: 32px;
-  color: #999;
+  color: #947268;
   cursor: pointer;
   width: 40px;
   height: 40px;
@@ -46,7 +46,7 @@
 
 .close-btn:hover {
   background: #f5f5f5;
-  color: #333;
+  color: #45462A;
 }
 
 /* Menu View */
@@ -71,10 +71,10 @@
 }
 
 .menu-option:hover {
-  border-color: #6C5CE7;
-  background: #f8f9ff;
+  border-color: #74070E;
+  background: #F4E3B2;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.1);
+  box-shadow: 0 4px 12px rgba(116, 7, 14, 0.2);
 }
 
 .menu-icon {
@@ -85,13 +85,13 @@
 .menu-option h3 {
   margin: 0 0 8px 0;
   font-size: 18px;
-  color: #333;
+  color: #45462A;
 }
 
 .menu-option p {
   margin: 0;
   font-size: 14px;
-  color: #666;
+  color: #947268;
 }
 
 /* Body */
@@ -110,14 +110,14 @@
 
 .note-item {
   padding: 16px;
-  background: #f8f9fa;
+  background: #F4E3B2;
   border-radius: 8px;
   border: 1px solid #e0e0e0;
   transition: all 0.2s;
 }
 
 .note-item:hover {
-  border-color: #6C5CE7;
+  border-color: #74070E;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -131,7 +131,7 @@
 .note-item h3 {
   margin: 0;
   font-size: 16px;
-  color: #333;
+  color: #45462A;
 }
 
 .note-actions {
@@ -155,7 +155,7 @@
 
 .note-preview {
   margin: 8px 0;
-  color: #666;
+  color: #947268;
   font-size: 14px;
   line-height: 1.5;
 }
@@ -163,13 +163,13 @@
 .note-date {
   margin: 0;
   font-size: 12px;
-  color: #999;
+  color: #947268;
 }
 
 .empty-notes {
   text-align: center;
   padding: 40px;
-  color: #999;
+  color: #947268;
 }
 
 /* Form */
@@ -181,7 +181,7 @@
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #333;
+  color: #45462A;
   font-size: 14px;
 }
 
@@ -196,7 +196,7 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #6C5CE7;
+  border-color: #74070E;
 }
 
 .notes-textarea {
@@ -214,7 +214,7 @@
 
 .notes-textarea:focus {
   outline: none;
-  border-color: #6C5CE7;
+  border-color: #74070E;
 }
 
 /* Footer */
@@ -228,7 +228,7 @@
 
 .last-saved {
   font-size: 13px;
-  color: #999;
+  color: #947268;
 }
 
 .notes-actions {
@@ -248,12 +248,12 @@
 }
 
 .btn-primary {
-  background: #6C5CE7;
+  background: #74070E;
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #5f4dd4;
+  background: #310E10;
   transform: translateY(-2px);
 }
 
@@ -264,11 +264,11 @@
 
 .btn-secondary {
   background: white;
-  color: #666;
+  color: #947268;
   border: 2px solid #e0e0e0;
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: #f8f9fa;
+  background: #F4E3B2;
   border-color: #ccc;
 }
