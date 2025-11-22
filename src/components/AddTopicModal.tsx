@@ -190,7 +190,7 @@ Write in a clear, engaging, conversational but professional tone. Explain comple
         .replace(/^(?!<[hul])/gim, '<p>')
         .replace(/(?<![>])$/gim, '</p>')
 
-      return `<h2>${topic}</h2>${htmlContent}`
+      return htmlContent
     } catch (error: any) {
       console.error('AI Generation Error:', error)
       throw new Error('Failed to generate notes with AI: ' + error.message)
