@@ -16,7 +16,7 @@ export default function Course() {
   const [loading, setLoading] = useState(true)
   const [showAddTopic, setShowAddTopic] = useState(false)
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null)
-
+  const [showNotes, setShowNotes] = useState(false)
   useEffect(() => {
     if (courseId) {
       loadCourseData()
