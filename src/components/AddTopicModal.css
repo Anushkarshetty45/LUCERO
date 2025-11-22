@@ -33,14 +33,14 @@
 .modal-header h2 {
   margin: 0;
   font-size: 24px;
-  color: #333;
+  color: #45462A;
 }
 
 .close-btn {
   background: none;
   border: none;
   font-size: 32px;
-  color: #999;
+  color: #947268;
   cursor: pointer;
   width: 40px;
   height: 40px;
@@ -53,7 +53,7 @@
 
 .close-btn:hover {
   background: #f5f5f5;
-  color: #333;
+  color: #45462A;
 }
 
 .modal-body {
@@ -61,16 +61,16 @@
 }
 
 .course-info {
-  background: #f8f9fa;
+  background: #F4E3B2;
   padding: 12px 16px;
   border-radius: 8px;
   margin-bottom: 20px;
   font-size: 14px;
-  color: #666;
+  color: #947268;
 }
 
 .course-info strong {
-  color: #333;
+  color: #45462A;
 }
 
 .form-group {
@@ -81,7 +81,7 @@
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #333;
+  color: #45462A;
   font-size: 14px;
 }
 
@@ -99,7 +99,7 @@
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #6C5CE7;
+  border-color: #74070E;
 }
 
 .form-group input:disabled,
@@ -112,7 +112,7 @@
   display: block;
   margin-top: 6px;
   font-size: 13px;
-  color: #999;
+  color: #947268;
 }
 
 .error-message {
@@ -129,24 +129,24 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: #f0f4ff;
+  background: #F4E3B2;
   padding: 16px;
   border-radius: 8px;
   margin-top: 16px;
-  border: 1px solid #d0deff;
+  border: 1px solid #947268;
 }
 
 .generating-status p {
   margin: 0;
-  color: #6C5CE7;
+  color: #74070E;
   font-weight: 500;
 }
 
 .spinner-small {
   width: 20px;
   height: 20px;
-  border: 3px solid #d0deff;
-  border-top-color: #6C5CE7;
+  border: 3px solid #947268;
+  border-top-color: #74070E;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   flex-shrink: 0;
@@ -176,12 +176,12 @@
 }
 
 .btn-primary {
-  background: #6C5CE7;
+  background: #74070E;
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #5f4dd4;
+  background: #310E10;
   transform: translateY(-2px);
 }
 
@@ -192,12 +192,12 @@
 
 .btn-secondary {
   background: white;
-  color: #666;
+  color: #947268;
   border: 2px solid #e0e0e0;
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: #f8f9fa;
+  background: #F4E3B2;
   border-color: #ccc;
 }
 
