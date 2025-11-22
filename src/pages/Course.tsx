@@ -70,12 +70,6 @@ export default function Course() {
       </div>
     )
   }
-<button 
-  className="btn-notes"
-  onClick={() => setShowNotes(true)}
->
-  📝 My Notes
-</button>
 
   return (
     <div className="course-page">
@@ -86,6 +80,12 @@ export default function Course() {
           <h1>{course.title}</h1>
           <p className="course-subject">{course.subject}</p>
           {course.description && <p className="course-description">{course.description}</p>}
+          <button 
+            className="btn-notes"
+            onClick={() => setShowNotes(true)}
+          >
+            📝 My Notes
+          </button>
         </div>
       </header>
 
