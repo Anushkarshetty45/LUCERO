@@ -334,42 +334,57 @@ export const getWeeklyStudyTime = async (userId: string): Promise<number> => {
   return totalSeconds
 }
 // ==================== USER NOTES ====================
-export const getUserNotes = async (userId: string, courseId: string) => {
-    const { data, error } = await supabase
-      .from('user_notes')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('course_id', courseId)
-      .single()
-    
-    if (error && error.code !== 'PGRST116') throw error
-    return data
-  }
+export const getAllUserNotes = async (userId: string, courseId: string) => {
+  const { data, error } = await supabase
+    .from('user_notes')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('course_id', courseId)
+    .order('updated_at', { ascending: false })
   
-  export const saveUserNotes = async (userId: string, courseId: string, content: string) => {
-    // Check if notes exist
-    const existing = await getUserNotes(userId, courseId)
-    
-    if (existing) {
-      // Update existing notes
-      const { data, error } = await supabase
-        .from('user_notes')
-        .update({ content, updated_at: new Date().toISOString() })
-        .eq('id', existing.id)
-        .select()
-        .single()
-      
-      if (error) throw error
-      return data
-    } else {
-      // Create new notes
-      const { data, error } = await supabase
-        .from('user_notes')
-        .insert([{ user_id: userId, course_id: courseId, content }])
-        .select()
-        .single()
-      
-      if (error) throw error
-      return data
-    }
-  }
+  if (error) throw error
+  return data || []
+}
+
+export const getUserNote = async (noteId: string) => {
+  const { data, error } = await supabase
+    .from('user_notes')
+    .select('*')
+    .eq('id', noteId)
+    .single()
+  
+  if (error) throw error
+  return data
+}
+
+export const createUserNote = async (userId: string, courseId: string, topic: string, content: string) => {
+  const { data, error } = await supabase
+    .from('user_notes')
+    .insert([{ user_id: userId, course_id: courseId, topic, content }])
+    .select()
+    .single()
+  
+  if (error) throw error
+  return data
+}
+
+export const updateUserNote = async (noteId: string, content: string) => {
+  const { data, error } = await supabase
+    .from('user_notes')
+    .update({ content, updated_at: new Date().toISOString() })
+    .eq('id', noteId)
+    .select()
+    .single()
+  
+  if (error) throw error
+  return data
+}
+
+export const deleteUserNote = async (noteId: string) => {
+  const { error } = await supabase
+    .from('user_notes')
+    .delete()
+    .eq('id', noteId)
+  
+  if (error) throw error
+}
