@@ -5,6 +5,7 @@ import { getCourse, getLessons, deleteLesson } from '../services/api'
 import { Course as CourseType, Lesson } from '../types'
 import AddTopicModal from '../components/AddTopicModal'
 import './Course.css'
+import NotesModal from '../components/NotesModal'
 
 export default function Course() {
   const { courseId } = useParams<{ courseId: string }>()
