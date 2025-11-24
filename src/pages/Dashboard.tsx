@@ -105,15 +105,13 @@ export default function Dashboard() {
   
   // Calculate stats
   const totalCourses = courses.length
+  const completedCourses = courses.filter(c => c.progress_percentage === 100).length
+  const inProgressCourses = courses.filter(c => c.progress_percentage > 0 && c.progress_percentage < 100).length
   
-  // Get continue learning course (most recently accessed)
+  // Get continue learning course (most recent with progress)
   const continueLearningCourse = courses
-    .filter(c => c.last_accessed !== null)
-    .sort((a, b) => {
-      const dateA = a.last_accessed ? new Date(a.last_accessed).getTime() : 0
-      const dateB = b.last_accessed ? new Date(b.last_accessed).getTime() : 0
-      return dateB - dateA
-    })[0]
+    .filter(c => c.progress_percentage > 0 && c.progress_percentage < 100)
+    .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())[0]
 
   return (
     <div className="dashboard-page">
@@ -171,20 +169,24 @@ export default function Dashboard() {
           </div>
           
           <div className="stat-card">
-            <div className="stat-icon">📝</div>
+            <div className="stat-icon">📈</div>
             <div className="stat-content">
-              <h3>{courses.reduce((sum, c) => sum + c.total_lessons, 0)}</h3>
-              <p>Total Topics</p>
+              <h3>{inProgressCourses}</h3>
+              <p>In Progress</p>
             </div>
           </div>
           
           <div className="stat-card">
-            <div className="stat-icon">🔥</div>
+            <div className="stat-icon">✅</div>
             <div className="stat-content">
-              <h3>{streak}</h3>
-              <p>Day Streak</p>
+              <h3>{completedCourses}</h3>
+              <p>Completed</p>
             </div>
           </div>
+          
+          <div className="stat-card">
+            <div className="stat-icon">⏱️</div>
+            <div className="stat-content">
               <h3>{formatTime(todayStudyTime)}</h3>
               <p>Today's Study Time</p>
             </div>
@@ -202,8 +204,14 @@ export default function Dashboard() {
               </div>
               <div className="continue-card-body">
                 <div className="progress-info">
-                  <span>📚 {continueLearningCourse.total_lessons} Topics</span>
-                  <span>🕒 Last studied: {new Date(continueLearningCourse.last_accessed!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                  <span>{continueLearningCourse.progress_percentage}% Complete</span>
+                  <span>{continueLearningCourse.completed_lessons} / {continueLearningCourse.total_lessons} Lessons</span>
+                </div>
+                <div className="progress-bar">
+                  <div 
+                    className="progress-fill" 
+                    style={{ width: `${continueLearningCourse.progress_percentage}%` }}
+                  ></div>
                 </div>
                 <button 
                   className="btn-continue"
@@ -211,7 +219,6 @@ export default function Dashboard() {
                 >
                   Continue Learning →
                 </button>
-              </div>
               </div>
             </div>
           </section>
