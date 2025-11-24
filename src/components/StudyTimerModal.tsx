@@ -6,37 +6,24 @@ interface StudyTimerModalProps {
 }
 
 export default function StudyTimerModal({ onClose }: StudyTimerModalProps) {
-  const [time, setTime] = useState(25 * 60) // 25 minutes in seconds
+  const [hours, setHours] = useState(0)
+  const [minutes, setMinutes] = useState(25)
   const [isRunning, setIsRunning] = useState(false)
-  const [mode, setMode] = useState<'pomodoro' | 'short' | 'long' | 'custom'>('custom')
-  const [showCustomInput, setShowCustomInput] = useState(true)
-  const [customHours, setCustomHours] = useState(0)
-  const [customMinutes, setCustomMinutes] = useState(25)
+  const [timeLeft, setTimeLeft] = useState(0)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
-  const audioRef = useRef<HTMLAudioElement | null>(null)
-
-  const durations = {
-    pomodoro: 25 * 60, // 25 minutes
-    short: 5 * 60,     // 5 minutes
-    long: 15 * 60,     // 15 minutes
-    custom: (customHours * 60 + customMinutes) * 60
-  }
 
   useEffect(() => {
-    // Play notification sound when timer ends
-    if (time === 0 && isRunning) {
-      playAlarm()
-      setIsRunning(false)
-      setTimeout(() => {
-        alert('⏰ Time\'s up! Great job studying! 🎉')
-      }, 100)
-    }
-  }, [time, isRunning])
-
-  useEffect(() => {
-    if (isRunning) {
+    if (isRunning && timeLeft > 0) {
       intervalRef.current = setInterval(() => {
-        setTime((prevTime) => Math.max(0, prevTime - 1))
+        setTimeLeft(prev => {
+          if (prev <= 1) {
+            setIsRunning(false)
+            playAlarm()
+            alert('⏰ Time\'s up! Great job studying! 🎉')
+            return 0
+          }
+          return prev - 1
+        })
       }, 1000)
     } else {
       if (intervalRef.current) {
@@ -49,10 +36,9 @@ export default function StudyTimerModal({ onClose }: StudyTimerModalProps) {
         clearInterval(intervalRef.current)
       }
     }
-  }, [isRunning])
+  }, [isRunning, timeLeft])
 
   const playAlarm = () => {
-    // Create an alarm sound with multiple beeps
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
     
     const playBeep = (startTime: number, frequency: number) => {
@@ -72,7 +58,6 @@ export default function StudyTimerModal({ onClose }: StudyTimerModalProps) {
       oscillator.stop(startTime + 0.3)
     }
     
-    // Play 5 beeps with alternating frequencies
     const now = audioContext.currentTime
     playBeep(now, 800)
     playBeep(now + 0.35, 1000)
@@ -82,22 +67,23 @@ export default function StudyTimerModal({ onClose }: StudyTimerModalProps) {
   }
 
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+    const h = Math.floor(seconds / 3600)
+    const m = Math.floor((seconds % 3600) / 60)
+    const s = seconds % 60
+    
+    if (h > 0) {
+      return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+    }
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
   }
 
   const handleStart = () => {
-    if (mode === 'custom' && showCustomInput) {
-      // Start with custom time
-      const totalSeconds = (customHours * 60 + customMinutes) * 60
-      if (totalSeconds === 0) {
-        alert('Please enter a valid time!')
-        return
-      }
-      setTime(totalSeconds)
-      setShowCustomInput(false)
+    const totalSeconds = (hours * 3600) + (minutes * 60)
+    if (totalSeconds === 0) {
+      alert('Please enter a valid time!')
+      return
     }
+    setTimeLeft(totalSeconds)
     setIsRunning(true)
   }
 
@@ -107,27 +93,8 @@ export default function StudyTimerModal({ onClose }: StudyTimerModalProps) {
 
   const handleReset = () => {
     setIsRunning(false)
-    if (mode === 'custom') {
-      setShowCustomInput(true)
-      setTime((customHours * 60 + customMinutes) * 60)
-    } else {
-      setTime(durations[mode])
-    }
+    setTimeLeft(0)
   }
-
-  const handleModeChange = (newMode: 'pomodoro' | 'short' | 'long' | 'custom') => {
-    setMode(newMode)
-    setIsRunning(false)
-    if (newMode === 'custom') {
-      setShowCustomInput(true)
-      setTime((customHours * 60 + customMinutes) * 60)
-    } else {
-      setShowCustomInput(false)
-      setTime(durations[newMode])
-    }
-  }
-
-  const progress = ((durations[mode] - time) / durations[mode]) * 100
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -138,40 +105,9 @@ export default function StudyTimerModal({ onClose }: StudyTimerModalProps) {
         </div>
 
         <div className="modal-body">
-          <div className="timer-modes">
-            <button
-              className={`mode-btn ${mode === 'custom' ? 'active' : ''}`}
-              onClick={() => handleModeChange('custom')}
-              disabled={isRunning}
-            >
-              Custom Time
-            </button>
-            <button
-              className={`mode-btn ${mode === 'pomodoro' ? 'active' : ''}`}
-              onClick={() => handleModeChange('pomodoro')}
-              disabled={isRunning}
-            >
-              Pomodoro (25m)
-            </button>
-            <button
-              className={`mode-btn ${mode === 'short' ? 'active' : ''}`}
-              onClick={() => handleModeChange('short')}
-              disabled={isRunning}
-            >
-              Short Break (5m)
-            </button>
-            <button
-              className={`mode-btn ${mode === 'long' ? 'active' : ''}`}
-              onClick={() => handleModeChange('long')}
-              disabled={isRunning}
-            >
-              Long Break (15m)
-            </button>
-          </div>
-
-          {mode === 'custom' && showCustomInput && (
-            <div className="custom-time-input">
-              <h3>Set Your Study Time</h3>
+          {!isRunning && timeLeft === 0 ? (
+            <>
+              <h3 style={{ textAlign: 'center', marginBottom: '20px' }}>Set Your Study Time</h3>
               <div className="time-inputs">
                 <div className="time-input-group">
                   <label>Hours</label>
@@ -179,8 +115,8 @@ export default function StudyTimerModal({ onClose }: StudyTimerModalProps) {
                     type="number"
                     min="0"
                     max="23"
-                    value={customHours}
-                    onChange={(e) => setCustomHours(Math.max(0, Math.min(23, parseInt(e.target.value) || 0)))}
+                    value={hours}
+                    onChange={(e) => setHours(Math.max(0, Math.min(23, parseInt(e.target.value) || 0)))}
                   />
                 </div>
                 <span className="time-separator">:</span>
@@ -190,75 +126,105 @@ export default function StudyTimerModal({ onClose }: StudyTimerModalProps) {
                     type="number"
                     min="0"
                     max="59"
-                    value={customMinutes}
-                    onChange={(e) => setCustomMinutes(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+                    value={minutes}
+                    onChange={(e) => setMinutes(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
                   />
                 </div>
               </div>
-            </div>
-          )}
-
-          <div className="timer-display">
-            <svg className="timer-circle" viewBox="0 0 200 200">
-              <defs>
-                <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#2B124C" />
-                  <stop offset="100%" stopColor="#854F6C" />
-                </linearGradient>
-              </defs>
-              <circle
-                className="timer-circle-bg"
-                cx="100"
-                cy="100"
-                r="90"
-              />
-              <circle
-                className="timer-circle-progress"
-                cx="100"
-                cy="100"
-                r="90"
-                style={{
-                  strokeDasharray: `${2 * Math.PI * 90}`,
-                  strokeDashoffset: `${2 * Math.PI * 90 * (1 - progress / 100)}`
+              <button 
+                className="btn-start" 
+                onClick={handleStart}
+                style={{ 
+                  width: '100%', 
+                  marginTop: '30px',
+                  padding: '15px',
+                  background: 'linear-gradient(135deg, #2B124C, #854F6C)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '12px',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer'
                 }}
-              />
-            </svg>
-            <div className="timer-text">
-              <div className="time">{formatTime(time)}</div>
-              <div className="timer-label">
-                {mode === 'custom' ? 'Study Time' :
-                 mode === 'pomodoro' ? 'Focus Time' : 
-                 mode === 'short' ? 'Short Break' : 'Long Break'}
+              >
+                Start Timer
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="timer-display" style={{ textAlign: 'center', marginBottom: '30px' }}>
+                <div style={{ 
+                  fontSize: '64px', 
+                  fontWeight: 'bold',
+                  background: 'linear-gradient(135deg, #2B124C, #854F6C)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  marginBottom: '10px'
+                }}>
+                  {formatTime(timeLeft)}
+                </div>
+                <div style={{ fontSize: '18px', color: '#854F6C' }}>
+                  {isRunning ? 'Study Time' : 'Paused'}
+                </div>
               </div>
-            </div>
-          </div>
 
-          <div className="timer-controls">
-            {!isRunning ? (
-              <button className="btn-start" onClick={handleStart}>
-                {time === durations[mode] ? 'Start' : 'Resume'}
-              </button>
-            ) : (
-              <button className="btn-pause" onClick={handlePause}>
-                Pause
-              </button>
-            )}
-            <button className="btn-reset" onClick={handleReset}>
-              Reset
-            </button>
-          </div>
-
-          <div className="timer-tips">
-            <p>💡 <strong>Pomodoro Technique:</strong></p>
-            <ul>
-              <li>Focus for 25 minutes</li>
-              <li>Take a 5-minute break</li>
-              <li>After 4 pomodoros, take a 15-minute break</li>
-            </ul>
-          </div>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                {!isRunning ? (
+                  <button 
+                    onClick={() => setIsRunning(true)}
+                    style={{ 
+                      flex: 1,
+                      padding: '12px',
+                      background: '#2B124C',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontSize: '16px',
+                      fontWeight: '600',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Resume
+                  </button>
+                ) : (
+                  <button 
+                    onClick={handlePause}
+                    style={{ 
+                      flex: 1,
+                      padding: '12px',
+                      background: '#854F6C',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontSize: '16px',
+                      fontWeight: '600',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Pause
+                  </button>
+                )}
+                <button 
+                  onClick={handleReset}
+                  style={{ 
+                    flex: 1,
+                    padding: '12px',
+                    background: '#DFB6B2',
+                    color: '#522B5B',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Reset
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
   )
 }
-
