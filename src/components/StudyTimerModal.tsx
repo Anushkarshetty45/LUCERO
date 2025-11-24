@@ -8,22 +8,28 @@ interface StudyTimerModalProps {
 export default function StudyTimerModal({ onClose }: StudyTimerModalProps) {
   const [time, setTime] = useState(25 * 60) // 25 minutes in seconds
   const [isRunning, setIsRunning] = useState(false)
-  const [mode, setMode] = useState<'pomodoro' | 'short' | 'long'>('pomodoro')
+  const [mode, setMode] = useState<'pomodoro' | 'short' | 'long' | 'custom'>('custom')
+  const [showCustomInput, setShowCustomInput] = useState(true)
+  const [customHours, setCustomHours] = useState(0)
+  const [customMinutes, setCustomMinutes] = useState(25)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const durations = {
     pomodoro: 25 * 60, // 25 minutes
     short: 5 * 60,     // 5 minutes
-    long: 15 * 60      // 15 minutes
+    long: 15 * 60,     // 15 minutes
+    custom: (customHours * 60 + customMinutes) * 60
   }
 
   useEffect(() => {
     // Play notification sound when timer ends
     if (time === 0 && isRunning) {
-      playNotification()
+      playAlarm()
       setIsRunning(false)
-      alert('⏰ Time\'s up! Take a break! 🎉')
+      setTimeout(() => {
+        alert('⏰ Time\'s up! Great job studying! 🎉')
+      }, 100)
     }
   }, [time, isRunning])
 
@@ -45,23 +51,34 @@ export default function StudyTimerModal({ onClose }: StudyTimerModalProps) {
     }
   }, [isRunning])
 
-  const playNotification = () => {
-    // Create a simple beep sound
+  const playAlarm = () => {
+    // Create an alarm sound with multiple beeps
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-    const oscillator = audioContext.createOscillator()
-    const gainNode = audioContext.createGain()
     
-    oscillator.connect(gainNode)
-    gainNode.connect(audioContext.destination)
+    const playBeep = (startTime: number, frequency: number) => {
+      const oscillator = audioContext.createOscillator()
+      const gainNode = audioContext.createGain()
+      
+      oscillator.connect(gainNode)
+      gainNode.connect(audioContext.destination)
+      
+      oscillator.frequency.value = frequency
+      oscillator.type = 'sine'
+      
+      gainNode.gain.setValueAtTime(0.5, startTime)
+      gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3)
+      
+      oscillator.start(startTime)
+      oscillator.stop(startTime + 0.3)
+    }
     
-    oscillator.frequency.value = 800
-    oscillator.type = 'sine'
-    
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5)
-    
-    oscillator.start(audioContext.currentTime)
-    oscillator.stop(audioContext.currentTime + 0.5)
+    // Play 5 beeps with alternating frequencies
+    const now = audioContext.currentTime
+    playBeep(now, 800)
+    playBeep(now + 0.35, 1000)
+    playBeep(now + 0.7, 800)
+    playBeep(now + 1.05, 1000)
+    playBeep(now + 1.4, 800)
   }
 
   const formatTime = (seconds: number) => {
@@ -71,6 +88,16 @@ export default function StudyTimerModal({ onClose }: StudyTimerModalProps) {
   }
 
   const handleStart = () => {
+    if (mode === 'custom' && showCustomInput) {
+      // Start with custom time
+      const totalSeconds = (customHours * 60 + customMinutes) * 60
+      if (totalSeconds === 0) {
+        alert('Please enter a valid time!')
+        return
+      }
+      setTime(totalSeconds)
+      setShowCustomInput(false)
+    }
     setIsRunning(true)
   }
 
@@ -80,13 +107,24 @@ export default function StudyTimerModal({ onClose }: StudyTimerModalProps) {
 
   const handleReset = () => {
     setIsRunning(false)
-    setTime(durations[mode])
+    if (mode === 'custom') {
+      setShowCustomInput(true)
+      setTime((customHours * 60 + customMinutes) * 60)
+    } else {
+      setTime(durations[mode])
+    }
   }
 
-  const handleModeChange = (newMode: 'pomodoro' | 'short' | 'long') => {
+  const handleModeChange = (newMode: 'pomodoro' | 'short' | 'long' | 'custom') => {
     setMode(newMode)
-    setTime(durations[newMode])
     setIsRunning(false)
+    if (newMode === 'custom') {
+      setShowCustomInput(true)
+      setTime((customHours * 60 + customMinutes) * 60)
+    } else {
+      setShowCustomInput(false)
+      setTime(durations[newMode])
+    }
   }
 
   const progress = ((durations[mode] - time) / durations[mode]) * 100
@@ -101,6 +139,13 @@ export default function StudyTimerModal({ onClose }: StudyTimerModalProps) {
 
         <div className="modal-body">
           <div className="timer-modes">
+            <button
+              className={`mode-btn ${mode === 'custom' ? 'active' : ''}`}
+              onClick={() => handleModeChange('custom')}
+              disabled={isRunning}
+            >
+              Custom Time
+            </button>
             <button
               className={`mode-btn ${mode === 'pomodoro' ? 'active' : ''}`}
               onClick={() => handleModeChange('pomodoro')}
@@ -123,6 +168,35 @@ export default function StudyTimerModal({ onClose }: StudyTimerModalProps) {
               Long Break (15m)
             </button>
           </div>
+
+          {mode === 'custom' && showCustomInput && (
+            <div className="custom-time-input">
+              <h3>Set Your Study Time</h3>
+              <div className="time-inputs">
+                <div className="time-input-group">
+                  <label>Hours</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="23"
+                    value={customHours}
+                    onChange={(e) => setCustomHours(Math.max(0, Math.min(23, parseInt(e.target.value) || 0)))}
+                  />
+                </div>
+                <span className="time-separator">:</span>
+                <div className="time-input-group">
+                  <label>Minutes</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="59"
+                    value={customMinutes}
+                    onChange={(e) => setCustomMinutes(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="timer-display">
             <svg className="timer-circle" viewBox="0 0 200 200">
@@ -152,7 +226,8 @@ export default function StudyTimerModal({ onClose }: StudyTimerModalProps) {
             <div className="timer-text">
               <div className="time">{formatTime(time)}</div>
               <div className="timer-label">
-                {mode === 'pomodoro' ? 'Focus Time' : 
+                {mode === 'custom' ? 'Study Time' :
+                 mode === 'pomodoro' ? 'Focus Time' : 
                  mode === 'short' ? 'Short Break' : 'Long Break'}
               </div>
             </div>

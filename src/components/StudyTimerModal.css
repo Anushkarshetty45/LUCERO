@@ -4,8 +4,9 @@
 
 .timer-modes {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
   justify-content: center;
 }
 
@@ -35,6 +36,66 @@
 .mode-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.custom-time-input {
+  background: linear-gradient(135deg, #FBE4D8, #DFB6B2);
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  border: 2px solid #DFB6B2;
+}
+
+.custom-time-input h3 {
+  margin: 0 0 16px 0;
+  color: #2B124C;
+  font-size: 18px;
+  text-align: center;
+}
+
+.time-inputs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.time-input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.time-input-group label {
+  font-size: 14px;
+  color: #522B5B;
+  font-weight: 600;
+}
+
+.time-input-group input {
+  width: 80px;
+  padding: 12px;
+  border: 2px solid #DFB6B2;
+  border-radius: 8px;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+  color: #2B124C;
+  background: white;
+  transition: border-color 0.2s;
+}
+
+.time-input-group input:focus {
+  outline: none;
+  border-color: #2B124C;
+}
+
+.time-separator {
+  font-size: 32px;
+  font-weight: 700;
+  color: #2B124C;
+  margin-top: 20px;
 }
 
 .timer-display {
