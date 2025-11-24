@@ -1,6 +1,6 @@
 .legal-page {
     min-height: 100vh;
-    background: #F4E3B2;
+    background: #FBE4D8;
   }
   
   .legal-header {
@@ -52,7 +52,7 @@
   
   .last-updated {
     font-size: 14px;
-    color: #947268;
+    color: #854F6C;
     margin-bottom: 40px;
     font-style: italic;
   }
@@ -76,7 +76,7 @@
     font-weight: 600;
     margin-bottom: 12px;
     margin-top: 20px;
-    color: #45462A;
+    color: #522B5B;
   }
   
   .legal-content p {
@@ -123,7 +123,7 @@
   .acceptance-notice p {
     margin: 0;
     font-size: 16px;
-    color: #45462A;
+    color: #522B5B;
   }
   
   /* Responsive Design */
