@@ -33,7 +33,7 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
 
       // Get course titles for each note
       if (notesData && notesData.length > 0) {
-        const courseIds = [...new Set(notesData.map(n => n.course_id))]
+        const courseIds = Array.from(new Set(notesData.map(n => n.course_id)))
         const { data: coursesData, error: coursesError } = await supabase
           .from('courses')
           .select('id, title')
