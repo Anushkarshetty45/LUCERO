@@ -31,7 +31,7 @@
 }
 
 .nav-button:hover {
-  background: #45462A;
+  background: #522B5B;
   transform: translateY(-2px);
 }
 
@@ -58,7 +58,7 @@
 
 .hero-subtitle {
   font-size: 20px;
-  color: #947268;
+  color: #854F6C;
   margin-bottom: 40px;
   line-height: 1.6;
 }
@@ -76,7 +76,7 @@
 }
 
 .cta-button:hover {
-  background: #45462A;
+  background: #522B5B;
   transform: translateY(-2px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
@@ -115,7 +115,7 @@
 
 .feature p {
   font-size: 16px;
-  color: #947268;
+  color: #854F6C;
   line-height: 1.6;
 }
 
