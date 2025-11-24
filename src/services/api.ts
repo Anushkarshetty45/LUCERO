@@ -85,7 +85,7 @@ export const getCourseWithProgress = async (courseId: string, userId: string) =>
   // Get course
   const course = await getCourse(courseId)
   
-  // Get lessons
+  // Get lessons count
   const { data: lessons, error: lessonsError } = await supabase
     .from('lessons')
     .select('id')
@@ -95,24 +95,24 @@ export const getCourseWithProgress = async (courseId: string, userId: string) =>
   
   const lessonIds = lessons?.map(l => l.id) || []
   
-  // Get progress
+  // Get last accessed date
   const { data: progress, error: progressError } = await supabase
     .from('lesson_progress')
-    .select('*')
+    .select('last_accessed')
     .eq('user_id', userId)
     .in('lesson_id', lessonIds)
+    .order('last_accessed', { ascending: false })
+    .limit(1)
   
   if (progressError) throw progressError
   
   const totalLessons = lessons?.length || 0
-  const completedLessons = progress?.filter(p => p.completed).length || 0
-  const progressPercentage = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0
+  const lastAccessed = progress && progress.length > 0 ? progress[0].last_accessed : null
   
   return {
     ...course,
     total_lessons: totalLessons,
-    completed_lessons: completedLessons,
-    progress_percentage: progressPercentage
+    last_accessed: lastAccessed
   }
 }
 

@@ -44,23 +44,23 @@ export default function CourseCard({ course, onUpdate }: CourseCardProps) {
 
         <div className="course-stats">
           <div className="stat">
-            <span className="stat-label">Lessons</span>
+            <span className="stat-label">Topics</span>
             <span className="stat-value">{course.total_lessons}</span>
           </div>
           <div className="stat">
-            <span className="stat-label">Completed</span>
-            <span className="stat-value">{course.completed_lessons}</span>
+            <span className="stat-label">Last Studied</span>
+            <span className="stat-value stat-small">
+              {course.last_accessed 
+                ? new Date(course.last_accessed).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                : 'Not yet'}
+            </span>
           </div>
         </div>
 
-        <div className="course-progress">
-          <div className="progress-bar">
-            <div 
-              className="progress-fill" 
-              style={{ width: `${course.progress_percentage}%` }}
-            ></div>
-          </div>
-          <span className="progress-text">{course.progress_percentage}%</span>
+        <div className="course-footer-info">
+          <span className="created-date">
+            📅 Created {new Date(course.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          </span>
         </div>
 
         <div className="course-card-actions">

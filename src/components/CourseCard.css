@@ -78,34 +78,25 @@
     font-weight: 700;
     color: #522B5B;
   }
-  
-  .course-progress {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-  
-  .course-progress .progress-bar {
-    flex: 1;
-    height: 6px;
-    background: #DFB6B2;
-    border-radius: 3px;
-    overflow: hidden;
-  }
-  
-  .course-progress .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #2B124C, #854F6C);
-    transition: width 0.3s;
-  }
-  
-  .progress-text {
+
+  .stat-value.stat-small {
     font-size: 14px;
     font-weight: 600;
     color: #2B124C;
-    min-width: 40px;
-    text-align: right;
+  }
+  
+  .course-footer-info {
+    padding: 12px 0;
+    border-top: 1px solid #DFB6B2;
+    margin-bottom: 16px;
+  }
+  
+  .created-date {
+    font-size: 13px;
+    color: #854F6C;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
   
   .course-card-actions {

@@ -62,8 +62,7 @@ export interface Profile {
   
   export interface CourseWithProgress extends Course {
     total_lessons: number
-    completed_lessons: number
-    progress_percentage: number
+    last_accessed: string | null
   }
 
   export interface UserNote {
