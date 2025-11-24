@@ -6,13 +6,13 @@
 /* Left side - Logo section */
 .auth-logo-section {
   flex:30%;
-  background: linear-gradient(135deg, #74070E, #310E10);
+  background: linear-gradient(135deg, #2B124C, #190019);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 40px;
-  color: #F4E3B2;
+  color: #FBE4D8;
 }
 
 .auth-logo-section img {
@@ -27,12 +27,12 @@
   font-weight: 700;
   letter-spacing: 3px;
   margin-bottom: 20px;
-  color: #F4E3B2;
+  color: #FBE4D8;
 }
 
 .auth-logo-section p {
   font-size: 18px;
-  color: #F4E3B2;
+  color: #FBE4D8;
   opacity: 0.9;
   text-align: center;
   max-width: 400px;
@@ -45,7 +45,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: #F4E3B2;
+  background: #FBE4D8;
   overflow-y: auto;
 }
 
