@@ -44,7 +44,7 @@
   
   .course-description {
     font-size: 14px;
-    color: #947268;
+    color: #854F6C;
     margin-bottom: 16px;
     line-height: 1.5;
     display: -webkit-box;
@@ -68,7 +68,7 @@
   
   .stat-label {
     font-size: 12px;
-    color: #947268;
+    color: #854F6C;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -76,7 +76,7 @@
   .stat-value {
     font-size: 24px;
     font-weight: 700;
-    color: #45462A;
+    color: #522B5B;
   }
   
   .course-progress {
@@ -89,21 +89,21 @@
   .course-progress .progress-bar {
     flex: 1;
     height: 6px;
-    background: #e0e0e0;
+    background: #DFB6B2;
     border-radius: 3px;
     overflow: hidden;
   }
   
   .course-progress .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #74070E, #947268);
+    background: linear-gradient(90deg, #2B124C, #854F6C);
     transition: width 0.3s;
   }
   
   .progress-text {
     font-size: 14px;
     font-weight: 600;
-    color: #74070E;
+    color: #2B124C;
     min-width: 40px;
     text-align: right;
   }
@@ -117,7 +117,7 @@
   .btn-open {
     flex: 1;
     padding: 10px;
-    background: #74070E;
+    background: #2B124C;
     color: white;
     border: none;
     border-radius: 6px;
@@ -127,14 +127,14 @@
   }
   
   .btn-open:hover {
-    background: #310E10;
+    background: #190019;
     transform: translateY(-2px);
   }
   
   .btn-menu {
     width: 40px;
     padding: 10px;
-    background: #F4E3B2;
+    background: #FBE4D8;
     border: none;
     border-radius: 6px;
     font-size: 20px;
@@ -143,7 +143,7 @@
   }
   
   .btn-menu:hover {
-    background: #e0e0e0;
+    background: #DFB6B2;
   }
   
   .course-menu {
@@ -172,11 +172,11 @@
   }
   
   .course-menu button:hover {
-    background: #F4E3B2;
+    background: #FBE4D8;
   }
   
   .course-menu .delete-btn {
-    color: #74070E;
+    color: #2B124C;
   }
   
   /* Delete Confirmation Modal */
@@ -208,7 +208,7 @@
   
   .delete-confirm-modal p {
     font-size: 16px;
-    color: #947268;
+    color: #854F6C;
     margin-bottom: 24px;
     line-height: 1.5;
   }
@@ -230,19 +230,19 @@
   }
   
   .btn-cancel {
-    background: #F4E3B2;
-    color: #45462A;
+    background: #FBE4D8;
+    color: #522B5B;
   }
   
   .btn-cancel:hover {
-    background: #e0e0e0;
+    background: #DFB6B2;
   }
   
   .btn-delete {
-    background: #74070E;
+    background: #2B124C;
     color: white;
   }
   
   .btn-delete:hover {
-    background: #310E10;
+    background: #190019;
   }
