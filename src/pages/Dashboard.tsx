@@ -1,11 +1,14 @@
+// FORCE RECOMPILE - VERSION 2
 import { useEffect, useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { useNavigate, Link } from 'react-router-dom'
-import { getProfile, getCourses, getTodayStudyTime, getCourseWithProgress } from '../services/api'
+import { getProfile, getCourses, getTodayStudyTime, getCourseWithProgress, calculateUserStreak } from '../services/api'
 import { Profile, CourseWithProgress } from '../types'
-import { getGreeting, formatTime, getMotivationalQuote, calculateStreak } from '../utils/helpers'
+import { getGreeting, formatTime, getMotivationalQuote } from '../utils/helpers'
 import CreateCourseModal from '../components/CreateCourseModal'
 import CourseCard from '../components/CourseCard'
+import AllNotesModal from '../components/AllNotesModal'
+import StudyTimerModal from '../components/StudyTimerModal'
 import './Dashboard.css'
 
 export default function Dashboard() {
@@ -16,12 +19,15 @@ export default function Dashboard() {
   const [todayStudyTime, setTodayStudyTime] = useState(0)
   const [loading, setLoading] = useState(true)
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showAllNotes, setShowAllNotes] = useState(false)
+  const [showTimer, setShowTimer] = useState(false)
   const [streak, setStreak] = useState(0)
 
   useEffect(() => {
     if (user) {
       loadDashboardData()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   const loadDashboardData = async () => {
@@ -61,7 +67,8 @@ export default function Dashboard() {
       setTodayStudyTime(studyTime)
       
       // Calculate streak
-      const streakDays = calculateStreak()
+      const streakDays = await calculateUserStreak(user!.id)
+      console.log('🔥 Streak calculation result:', streakDays)
       setStreak(streakDays)
       
     } catch (error) {
@@ -123,10 +130,6 @@ export default function Dashboard() {
           <h1 className="nav-logo">LUCERO</h1>
         </div>
         <div className="nav-right">
-          <div className="nav-search">
-            <input type="text" placeholder="Search courses..." />
-            <span className="search-icon">🔍</span>
-          </div>
           <button className="nav-icon-btn" title="Notifications">
             🔔
             <span className="notification-badge">3</span>
@@ -161,20 +164,15 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Stats */}
+        <h1 style={{color: 'red', fontSize: '40px', textAlign: 'center', margin: '20px'}}>
+          🚀 NEW CODE LOADED - CACHE IS CLEARED! 🚀
+        </h1>
         <div className="quick-stats">
           <div className="stat-card">
             <div className="stat-icon">📚</div>
             <div className="stat-content">
               <h3>{totalCourses}</h3>
               <p>Total Courses</p>
-            </div>
-          </div>
-          
-          <div className="stat-card">
-            <div className="stat-icon">📝</div>
-            <div className="stat-content">
-              <h3>{courses.reduce((sum, c) => sum + c.total_lessons, 0)}</h3>
-              <p>Total Topics</p>
             </div>
           </div>
           
@@ -266,15 +264,16 @@ export default function Dashboard() {
               <span className="tool-name">AI Assistant</span>
               <span className="tool-badge">Coming Soon</span>
             </button>
-            <button className="tool-card">
+            <button className="tool-card" onClick={() => setShowAllNotes(true)}>
               <span className="tool-icon">📝</span>
               <span className="tool-name">Notes</span>
             </button>
             <button className="tool-card">
               <span className="tool-icon">🃏</span>
               <span className="tool-name">Flashcards</span>
+              <span className="tool-badge">Coming Soon</span>
             </button>
-            <button className="tool-card">
+            <button className="tool-card" onClick={() => setShowTimer(true)}>
               <span className="tool-icon">⏱️</span>
               <span className="tool-name">Study Timer</span>
             </button>
@@ -287,6 +286,25 @@ export default function Dashboard() {
         <CreateCourseModal
           onClose={() => setShowCreateModal(false)}
           onSuccess={handleCourseCreated}
+        />
+      )}
+
+      {/* All Notes Modal */}
+      {showAllNotes && user && (
+        <AllNotesModal
+          userId={user.id}
+          onClose={() => setShowAllNotes(false)}
+          onOpenNote={(courseId, noteId) => {
+            setShowAllNotes(false)
+            navigate(`/course/${courseId}`)
+          }}
+        />
+      )}
+
+      {/* Study Timer Modal */}
+      {showTimer && (
+        <StudyTimerModal
+          onClose={() => setShowTimer(false)}
         />
       )}
     </div>
