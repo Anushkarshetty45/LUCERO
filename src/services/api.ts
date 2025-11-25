@@ -342,8 +342,13 @@ export const calculateUserStreak = async (userId: string): Promise<number> => {
     .eq('user_id', userId)
     .order('started_at', { ascending: false })
   
+  console.log('🔍 Study sessions data:', data)
+  
   if (error) throw error
-  if (!data || data.length === 0) return 0
+  if (!data || data.length === 0) {
+    console.log('✅ No study sessions found, streak = 0')
+    return 0
+  }
   
   // Group sessions by date and calculate total study time per day
   const dailyStudyTime: { [date: string]: number } = {}
