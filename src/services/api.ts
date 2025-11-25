@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import { Course, Lesson, Material, LessonProgress, StudySession, Profile } from '../types'
+import { Course, Lesson, Material, LessonProgress, Profile } from '../types'
 
 // ==================== PROFILE ====================
 export const getProfile = async (userId: string): Promise<Profile> => {
