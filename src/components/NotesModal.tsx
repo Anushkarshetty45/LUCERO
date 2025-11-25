@@ -25,6 +25,7 @@ export default function NotesModal({ userId, courseId, courseTitle, onClose }: N
     if (view === 'list') {
       loadNotes()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view])
 
   const loadNotes = async () => {
@@ -47,7 +48,7 @@ export default function NotesModal({ userId, courseId, courseTitle, onClose }: N
 
     setSaving(true)
     try {
-      const newNote = await createUserNote(userId, courseId, newTopic, content)
+      await createUserNote(userId, courseId, newTopic, content)
       alert('Note created successfully!')
       setView('menu')
       setNewTopic('')
