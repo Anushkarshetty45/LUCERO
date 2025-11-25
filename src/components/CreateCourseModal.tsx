@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { createCourse } from '../services/api'
-import { getCourseColor } from '../utils/helpers'
 import './CreateCourseModal.css'
 
 interface CreateCourseModalProps {
