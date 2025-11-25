@@ -16,6 +16,7 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
 
   useEffect(() => {
     loadAllNotes()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId])
 
   const loadAllNotes = async () => {
