@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../../services/supabase'
-import { useNavigate } from 'react-router-dom'
+
 import './AuthForms.css'
 
 export default function RegisterForm({ onToggle }: { onToggle: () => void }) {
@@ -13,7 +13,6 @@ export default function RegisterForm({ onToggle }: { onToggle: () => void }) {
   const [subscribe, setSubscribe] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
