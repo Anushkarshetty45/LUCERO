@@ -384,7 +384,7 @@
   align-items: center;
   gap: 12px;
   padding: 30px;
-  background: white;
+  background: rgb(245, 241, 241);
   border: 2px solid #DFB6B2;
   border-radius: 12px;
   cursor: pointer;
