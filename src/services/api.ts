@@ -335,27 +335,36 @@ export const getWeeklyStudyTime = async (userId: string): Promise<number> => {
 }
 
 export const calculateUserStreak = async (userId: string): Promise<number> => {
-  // Get all study sessions ordered by date
+  // Get all study sessions with duration
   const { data, error } = await supabase
     .from('study_sessions')
-    .select('started_at')
+    .select('started_at, duration')
     .eq('user_id', userId)
     .order('started_at', { ascending: false })
   
   if (error) throw error
   if (!data || data.length === 0) return 0
   
-  // Get unique dates (without time)
-  const uniqueDates = Array.from(
-    new Set(
-      data.map(session => {
-        const date = new Date(session.started_at)
-        return date.toISOString().split('T')[0] // Get just the date part (YYYY-MM-DD)
-      })
-    )
-  ).sort((a, b) => b.localeCompare(a)) // Sort descending (most recent first)
+  // Group sessions by date and calculate total study time per day
+  const dailyStudyTime: { [date: string]: number } = {}
   
-  if (uniqueDates.length === 0) return 0
+  data.forEach(session => {
+    const date = new Date(session.started_at)
+    const dateStr = date.toISOString().split('T')[0] // YYYY-MM-DD
+    const duration = session.duration || 0
+    
+    if (!dailyStudyTime[dateStr]) {
+      dailyStudyTime[dateStr] = 0
+    }
+    dailyStudyTime[dateStr] += duration
+  })
+  
+  // Filter days with at least 30 minutes (1800 seconds) of study time
+  const qualifiedDates = Object.keys(dailyStudyTime)
+    .filter(date => dailyStudyTime[date] >= 1800) // 30 minutes = 1800 seconds
+    .sort((a, b) => b.localeCompare(a)) // Sort descending (most recent first)
+  
+  if (qualifiedDates.length === 0) return 0
   
   // Check if there's activity today or yesterday (streak might still be valid)
   const today = new Date()
@@ -366,7 +375,7 @@ export const calculateUserStreak = async (userId: string): Promise<number> => {
   yesterday.setDate(yesterday.getDate() - 1)
   const yesterdayStr = yesterday.toISOString().split('T')[0]
   
-  const mostRecentDate = uniqueDates[0]
+  const mostRecentDate = qualifiedDates[0]
   
   // If most recent activity is not today or yesterday, streak is broken
   if (mostRecentDate !== todayStr && mostRecentDate !== yesterdayStr) {
@@ -377,12 +386,12 @@ export const calculateUserStreak = async (userId: string): Promise<number> => {
   let streak = 1
   let currentDate = new Date(mostRecentDate)
   
-  for (let i = 1; i < uniqueDates.length; i++) {
+  for (let i = 1; i < qualifiedDates.length; i++) {
     const expectedDate = new Date(currentDate)
     expectedDate.setDate(expectedDate.getDate() - 1)
     const expectedDateStr = expectedDate.toISOString().split('T')[0]
     
-    if (uniqueDates[i] === expectedDateStr) {
+    if (qualifiedDates[i] === expectedDateStr) {
       streak++
       currentDate = expectedDate
     } else {
