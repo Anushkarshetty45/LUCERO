@@ -333,6 +333,66 @@ export const getWeeklyStudyTime = async (userId: string): Promise<number> => {
   const totalSeconds = data?.reduce((sum, session) => sum + (session.duration || 0), 0) || 0
   return totalSeconds
 }
+
+export const calculateUserStreak = async (userId: string): Promise<number> => {
+  // Get all study sessions ordered by date
+  const { data, error } = await supabase
+    .from('study_sessions')
+    .select('started_at')
+    .eq('user_id', userId)
+    .order('started_at', { ascending: false })
+  
+  if (error) throw error
+  if (!data || data.length === 0) return 0
+  
+  // Get unique dates (without time)
+  const uniqueDates = Array.from(
+    new Set(
+      data.map(session => {
+        const date = new Date(session.started_at)
+        return date.toISOString().split('T')[0] // Get just the date part (YYYY-MM-DD)
+      })
+    )
+  ).sort((a, b) => b.localeCompare(a)) // Sort descending (most recent first)
+  
+  if (uniqueDates.length === 0) return 0
+  
+  // Check if there's activity today or yesterday (streak might still be valid)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const todayStr = today.toISOString().split('T')[0]
+  
+  const yesterday = new Date(today)
+  yesterday.setDate(yesterday.getDate() - 1)
+  const yesterdayStr = yesterday.toISOString().split('T')[0]
+  
+  const mostRecentDate = uniqueDates[0]
+  
+  // If most recent activity is not today or yesterday, streak is broken
+  if (mostRecentDate !== todayStr && mostRecentDate !== yesterdayStr) {
+    return 0
+  }
+  
+  // Count consecutive days
+  let streak = 1
+  let currentDate = new Date(mostRecentDate)
+  
+  for (let i = 1; i < uniqueDates.length; i++) {
+    const expectedDate = new Date(currentDate)
+    expectedDate.setDate(expectedDate.getDate() - 1)
+    const expectedDateStr = expectedDate.toISOString().split('T')[0]
+    
+    if (uniqueDates[i] === expectedDateStr) {
+      streak++
+      currentDate = expectedDate
+    } else {
+      // Gap found, streak ends
+      break
+    }
+  }
+  
+  return streak
+}
 // ==================== USER NOTES ====================
 export const getAllUserNotes = async (userId: string, courseId: string) => {
   const { data, error } = await supabase
