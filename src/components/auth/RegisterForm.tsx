@@ -53,24 +53,12 @@ export default function RegisterForm({ onToggle }: { onToggle: () => void }) {
       } else {
         console.log('✅ Signup successful!')
         console.log('👤 User:', data.user?.email)
-        console.log('🔑 Session:', data.session ? 'Active' : 'Pending confirmation')
         
-        // Check if email confirmation is required
-        if (data?.user && !data.session) {
-          // Email confirmation required
-          console.log('📧 Email confirmation required')
-          setLoading(false)
-          alert(`✅ Account created! Please check your email (${email}) to verify your account.`)
-          onToggle() // Switch to login form
-        } else if (data?.session) {
-          // User is auto-logged in - wait a moment for auth state to update
-          console.log('🎉 Registration complete, redirecting to dashboard...')
-          setTimeout(() => {
-            window.location.href = '/dashboard'
-          }, 500)
-        } else {
-          setLoading(false)
-        }
+        // ALWAYS require email confirmation before login
+        console.log('📧 Email verification required')
+        setLoading(false)
+        alert(`✅ Registration successful!\n\n📧 Please check your email (${email}) to verify your account.\n\nAfter verification, you can log in.`)
+        onToggle() // Switch to login form
       }
     } catch (err: any) {
       console.error('💥 Unexpected error:', err)
