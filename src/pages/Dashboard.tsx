@@ -164,9 +164,6 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Stats */}
-        <h1 style={{color: 'red', fontSize: '40px', textAlign: 'center', margin: '20px'}}>
-          🚀 NEW CODE LOADED - CACHE IS CLEARED! 🚀
-        </h1>
         <div className="quick-stats">
           <div className="stat-card">
             <div className="stat-icon">📚</div>
