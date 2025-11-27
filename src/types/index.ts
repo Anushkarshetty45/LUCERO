@@ -25,7 +25,7 @@ export interface Lesson {
   course_id: string
   title: string
   content: string
-  order_index: number
+  order_index?: number
   duration?: number
   created_at: string
   updated_at: string
