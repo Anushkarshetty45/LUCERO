@@ -1,7 +1,44 @@
 import { Link } from 'react-router-dom'
+import { useState } from 'react'
 import './Home.css'
 
 export default function Home() {
+  const [openFaq, setOpenFaq] = useState<number | null>(null)
+
+  const toggleFaq = (index: number) => {
+    setOpenFaq(openFaq === index ? null : index)
+  }
+
+  const faqs = [
+    {
+      question: "What are the limits of Lucero?",
+      answer: "The free plan includes 5 uploads and 30 AI chat messages per month. The Pro plan offers unlimited uploads, notes, exercises, and AI chat for just $4.99/month."
+    },
+    {
+      question: "How is Lucero AI different from other AI models?",
+      answer: "Lucero is specifically designed for students and learning. Unlike general AI models, it organizes your study materials into structured notes, creates personalized quizzes, and builds a comprehensive Golden Note that grows with your learning journey."
+    },
+    {
+      question: "What do I do if something doesn't work?",
+      answer: "If you encounter any issues, please contact our support team at support@lucero.com. We're here to help 24/7 and typically respond within a few hours."
+    },
+    {
+      question: "Can Lucero help me with the exams?",
+      answer: "Absolutely! Lucero creates exam-style practice questions, provides instant feedback, and helps you identify weak areas before test day. Our exam simulator mimics real test conditions to prepare you thoroughly."
+    },
+    {
+      question: "How does Lucero protect my data?",
+      answer: "We take data security seriously. All your notes and materials are encrypted in transit and at rest. We never share your data with third parties, and you can delete your account and all associated data at any time."
+    },
+    {
+      question: "How do I cancel my subscription?",
+      answer: "You can cancel your subscription anytime from your account settings. Simply go to Settings > Subscription > Cancel. You'll retain access until the end of your billing period."
+    },
+    {
+      question: "Does Lucero work in my language?",
+      answer: "Lucero currently supports English, Spanish, French, German, Italian, Portuguese, and Chinese. We're constantly adding more languages based on user demand."
+    }
+  ]
   return (
     <div className="home-page">
       <nav className="home-nav">
@@ -331,48 +368,19 @@ export default function Home() {
           </div>
 
           <div className="faq-container">
-            <div className="faq-item">
-              <div className="faq-question">
-                <span>What are the limits of Lucero?</span>
-                <span className="faq-icon">+</span>
+            {faqs.map((faq, index) => (
+              <div key={index} className={`faq-item ${openFaq === index ? 'active' : ''}`}>
+                <div className="faq-question" onClick={() => toggleFaq(index)}>
+                  <span>{faq.question}</span>
+                  <span className="faq-icon">{openFaq === index ? '−' : '+'}</span>
+                </div>
+                {openFaq === index && (
+                  <div className="faq-answer">
+                    <p>{faq.answer}</p>
+                  </div>
+                )}
               </div>
-            </div>
-            <div className="faq-item">
-              <div className="faq-question">
-                <span>How is Lucero AI different from other AI models?</span>
-                <span className="faq-icon">+</span>
-              </div>
-            </div>
-            <div className="faq-item">
-              <div className="faq-question">
-                <span>What do I do if something doesn't work?</span>
-                <span className="faq-icon">+</span>
-              </div>
-            </div>
-            <div className="faq-item">
-              <div className="faq-question">
-                <span>Can Lucero help me with the exams?</span>
-                <span className="faq-icon">+</span>
-              </div>
-            </div>
-            <div className="faq-item">
-              <div className="faq-question">
-                <span>How does Lucero protect my data?</span>
-                <span className="faq-icon">+</span>
-              </div>
-            </div>
-            <div className="faq-item">
-              <div className="faq-question">
-                <span>How do I cancel my subscription?</span>
-                <span className="faq-icon">+</span>
-              </div>
-            </div>
-            <div className="faq-item">
-              <div className="faq-question">
-                <span>Does Lucero work in my language?</span>
-                <span className="faq-icon">+</span>
-              </div>
-            </div>
+            ))}
           </div>
         </section>
 
