@@ -29,7 +29,7 @@ export default function Home() {
             <Link to="/auth" className="cta-button">Try Lucero now</Link>
 
             <div className="hero-illustration">
-              <div className="bunny-mascot">🐴</div>
+              <img src="/horse-mascot.png" alt="Lucero Horse Mascot" className="horse-mascot" />
             </div>
           </div>
         </section>
@@ -216,7 +216,7 @@ export default function Home() {
                 <li><span className="check-icon">✔</span> Unlimited AI chat</li>
               </ul>
               <div className="card-illustration">
-                <div className="bunny-mascot-small">🐴</div>
+                <img src="/horse-mascot.png" alt="Lucero Horse" className="horse-mascot-small" />
               </div>
             </div>
           </div>
@@ -231,7 +231,10 @@ export default function Home() {
             </blockquote>
             <div className="testimonial-author">
               <p>Student at Copenhagen Business School</p>
-              <div className="bunny-friends">🐴🐴</div>
+              <div className="bunny-friends">
+                <img src="/horse-mascot.png" alt="Horse" className="horse-friend" />
+                <img src="/horse-mascot.png" alt="Horse" className="horse-friend" />
+              </div>
             </div>
           </div>
         </section>
