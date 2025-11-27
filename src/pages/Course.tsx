@@ -29,7 +29,7 @@ export default function Course() {
       setLoading(true)
       const courseData = await getCourse(courseId!)
       setCourse(courseData)
-      
+
       const lessonsData = await getLessons(courseId!)
       setLessons(lessonsData)
     } catch (error) {
@@ -41,7 +41,7 @@ export default function Course() {
 
   const handleDeleteLesson = async (lessonId: string) => {
     if (!window.confirm('Are you sure you want to delete this topic?')) return
-    
+
     try {
       await deleteLesson(lessonId)
       setLessons(lessons.filter(l => l.id !== lessonId))
@@ -81,7 +81,7 @@ export default function Course() {
           <h1>{course.title}</h1>
           <p className="course-subject">{course.subject}</p>
           {course.description && <p className="course-description">{course.description}</p>}
-          <button 
+          <button
             className="btn-notes"
             onClick={() => setShowNotes(true)}
           >
@@ -95,7 +95,7 @@ export default function Course() {
         <aside className="topics-sidebar">
           <div className="sidebar-header">
             <h2>Topics</h2>
-            <button 
+            <button
               className="btn-add-topic"
               onClick={() => setShowAddTopic(true)}
             >
@@ -111,7 +111,7 @@ export default function Course() {
           ) : (
             <ul className="topics-list">
               {lessons.map((lesson, index) => (
-                <li 
+                <li
                   key={lesson.id}
                   className={selectedLesson?.id === lesson.id ? 'active' : ''}
                   onClick={() => setSelectedLesson(lesson)}
@@ -119,11 +119,11 @@ export default function Course() {
                   <div className="topic-number">{index + 1}</div>
                   <div className="topic-info">
                     <h3>{lesson.title}</h3>
-                    {lesson.duration > 0 && (
+                    {(lesson.duration || 0) > 0 && (
                       <span className="topic-duration">{lesson.duration} min</span>
                     )}
                   </div>
-                  <button 
+                  <button
                     className="btn-delete-topic"
                     onClick={(e) => {
                       e.stopPropagation()
@@ -143,7 +143,7 @@ export default function Course() {
           {selectedLesson ? (
             <div className="notes-viewer">
               <h2>{selectedLesson.title}</h2>
-              <div 
+              <div
                 className="notes-text"
                 dangerouslySetInnerHTML={{ __html: selectedLesson.content || '<p>No notes available</p>' }}
               />
@@ -157,13 +157,13 @@ export default function Course() {
           )}
         </main>
         {showNotes && user && (
-  <NotesModal
-    userId={user.id}
-    courseId={courseId!}
-    courseTitle={course.title}
-    onClose={() => setShowNotes(false)}
-  />
-)}
+          <NotesModal
+            userId={user.id}
+            courseId={courseId!}
+            courseTitle={course.title}
+            onClose={() => setShowNotes(false)}
+          />
+        )}
       </div>
 
       {/* Add Topic Modal */}
