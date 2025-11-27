@@ -11,12 +11,12 @@ interface AddTopicModalProps {
   onSuccess: (lesson: Lesson) => void
 }
 
-export default function AddTopicModal({ 
-  courseId, 
-  courseTitle, 
-  courseSubject, 
-  onClose, 
-  onSuccess 
+export default function AddTopicModal({
+  courseId,
+  courseTitle,
+  courseSubject,
+  onClose,
+  onSuccess
 }: AddTopicModalProps) {
   const [topicName, setTopicName] = useState('')
   const [loading, setLoading] = useState(false)
@@ -25,7 +25,7 @@ export default function AddTopicModal({
 
   const generateNotes = async (topic: string): Promise<string> => {
     const apiKey = process.env.REACT_APP_GEMINI_API_KEY
-    
+
     if (!apiKey) {
       throw new Error('Gemini API key not found. Please add REACT_APP_GEMINI_API_KEY to your .env file')
     }
@@ -199,7 +199,7 @@ Write in a clear, engaging, conversational but professional tone. Explain comple
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!topicName.trim()) {
       setError('Please enter a topic name')
       return
@@ -213,16 +213,15 @@ Write in a clear, engaging, conversational but professional tone. Explain comple
       // Generate notes using AI
       console.log('🤖 Generating notes for:', topicName)
       const generatedNotes = await generateNotes(topicName)
-      
+
       console.log('✅ Notes generated successfully')
-      
+
       // Create lesson with generated notes
       const newLesson = await createLesson({
         course_id: courseId,
         title: topicName,
         content: generatedNotes,
-        order_index: 0,
-        duration: 15
+        order_index: 0
       })
 
       console.log('📝 Lesson created:', newLesson)
@@ -273,16 +272,16 @@ Write in a clear, engaging, conversational but professional tone. Explain comple
           </div>
 
           <div className="modal-footer">
-            <button 
-              type="button" 
-              className="btn-secondary" 
+            <button
+              type="button"
+              className="btn-secondary"
               onClick={onClose}
               disabled={loading}
             >
               Cancel
             </button>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="btn-primary"
               disabled={loading}
             >
