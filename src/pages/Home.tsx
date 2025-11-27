@@ -23,8 +23,9 @@ export default function Home() {
               <span className="highlight-text">less time</span>
             </h1>
             <p className="hero-subtitle">
-              Turn your study material into notes and exercises designed
-              to help you learn more, faster.
+              Transform your study materials into comprehensive, AI-powered notes and interactive exercises.
+              Lucero helps you master any subject faster with personalized learning paths, smart quizzes,
+              and real-time progress tracking.
             </p>
             <Link to="/auth" className="cta-button">Try Lucero now</Link>
 
@@ -43,27 +44,128 @@ export default function Home() {
           <div className="features-grid">
             <div className="feature-item">
               <div className="feature-icon">📝</div>
-              <h3>Notes</h3>
+              <h3>Smart Notes</h3>
+              <p>AI-generated comprehensive notes from your study materials</p>
             </div>
             <div className="feature-item">
               <div className="feature-icon">❓</div>
-              <h3>Quizzes</h3>
+              <h3>Adaptive Quizzes</h3>
+              <p>Test your knowledge with intelligent, personalized quizzes</p>
             </div>
             <div className="feature-item">
               <div className="feature-icon">🗂️</div>
               <h3>Flashcards</h3>
+              <p>Create and review flashcards for efficient memorization</p>
             </div>
             <div className="feature-item">
               <div className="feature-icon">📊</div>
               <h3>Progress Tracker</h3>
+              <p>Monitor your learning journey with detailed analytics</p>
             </div>
             <div className="feature-item">
               <div className="feature-icon">🤖</div>
-              <h3>AI Chat</h3>
+              <h3>AI Chat Assistant</h3>
+              <p>Get instant answers to your study questions 24/7</p>
             </div>
             <div className="feature-item">
               <div className="feature-icon">👥</div>
-              <h3>Study Group</h3>
+              <h3>Study Groups</h3>
+              <p>Collaborate with classmates and share resources</p>
+            </div>
+          </div>
+        </section>
+
+        {/* University Logos Section */}
+        <section className="universities-section">
+          <p className="universities-label">Over 100,000 students use Lucero</p>
+          <div className="universities-logos">
+            <div className="university-logo">Berkeley</div>
+            <div className="university-logo">Oxford</div>
+            <div className="university-logo">MIT</div>
+            <div className="university-logo">Stanford</div>
+            <div className="university-logo">Harvard</div>
+          </div>
+        </section>
+
+        {/* Benefits Section */}
+        <section className="benefits-section">
+          <div className="section-header">
+            <h2>Why students love Lucero</h2>
+            <p>Join thousands of students who are achieving their academic goals faster</p>
+          </div>
+
+          <div className="benefits-grid">
+            <div className="benefit-card">
+              <div className="benefit-icon">⚡</div>
+              <h3>Save Time</h3>
+              <p>Reduce study time by up to 50% with AI-powered note generation and smart learning paths tailored to your needs.</p>
+            </div>
+            <div className="benefit-card">
+              <div className="benefit-icon">🎯</div>
+              <h3>Better Retention</h3>
+              <p>Proven spaced repetition techniques and active recall methods help you remember more and forget less.</p>
+            </div>
+            <div className="benefit-card">
+              <div className="benefit-icon">📈</div>
+              <h3>Track Progress</h3>
+              <p>Visualize your improvement with detailed analytics, performance insights, and personalized recommendations.</p>
+            </div>
+            <div className="benefit-card">
+              <div className="benefit-icon">🌟</div>
+              <h3>Ace Your Exams</h3>
+              <p>Practice with exam-style questions, get instant feedback, and identify weak areas before test day.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Golden Note Section */}
+        <section className="golden-note-section">
+          <div className="golden-note-content">
+            <div className="golden-note-text">
+              <h2>Meet the future of note-taking</h2>
+              <p className="golden-note-description">
+                Lucero refines your notes, connects topics, and builds a structured summary
+                — the <strong>Golden Note</strong> that grows with every study session.
+              </p>
+
+              <div className="golden-note-features">
+                <div className="gn-feature">
+                  <div className="gn-icon">📋</div>
+                  <div>
+                    <h4>Topics</h4>
+                    <p>Lucero organizes your material by easy to understand topics.</p>
+                  </div>
+                </div>
+                <div className="gn-feature">
+                  <div className="gn-icon">✏️</div>
+                  <div>
+                    <h4>Note refinement</h4>
+                    <p>Improve your messy notes with just one click.</p>
+                  </div>
+                </div>
+                <div className="gn-feature">
+                  <div className="gn-icon">📄</div>
+                  <div>
+                    <h4>Golden note</h4>
+                    <p>Lucero pulls all your notes and materials into one simple, structured "cheat-sheet" — the Golden Note.</p>
+                    <p className="gn-subtext">Share it with your study group, and everyone's notes combine into one Golden Note.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="golden-note-visual">
+              <div className="gn-card gn-card-topics">
+                <div className="gn-card-header">Topics</div>
+                <div className="gn-card-body">Organized study material</div>
+              </div>
+              <div className="gn-card gn-card-refinement">
+                <div className="gn-card-header">Note Refinement</div>
+                <div className="gn-card-body">Enhanced notes</div>
+              </div>
+              <div className="gn-card gn-card-golden">
+                <div className="gn-card-header">Golden Note for Corporate Finance</div>
+                <div className="gn-card-body">Complete structured summary</div>
+              </div>
             </div>
           </div>
         </section>
@@ -220,6 +322,65 @@ export default function Home() {
               </div>
             </div>
           </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="faq-section">
+          <div className="section-header">
+            <h2>Still have questions?</h2>
+          </div>
+
+          <div className="faq-container">
+            <div className="faq-item">
+              <div className="faq-question">
+                <span>What are the limits of Lucero?</span>
+                <span className="faq-icon">+</span>
+              </div>
+            </div>
+            <div className="faq-item">
+              <div className="faq-question">
+                <span>How is Lucero AI different from other AI models?</span>
+                <span className="faq-icon">+</span>
+              </div>
+            </div>
+            <div className="faq-item">
+              <div className="faq-question">
+                <span>What do I do if something doesn't work?</span>
+                <span className="faq-icon">+</span>
+              </div>
+            </div>
+            <div className="faq-item">
+              <div className="faq-question">
+                <span>Can Lucero help me with the exams?</span>
+                <span className="faq-icon">+</span>
+              </div>
+            </div>
+            <div className="faq-item">
+              <div className="faq-question">
+                <span>How does Lucero protect my data?</span>
+                <span className="faq-icon">+</span>
+              </div>
+            </div>
+            <div className="faq-item">
+              <div className="faq-question">
+                <span>How do I cancel my subscription?</span>
+                <span className="faq-icon">+</span>
+              </div>
+            </div>
+            <div className="faq-item">
+              <div className="faq-question">
+                <span>Does Lucero work in my language?</span>
+                <span className="faq-icon">+</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Final CTA Section */}
+        <section className="final-cta-section">
+          <h2>Curious? Try it for free</h2>
+          <p>Join thousands of students already using Lucero to ace their exams</p>
+          <Link to="/auth" className="cta-button-large">Start Learning Now</Link>
         </section>
 
         {/* Testimonial Section */}
