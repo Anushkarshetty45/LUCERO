@@ -29,7 +29,7 @@ export default function Home() {
             <Link to="/auth" className="cta-button">Try Lucero now</Link>
 
             <div className="hero-illustration">
-              <div className="bunny-mascot">🐰</div>
+              <div className="bunny-mascot">🐴</div>
             </div>
           </div>
         </section>
@@ -68,6 +68,83 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Comparison Section */}
+        <section className="comparison-section">
+          <div className="section-header">
+            <h2>Built for studying</h2>
+            <p>Unlike other tools, Lucero is designed for students - and has everything you need.</p>
+          </div>
+
+          <div className="comparison-table-container">
+            <table className="comparison-table">
+              <thead>
+                <tr>
+                  <th>Features</th>
+                  <th className="highlight-col">Lucero</th>
+                  <th>NotebookLM</th>
+                  <th>ChatGPT</th>
+                  <th>Quizlet</th>
+                  <th>Notion</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Shared Notes</td>
+                  <td className="highlight-col"><span className="check">✔</span></td>
+                  <td><span className="cross">✕</span></td>
+                  <td><span className="cross">✕</span></td>
+                  <td><span className="cross">✕</span></td>
+                  <td><span className="check">✔</span></td>
+                </tr>
+                <tr>
+                  <td>Quizzes / Flashcards</td>
+                  <td className="highlight-col"><span className="check">✔</span></td>
+                  <td><span className="check">✔</span></td>
+                  <td><span className="cross">✕</span></td>
+                  <td><span className="check">✔</span></td>
+                  <td><span className="cross">✕</span></td>
+                </tr>
+                <tr>
+                  <td>Course Overview</td>
+                  <td className="highlight-col"><span className="check">✔</span></td>
+                  <td><span className="cross">✕</span></td>
+                  <td><span className="cross">✕</span></td>
+                  <td><span className="cross">✕</span></td>
+                  <td><span className="cross">✕</span></td>
+                </tr>
+                <tr>
+                  <td>AI Chat</td>
+                  <td className="highlight-col"><span className="check">✔</span></td>
+                  <td><span className="check">✔</span></td>
+                  <td><span className="check">✔</span></td>
+                  <td><span className="cross">✕</span></td>
+                  <td><span className="cross">✕</span></td>
+                </tr>
+                <tr>
+                  <td>Exam Simulator</td>
+                  <td className="highlight-col"><span className="check">✔</span></td>
+                  <td><span className="cross">✕</span></td>
+                  <td><span className="cross">✕</span></td>
+                  <td><span className="check">✔</span></td>
+                  <td><span className="cross">✕</span></td>
+                </tr>
+                <tr>
+                  <td>Made for</td>
+                  <td className="highlight-col">Students</td>
+                  <td>Research</td>
+                  <td>Everyone</td>
+                  <td>Students</td>
+                  <td>Everyone</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="comparison-cta">
+            <Link to="/auth" className="cta-button-black">Try it for yourself</Link>
+          </div>
+        </section>
+
         {/* How It Works Section */}
         <section className="how-it-works-section">
           <div className="section-header">
@@ -91,6 +168,60 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Pricing Section */}
+        <section className="pricing-section">
+          <div className="section-header">
+            <h2>Select a plan to get started</h2>
+            <div className="pricing-toggle">
+              <span className="toggle-option active">Annual 50% off</span>
+              <span className="toggle-option">Monthly</span>
+            </div>
+          </div>
+
+          <div className="pricing-grid">
+            {/* Starter Plan */}
+            <div className="pricing-card">
+              <div className="card-header">
+                <h3>Starter</h3>
+                <p>Great to start your journey</p>
+              </div>
+              <div className="price-display">
+                <span className="amount">Free</span>
+                <span className="period">Forever</span>
+              </div>
+              <Link to="/auth" className="pricing-button outline">Get started</Link>
+              <ul className="features-list">
+                <li><span className="check-icon">✔</span> Access to all features</li>
+                <li><span className="check-icon">✔</span> Only 5 uploads and 30 AI chats per month</li>
+              </ul>
+            </div>
+
+            {/* Pro Plan */}
+            <div className="pricing-card featured">
+              <div className="card-header">
+                <h3>Pro</h3>
+                <p>To ace your exams and save money</p>
+              </div>
+              <div className="price-display">
+                <span className="currency">$</span>
+                <span className="amount">4.99</span>
+                <span className="period">/month</span>
+              </div>
+              <p className="billing-info">$59.99 billed annually</p>
+              <Link to="/auth" className="pricing-button solid">Get started</Link>
+              <ul className="features-list">
+                <li><span className="check-icon">✔</span> Unlimited notes</li>
+                <li><span className="check-icon">✔</span> Unlimited exercises</li>
+                <li><span className="check-icon">✔</span> Unlimited uploads</li>
+                <li><span className="check-icon">✔</span> Unlimited AI chat</li>
+              </ul>
+              <div className="card-illustration">
+                <div className="bunny-mascot-small">🐴</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Testimonial Section */}
         <section className="testimonial-section">
           <div className="testimonial-content">
@@ -100,7 +231,7 @@ export default function Home() {
             </blockquote>
             <div className="testimonial-author">
               <p>Student at Copenhagen Business School</p>
-              <div className="bunny-friends">🐰🐰</div>
+              <div className="bunny-friends">🐴🐴</div>
             </div>
           </div>
         </section>
