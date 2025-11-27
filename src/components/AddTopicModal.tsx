@@ -220,8 +220,7 @@ Write in a clear, engaging, conversational but professional tone. Explain comple
       const newLesson = await createLesson({
         course_id: courseId,
         title: topicName,
-        content: generatedNotes,
-        order_index: 0
+        content: generatedNotes
       })
 
       console.log('📝 Lesson created:', newLesson)
