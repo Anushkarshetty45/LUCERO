@@ -12,11 +12,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 100;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+}
+
+.legal-logo-text {
+  font-size: 24px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
 .legal-logo {
@@ -45,12 +52,13 @@
 
 .legal-content {
   max-width: 900px;
-  margin: 40px auto;
-  padding: 60px 40px;
+  margin: 0 auto;
+  padding: 60px 40px 40px;
   background: #222;
   border-radius: 20px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 0;
 }
 
 .legal-content h1 {

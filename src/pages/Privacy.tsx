@@ -6,7 +6,7 @@ export default function Privacy() {
   return (
     <div className="legal-page">
       <div className="legal-header">
-        <img src={luceroLogo} alt="LUCERO" className="legal-logo" />
+        <div className="legal-logo-text">LUCERO</div>
         <Link to="/" className="back-home">← Back to Home</Link>
       </div>
 
@@ -17,19 +17,19 @@ export default function Privacy() {
         <section>
           <h2>1. Introduction</h2>
           <p>
-            Welcome to LUCERO ("we," "us," or "our"). We are committed to protecting your personal information 
-            and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard 
+            Welcome to LUCERO ("we," "us," or "our"). We are committed to protecting your personal information
+            and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard
             your information when you use our learning platform.
           </p>
           <p>
-            Please read this Privacy Policy carefully. If you do not agree with the terms of this Privacy Policy, 
+            Please read this Privacy Policy carefully. If you do not agree with the terms of this Privacy Policy,
             please do not access the platform.
           </p>
         </section>
 
         <section>
           <h2>2. Information We Collect</h2>
-          
+
           <h3>2.1 Personal Information You Provide</h3>
           <p>We collect personal information that you voluntarily provide when you:</p>
           <ul>
@@ -53,8 +53,8 @@ export default function Privacy() {
           <h3>2.3 Information from Third Parties</h3>
           <p>We may receive information from third-party services:</p>
           <ul>
-            <li><strong>OAuth Providers:</strong> When you sign in with Google or GitHub, we receive your name, 
-            email, and profile picture</li>
+            <li><strong>OAuth Providers:</strong> When you sign in with Google or GitHub, we receive your name,
+              email, and profile picture</li>
             <li><strong>Payment Processors:</strong> Transaction details and payment status</li>
             <li><strong>Analytics Services:</strong> Aggregated usage statistics</li>
           </ul>
@@ -63,7 +63,7 @@ export default function Privacy() {
         <section>
           <h2>3. How We Use Your Information</h2>
           <p>We use your personal information for the following purposes:</p>
-          
+
           <h3>3.1 Providing Services</h3>
           <ul>
             <li>Create and manage your account</li>
@@ -119,7 +119,7 @@ export default function Privacy() {
 
           <h3>4.2 Business Transfers</h3>
           <p>
-            If we are involved in a merger, acquisition, or sale of assets, your information may be transferred 
+            If we are involved in a merger, acquisition, or sale of assets, your information may be transferred
             as part of that transaction.
           </p>
 
@@ -140,10 +140,10 @@ export default function Privacy() {
 
         <section>
           <h2>5. Cookies and Tracking Technologies</h2>
-          
+
           <h3>5.1 What Are Cookies?</h3>
           <p>
-            Cookies are small data files placed on your device. We use cookies and similar tracking technologies 
+            Cookies are small data files placed on your device. We use cookies and similar tracking technologies
             to track activity on our platform and store certain information.
           </p>
 
@@ -157,7 +157,7 @@ export default function Privacy() {
 
           <h3>5.3 Managing Cookies</h3>
           <p>
-            You can control cookies through your browser settings. Note that disabling certain cookies may 
+            You can control cookies through your browser settings. Note that disabling certain cookies may
             affect the functionality of LUCERO.
           </p>
         </section>
@@ -165,7 +165,7 @@ export default function Privacy() {
         <section>
           <h2>6. Data Security</h2>
           <p>
-            We implement appropriate technical and organizational security measures to protect your personal 
+            We implement appropriate technical and organizational security measures to protect your personal
             information:
           </p>
           <ul>
@@ -176,7 +176,7 @@ export default function Privacy() {
             <li><strong>Secure Infrastructure:</strong> Hosted on secure, compliant platforms</li>
           </ul>
           <p>
-            However, no method of transmission over the internet is 100% secure. While we strive to protect 
+            However, no method of transmission over the internet is 100% secure. While we strive to protect
             your data, we cannot guarantee absolute security.
           </p>
         </section>
@@ -184,7 +184,7 @@ export default function Privacy() {
         <section>
           <h2>7. Data Retention</h2>
           <p>
-            We retain your personal information only for as long as necessary to fulfill the purposes outlined 
+            We retain your personal information only for as long as necessary to fulfill the purposes outlined
             in this Privacy Policy:
           </p>
           <ul>
@@ -226,7 +226,7 @@ export default function Privacy() {
 
           <h3>8.5 How to Exercise Your Rights</h3>
           <p>
-            To exercise any of these rights, please contact us at privacy@lucero.com. We will respond to your 
+            To exercise any of these rights, please contact us at privacy@lucero.com. We will respond to your
             request within 30 days.
           </p>
         </section>
@@ -234,8 +234,8 @@ export default function Privacy() {
         <section>
           <h2>9. Children's Privacy</h2>
           <p>
-            LUCERO is not intended for children under 13 years of age. We do not knowingly collect personal 
-            information from children under 13. If you are a parent or guardian and believe your child has 
+            LUCERO is not intended for children under 13 years of age. We do not knowingly collect personal
+            information from children under 13. If you are a parent or guardian and believe your child has
             provided us with personal information, please contact us at privacy@lucero.com.
           </p>
           <p>
@@ -246,11 +246,11 @@ export default function Privacy() {
         <section>
           <h2>10. International Data Transfers</h2>
           <p>
-            Your information may be transferred to and maintained on servers located outside of your country. 
+            Your information may be transferred to and maintained on servers located outside of your country.
             Data protection laws may differ from those in your jurisdiction.
           </p>
           <p>
-            By using LUCERO, you consent to the transfer of your information to countries that may not have 
+            By using LUCERO, you consent to the transfer of your information to countries that may not have
             the same data protection laws as your country. We ensure appropriate safeguards are in place.
           </p>
         </section>
@@ -258,11 +258,11 @@ export default function Privacy() {
         <section>
           <h2>11. Third-Party Services</h2>
           <p>
-            LUCERO may contain links to third-party websites and services (e.g., Google, GitHub). We are not 
-            responsible for the privacy practices of these third parties. We encourage you to review their 
+            LUCERO may contain links to third-party websites and services (e.g., Google, GitHub). We are not
+            responsible for the privacy practices of these third parties. We encourage you to review their
             privacy policies.
           </p>
-          
+
           <h3>Third-Party Services We Use:</h3>
           <ul>
             <li><strong>Supabase:</strong> <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a></li>
@@ -303,7 +303,7 @@ export default function Privacy() {
             <li>Right to withdraw consent</li>
             <li>Right to lodge a complaint with a supervisory authority</li>
           </ul>
-          
+
           <h3>Legal Basis for Processing</h3>
           <p>We process your data based on:</p>
           <ul>
@@ -333,7 +333,7 @@ export default function Privacy() {
         <section>
           <h2>15. Contact Us</h2>
           <p>
-            If you have questions, concerns, or requests regarding this Privacy Policy or your personal 
+            If you have questions, concerns, or requests regarding this Privacy Policy or your personal
             information, please contact us:
           </p>
           <ul>
@@ -349,8 +349,8 @@ export default function Privacy() {
 
         <div className="acceptance-notice">
           <p>
-            <strong>By using LUCERO, you acknowledge that you have read and understood this Privacy Policy 
-            and agree to the collection, use, and disclosure of your information as described herein.</strong>
+            <strong>By using LUCERO, you acknowledge that you have read and understood this Privacy Policy
+              and agree to the collection, use, and disclosure of your information as described herein.</strong>
           </p>
         </div>
       </div>

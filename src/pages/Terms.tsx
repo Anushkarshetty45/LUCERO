@@ -6,7 +6,7 @@ export default function Terms() {
   return (
     <div className="legal-page">
       <div className="legal-header">
-        <img src={luceroLogo} alt="LUCERO" className="legal-logo" />
+        <div className="legal-logo-text">LUCERO</div>
         <Link to="/" className="back-home">← Back to Home</Link>
       </div>
 
@@ -17,8 +17,8 @@ export default function Terms() {
         <section>
           <h2>1. Acceptance of Terms</h2>
           <p>
-            Welcome to LUCERO. By accessing or using our platform, you agree to be bound by these Terms of Use 
-            and all applicable laws and regulations. If you do not agree with any of these terms, you are 
+            Welcome to LUCERO. By accessing or using our platform, you agree to be bound by these Terms of Use
+            and all applicable laws and regulations. If you do not agree with any of these terms, you are
             prohibited from using or accessing this site.
           </p>
         </section>
@@ -26,8 +26,8 @@ export default function Terms() {
         <section>
           <h2>2. Description of Service</h2>
           <p>
-            LUCERO provides an online learning platform that enables users to access educational content, 
-            participate in courses, and track their learning progress. We reserve the right to modify, suspend, 
+            LUCERO provides an online learning platform that enables users to access educational content,
+            participate in courses, and track their learning progress. We reserve the right to modify, suspend,
             or discontinue any aspect of the service at any time without notice.
           </p>
         </section>
@@ -48,13 +48,13 @@ export default function Terms() {
 
           <h3>3.2 Account Eligibility</h3>
           <p>
-            Anyone who is willing to learn can create an account. If you are under 18, you must have 
+            Anyone who is willing to learn can create an account. If you are under 18, you must have
             parental or guardian consent to use LUCERO.
           </p>
 
           <h3>3.3 Account Termination</h3>
           <p>
-            We reserve the right to terminate or suspend your account at any time for violations of these 
+            We reserve the right to terminate or suspend your account at any time for violations of these
             Terms, fraudulent activity, or any other reason at our sole discretion.
           </p>
         </section>
@@ -62,7 +62,7 @@ export default function Terms() {
         <section>
           <h2>4. Use License</h2>
           <p>
-            Permission is granted to temporarily access and use LUCERO for personal, non-commercial learning 
+            Permission is granted to temporarily access and use LUCERO for personal, non-commercial learning
             purposes. This license does not include:
           </p>
           <ul>
@@ -73,7 +73,7 @@ export default function Terms() {
             <li>Transferring materials to another person or server</li>
           </ul>
           <p>
-            This license shall automatically terminate if you violate any of these restrictions and may be 
+            This license shall automatically terminate if you violate any of these restrictions and may be
             terminated by LUCERO at any time.
           </p>
         </section>
@@ -97,15 +97,15 @@ export default function Terms() {
           <h2>6. Intellectual Property Rights</h2>
           <h3>6.1 LUCERO Content</h3>
           <p>
-            All content on LUCERO, including but not limited to text, graphics, logos, images, audio clips, 
-            video, data compilations, and software, is the property of LUCERO or its content suppliers and is 
+            All content on LUCERO, including but not limited to text, graphics, logos, images, audio clips,
+            video, data compilations, and software, is the property of LUCERO or its content suppliers and is
             protected by international copyright laws.
           </p>
 
           <h3>6.2 User Content</h3>
           <p>
-            By submitting content to LUCERO (comments, feedback, submissions), you grant us a worldwide, 
-            non-exclusive, royalty-free license to use, reproduce, modify, adapt, publish, and distribute 
+            By submitting content to LUCERO (comments, feedback, submissions), you grant us a worldwide,
+            non-exclusive, royalty-free license to use, reproduce, modify, adapt, publish, and distribute
             such content in connection with operating the platform.
           </p>
 
@@ -126,19 +126,19 @@ export default function Terms() {
           <h2>7. Payment and Subscriptions</h2>
           <h3>7.1 Fees</h3>
           <p>
-            Some features of LUCERO may require payment. All fees are stated in US dollars and are 
+            Some features of LUCERO may require payment. All fees are stated in US dollars and are
             non-refundable except as required by law.
           </p>
 
           <h3>7.2 Billing</h3>
           <p>
-            By providing payment information, you represent that you are authorized to use the payment method. 
+            By providing payment information, you represent that you are authorized to use the payment method.
             You authorize us to charge the payment method for all fees incurred.
           </p>
 
           <h3>7.3 Automatic Renewal</h3>
           <p>
-            Subscriptions automatically renew unless you cancel before the renewal date. You may cancel at any 
+            Subscriptions automatically renew unless you cancel before the renewal date. You may cancel at any
             time through your account settings.
           </p>
         </section>
@@ -146,7 +146,7 @@ export default function Terms() {
         <section>
           <h2>8. Privacy and Data Protection</h2>
           <p>
-            Your use of LUCERO is also governed by our Privacy Policy. Please review our Privacy Policy to 
+            Your use of LUCERO is also governed by our Privacy Policy. Please review our Privacy Policy to
             understand how we collect, use, and protect your personal information.
           </p>
         </section>
@@ -155,21 +155,21 @@ export default function Terms() {
           <h2>9. Disclaimers and Limitations of Liability</h2>
           <h3>9.1 No Warranties</h3>
           <p>
-            LUCERO is provided "as is" without warranties of any kind, either express or implied, including 
-            but not limited to warranties of merchantability, fitness for a particular purpose, or 
+            LUCERO is provided "as is" without warranties of any kind, either express or implied, including
+            but not limited to warranties of merchantability, fitness for a particular purpose, or
             non-infringement.
           </p>
 
           <h3>9.2 Limitation of Liability</h3>
           <p>
-            To the maximum extent permitted by law, LUCERO shall not be liable for any indirect, incidental, 
-            special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred 
+            To the maximum extent permitted by law, LUCERO shall not be liable for any indirect, incidental,
+            special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred
             directly or indirectly.
           </p>
 
           <h3>9.3 Educational Content Disclaimer</h3>
           <p>
-            While we strive to provide accurate and up-to-date educational content, we make no guarantees 
+            While we strive to provide accurate and up-to-date educational content, we make no guarantees
             regarding the accuracy, completeness, or usefulness of the content. Learning outcomes may vary.
           </p>
         </section>
@@ -177,8 +177,8 @@ export default function Terms() {
         <section>
           <h2>10. Indemnification</h2>
           <p>
-            You agree to indemnify and hold harmless LUCERO, its affiliates, officers, directors, employees, 
-            and agents from any claims, damages, losses, liabilities, and expenses (including legal fees) 
+            You agree to indemnify and hold harmless LUCERO, its affiliates, officers, directors, employees,
+            and agents from any claims, damages, losses, liabilities, and expenses (including legal fees)
             arising from:
           </p>
           <ul>
@@ -192,8 +192,8 @@ export default function Terms() {
         <section>
           <h2>11. Third-Party Links and Services</h2>
           <p>
-            LUCERO may contain links to third-party websites or services. We are not responsible for the 
-            content, privacy policies, or practices of third-party sites. You access third-party sites at 
+            LUCERO may contain links to third-party websites or services. We are not responsible for the
+            content, privacy policies, or practices of third-party sites. You access third-party sites at
             your own risk.
           </p>
         </section>
@@ -201,8 +201,8 @@ export default function Terms() {
         <section>
           <h2>12. Changes to Terms</h2>
           <p>
-            We reserve the right to modify these Terms at any time. We will notify users of material changes 
-            via email or platform notification. Your continued use of LUCERO after changes constitutes 
+            We reserve the right to modify these Terms at any time. We will notify users of material changes
+            via email or platform notification. Your continued use of LUCERO after changes constitutes
             acceptance of the modified Terms.
           </p>
         </section>
@@ -210,7 +210,7 @@ export default function Terms() {
         <section>
           <h2>13. Termination</h2>
           <p>
-            We may terminate or suspend your access immediately, without prior notice, for any reason, 
+            We may terminate or suspend your access immediately, without prior notice, for any reason,
             including breach of these Terms. Upon termination:
           </p>
           <ul>
@@ -223,8 +223,8 @@ export default function Terms() {
         <section>
           <h2>14. Governing Law</h2>
           <p>
-            These Terms shall be governed by and construed in accordance with the laws of [Your State/Country], 
-            without regard to its conflict of law provisions. Any disputes shall be resolved in the courts 
+            These Terms shall be governed by and construed in accordance with the laws of [Your State/Country],
+            without regard to its conflict of law provisions. Any disputes shall be resolved in the courts
             located in [Your Jurisdiction].
           </p>
         </section>
@@ -233,13 +233,13 @@ export default function Terms() {
           <h2>15. Dispute Resolution</h2>
           <h3>15.1 Informal Resolution</h3>
           <p>
-            Before filing a claim, you agree to try to resolve the dispute informally by contacting us at 
+            Before filing a claim, you agree to try to resolve the dispute informally by contacting us at
             support@lucero.com.
           </p>
 
           <h3>15.2 Arbitration</h3>
           <p>
-            If informal resolution fails, disputes will be resolved through binding arbitration rather than 
+            If informal resolution fails, disputes will be resolved through binding arbitration rather than
             in court, except that you may assert claims in small claims court if they qualify.
           </p>
         </section>
@@ -247,8 +247,8 @@ export default function Terms() {
         <section>
           <h2>16. Severability</h2>
           <p>
-            If any provision of these Terms is found to be unenforceable or invalid, that provision will be 
-            limited or eliminated to the minimum extent necessary so that these Terms will otherwise remain 
+            If any provision of these Terms is found to be unenforceable or invalid, that provision will be
+            limited or eliminated to the minimum extent necessary so that these Terms will otherwise remain
             in full force and effect.
           </p>
         </section>
@@ -256,7 +256,7 @@ export default function Terms() {
         <section>
           <h2>17. Entire Agreement</h2>
           <p>
-            These Terms constitute the entire agreement between you and LUCERO regarding the use of the 
+            These Terms constitute the entire agreement between you and LUCERO regarding the use of the
             platform and supersede all prior agreements and understandings.
           </p>
         </section>
@@ -275,8 +275,8 @@ export default function Terms() {
 
         <div className="acceptance-notice">
           <p>
-            <strong>By using LUCERO, you acknowledge that you have read, understood, and agree to be bound 
-            by these Terms of Use.</strong>
+            <strong>By using LUCERO, you acknowledge that you have read, understood, and agree to be bound
+              by these Terms of Use.</strong>
           </p>
         </div>
       </div>
