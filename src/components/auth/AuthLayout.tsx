@@ -11,10 +11,10 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
     <div className="auth-container">
       {/* Left side - Logo */}
       <div className="auth-logo-section">
-        <img src={luceroLogo} alt="LUCERO" />
+        <div className="auth-logo-text">LUCERO</div>
         <p>Your learning journey begins here!</p>
       </div>
-      
+
       {/* Right side - Form */}
       <div className="auth-form-section">
         {children}
