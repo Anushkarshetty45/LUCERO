@@ -132,6 +132,14 @@
   box-shadow: 0 4px 15px rgba(253, 185, 19, 0.3);
 }
 
+.btn-primary:active,
+.btn-primary:focus {
+  background: #c48b0b !important;
+  transform: translateY(0);
+  box-shadow: none;
+  outline: none;
+}
+
 .btn-primary:disabled {
   background: #444;
   color: #888;
