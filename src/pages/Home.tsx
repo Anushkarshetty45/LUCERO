@@ -1,9 +1,27 @@
 import { Link } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './Home.css'
 
 export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+
+  // Intersection Observer for scroll animations
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible')
+        }
+      })
+    }, { threshold: 0.1 })
+
+    const hiddenElements = document.querySelectorAll('.animate-on-scroll')
+    hiddenElements.forEach((el) => observer.observe(el))
+
+    return () => {
+      hiddenElements.forEach((el) => observer.unobserve(el))
+    }
+  }, [])
 
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index)
@@ -54,7 +72,7 @@ export default function Home() {
       <main className="home-content">
         {/* Hero Section */}
         <section className="hero-section">
-          <div className="hero-content">
+          <div className="hero-content animate-on-scroll">
             <h1 className="hero-title">
               Get better grades in <br />
               <span className="highlight-text">less time</span>
@@ -79,32 +97,32 @@ export default function Home() {
           </div>
 
           <div className="features-grid">
-            <div className="feature-item">
+            <div className="feature-item animate-on-scroll delay-100">
               <div className="feature-icon">📝</div>
               <h3>Smart Notes</h3>
               <p>AI-generated comprehensive notes from your study materials</p>
             </div>
-            <div className="feature-item">
+            <div className="feature-item animate-on-scroll delay-200">
               <div className="feature-icon">❓</div>
               <h3>Adaptive Quizzes</h3>
               <p>Test your knowledge with intelligent, personalized quizzes</p>
             </div>
-            <div className="feature-item">
+            <div className="feature-item animate-on-scroll delay-300">
               <div className="feature-icon">🗂️</div>
               <h3>Flashcards</h3>
               <p>Create and review flashcards for efficient memorization</p>
             </div>
-            <div className="feature-item">
+            <div className="feature-item animate-on-scroll delay-100">
               <div className="feature-icon">📊</div>
               <h3>Progress Tracker</h3>
               <p>Monitor your learning journey with detailed analytics</p>
             </div>
-            <div className="feature-item">
+            <div className="feature-item animate-on-scroll delay-200">
               <div className="feature-icon">🤖</div>
               <h3>AI Chat Assistant</h3>
               <p>Get instant answers to your study questions 24/7</p>
             </div>
-            <div className="feature-item">
+            <div className="feature-item animate-on-scroll delay-300">
               <div className="feature-icon">👥</div>
               <h3>Study Groups</h3>
               <p>Collaborate with classmates and share resources</p>
@@ -132,22 +150,22 @@ export default function Home() {
           </div>
 
           <div className="benefits-grid">
-            <div className="benefit-card">
+            <div className="benefit-card animate-on-scroll delay-100">
               <div className="benefit-icon">⚡</div>
               <h3>Save Time</h3>
               <p>Reduce study time by up to 50% with AI-powered note generation and smart learning paths tailored to your needs.</p>
             </div>
-            <div className="benefit-card">
+            <div className="benefit-card animate-on-scroll delay-200">
               <div className="benefit-icon">🎯</div>
               <h3>Better Retention</h3>
               <p>Proven spaced repetition techniques and active recall methods help you remember more and forget less.</p>
             </div>
-            <div className="benefit-card">
+            <div className="benefit-card animate-on-scroll delay-300">
               <div className="benefit-icon">📈</div>
               <h3>Track Progress</h3>
               <p>Visualize your improvement with detailed analytics, performance insights, and personalized recommendations.</p>
             </div>
-            <div className="benefit-card">
+            <div className="benefit-card animate-on-scroll delay-100">
               <div className="benefit-icon">🌟</div>
               <h3>Ace Your Exams</h3>
               <p>Practice with exam-style questions, get instant feedback, and identify weak areas before test day.</p>
@@ -158,7 +176,7 @@ export default function Home() {
         {/* Golden Note Section */}
         <section className="golden-note-section">
           <div className="golden-note-content">
-            <div className="golden-note-text">
+            <div className="golden-note-text animate-on-scroll">
               <h2>Meet the future of note-taking</h2>
               <p className="golden-note-description">
                 Lucero refines your notes, connects topics, and builds a structured summary
@@ -190,7 +208,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="golden-note-visual">
+            <div className="golden-note-visual animate-on-scroll delay-200">
               <div className="gn-card gn-card-topics">
                 <div className="gn-card-header">Topics</div>
                 <div className="gn-card-body">Organized study material</div>
@@ -292,15 +310,15 @@ export default function Home() {
           </div>
 
           <div className="steps-grid">
-            <div className="step-card">
+            <div className="step-card animate-on-scroll delay-100">
               <h3>1. Upload PDF</h3>
               <div className="step-image upload-image">📄</div>
             </div>
-            <div className="step-card">
+            <div className="step-card animate-on-scroll delay-200">
               <h3>2. Study</h3>
               <div className="step-image study-image">🧠</div>
             </div>
-            <div className="step-card">
+            <div className="step-card animate-on-scroll delay-300">
               <h3>3. Improve</h3>
               <div className="step-image improve-image">📈</div>
             </div>
@@ -319,7 +337,7 @@ export default function Home() {
 
           <div className="pricing-grid">
             {/* Starter Plan */}
-            <div className="pricing-card">
+            <div className="pricing-card animate-on-scroll delay-100">
               <div className="card-header">
                 <h3>Starter</h3>
                 <p>Great to start your journey</p>
@@ -336,7 +354,7 @@ export default function Home() {
             </div>
 
             {/* Pro Plan */}
-            <div className="pricing-card featured">
+            <div className="pricing-card featured animate-on-scroll delay-200">
               <div className="card-header">
                 <h3>Pro</h3>
                 <p>To ace your exams and save money</p>
