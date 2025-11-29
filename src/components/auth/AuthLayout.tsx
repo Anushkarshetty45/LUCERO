@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 import './AuthLayout.css'
-import luceroLogo from '../../assets/lucero-logo.png'
+import horseLogo from '../../assets/horse-logo.png'
 
 interface AuthLayoutProps {
   children: ReactNode
@@ -11,6 +11,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
     <div className="auth-container">
       {/* Left side - Logo */}
       <div className="auth-logo-section">
+        <img src={horseLogo} alt="LUCERO Horse" className="auth-horse-logo" />
         <div className="auth-logo-text">LUCERO</div>
         <p>Your learning journey begins here!</p>
       </div>
