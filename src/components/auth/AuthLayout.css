@@ -21,7 +21,8 @@
   width: 60%;
   height: auto;
   margin-bottom: 20px;
-  filter: drop-shadow(0 0 20px rgba(253, 185, 19, 0.3));
+  filter: invert(1) drop-shadow(0 0 20px rgba(253, 185, 19, 0.3));
+  mix-blend-mode: screen;
   animation: float 6s ease-in-out infinite;
 }
 
