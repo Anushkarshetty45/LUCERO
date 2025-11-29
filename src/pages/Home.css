@@ -1,3 +1,13 @@
+/* Global color variables - Dark theme with yellow accents */
+:root {
+  --primary-color: #FDB913;
+  --primary-dark: #E5A50D;
+  --bg-dark: #1a1a1a;
+  --bg-darker: #0f0f0f;
+  --text-light: #ffffff;
+  --text-gray: #999;
+}
+
 .home-page {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: #1a1a1a;
@@ -91,7 +101,7 @@
   left: 0;
   width: 100%;
   height: 8px;
-  background-color: #ff9f43;
+  background-color: #FDB913;
   opacity: 0.6;
   z-index: -1;
   border-radius: 4px;
@@ -205,7 +215,7 @@
   transform: translate(-50%, -50%);
   width: 110%;
   height: 110%;
-  border: 3px solid #ff9f43;
+  border: 3px solid #FDB913;
   border-radius: 50% 60% 50% 40% / 40% 50% 60% 50%;
   z-index: -1;
 }
@@ -397,7 +407,7 @@
 
 .gn-card-golden {
   background: linear-gradient(135deg, #fff4e6 0%, #fff 100%);
-  border: 2px solid #ff9f43;
+  border: 2px solid #FDB913;
 }
 
 /* FAQ Section */
@@ -421,12 +431,12 @@
 }
 
 .faq-item.active {
-  border-color: #ff9f43;
+  border-color: #FDB913;
   box-shadow: 0 4px 20px rgba(255, 159, 67, 0.15);
 }
 
 .faq-item:hover {
-  border-color: #ff9f43;
+  border-color: #FDB913;
   box-shadow: 0 4px 20px rgba(255, 159, 67, 0.1);
 }
 
@@ -449,7 +459,7 @@
 }
 
 .faq-item.active .faq-icon {
-  color: #ff9f43;
+  color: #FDB913;
 }
 
 .faq-answer {
@@ -498,7 +508,7 @@
 
 .cta-button-large {
   display: inline-block;
-  background: linear-gradient(135deg, #ff9f43 0%, #ff8c2e 100%);
+  background: linear-gradient(135deg, #FDB913 0%, #E5A50D 100%);
   color: #fff;
   padding: 1.5rem 4rem;
   border-radius: 50px;
@@ -541,7 +551,7 @@
 .benefit-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 12px 40px rgba(255, 159, 67, 0.15);
-  border-color: #ff9f43;
+  border-color: #FDB913;
 }
 
 .benefit-icon {
@@ -597,12 +607,12 @@
 }
 
 .highlight-col {
-  color: #ff9f43 !important;
+  color: #FDB913 !important;
   font-weight: 700 !important;
 }
 
 .check {
-  color: #ff9f43;
+  color: #FDB913;
   font-weight: bold;
   font-size: 1.2rem;
 }
@@ -658,7 +668,7 @@
 }
 
 .toggle-option.active {
-  background: #ff9f43;
+  background: #FDB913;
   color: #fff;
 }
 
@@ -686,7 +696,7 @@
 }
 
 .pricing-card.featured {
-  border: 3px solid #ff9f43;
+  border: 3px solid #FDB913;
   position: relative;
   overflow: hidden;
   background: linear-gradient(135deg, #fff 0%, #fffaf5 100%);
@@ -812,7 +822,7 @@
 /* How It Works Section */
 .how-it-works-section {
   padding: 6rem 2rem;
-  background-color: #ff9f43;
+  background-color: #FDB913;
   text-align: center;
   color: #000;
 }
@@ -874,7 +884,7 @@ blockquote {
 }
 
 .highlight-orange {
-  color: #ff9f43;
+  color: #FDB913;
 }
 
 .testimonial-author p {
@@ -890,8 +900,8 @@ blockquote {
 }
 
 .horse-friend {
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 80px;
   object-fit: contain;
   filter: drop-shadow(0 4px 10px rgba(255, 159, 67, 0.2));
 }
