@@ -521,7 +521,13 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: var(--bg-dark);
+  background: #1a1a1a;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
 }
 
 .spinner {
@@ -773,10 +779,12 @@
   align-items: center;
   gap: 16px;
   padding: 24px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s, box-shadow 0.2s;
+  background: #222;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
 }
 
 .stat-card:hover {
@@ -791,8 +799,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #FBE4D8;
+  background: rgba(253, 185, 19, 0.1);
   border-radius: 12px;
+  color: #FDB913;
 }
 
 .stat-content h3 {
