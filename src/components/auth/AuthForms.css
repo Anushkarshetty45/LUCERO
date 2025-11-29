@@ -27,7 +27,7 @@
   margin-bottom: 8px;
   font-weight: 600;
   font-size: 14px;
-  color: #fff;
+  color: #fff !important;
   letter-spacing: 0.5px;
 }
 
