@@ -402,7 +402,6 @@ export default function Home() {
               <p>Student at Copenhagen Business School</p>
               <div className="bunny-friends">
                 <img src="/horse-mascot.png" alt="Horse" className="horse-friend" />
-                <img src="/horse-mascot.png" alt="Horse" className="horse-friend" />
               </div>
             </div>
           </div>
