@@ -241,17 +241,6 @@
   color: #FDB913;
 }
 
-font-weight: 600;
-color: #ccc;
-overflow: hidden;
-text-overflow: ellipsis;
-white-space: nowrap;
-transition: color 0.2s;
-}
-
-.topics-list li.active .topic-info h3 {
-  color: #fff;
-}
 
 .topic-duration {
   font-size: 11px;
