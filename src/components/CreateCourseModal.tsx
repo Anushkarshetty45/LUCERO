@@ -18,19 +18,19 @@ export default function CreateCourseModal({ onClose, onSuccess }: CreateCourseMo
   const [error, setError] = useState('')
 
   const colors = [
-    '#6C5CE7', // Purple
-    '#0984E3', // Blue
-    '#00B894', // Green
-    '#FDCB6E', // Yellow
-    '#E17055', // Orange
-    '#FD79A8', // Pink
-    '#A29BFE', // Light Purple
-    '#74B9FF'  // Light Blue
+    '#FDB913', // Gold
+    '#FFD700', // Goldenrod
+    '#FFA500', // Orange
+    '#DAA520', // Goldenrod
+    '#E5A50D', // Dark Gold
+    '#F4C430', // Saffron
+    '#FFB347', // Pastel Orange
+    '#FFCC33'  // Sunglow
   ]
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!title.trim()) {
       setError('Course title is required')
       return
@@ -117,16 +117,16 @@ export default function CreateCourseModal({ onClose, onSuccess }: CreateCourseMo
           </div>
 
           <div className="modal-actions">
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="btn-cancel"
               onClick={onClose}
               disabled={loading}
             >
               Cancel
             </button>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="btn-create"
               disabled={loading}
             >
