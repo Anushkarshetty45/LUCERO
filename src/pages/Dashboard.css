@@ -78,6 +78,7 @@
   flex-direction: column;
   overflow: hidden;
   margin-bottom: 20px;
+  min-height: 0;
 }
 
 .sidebar-courses-header {
@@ -86,6 +87,7 @@
   align-items: center;
   margin-bottom: 12px;
   padding: 0 12px;
+  flex-shrink: 0;
 }
 
 .sidebar-courses-header h3 {
@@ -119,7 +121,27 @@
   flex-direction: column;
   gap: 2px;
   overflow-y: auto;
+  overflow-x: hidden;
   padding-right: 4px;
+  flex: 1;
+  min-height: 0;
+}
+
+.sidebar-courses-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-courses-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-courses-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
+
+.sidebar-courses-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .sidebar-course-link {
