@@ -262,7 +262,7 @@
 
 .notes-text {
   line-height: 1.8;
-  color: #ccc;
+  color: #e0e0e0;
   font-size: 16px;
 }
 
@@ -275,18 +275,42 @@
   font-weight: 700;
 }
 
+.notes-text h1 {
+  font-size: 28px;
+}
+
+.notes-text h2 {
+  font-size: 24px;
+}
+
+.notes-text h3 {
+  font-size: 20px;
+}
+
 .notes-text p {
   margin-bottom: 15px;
+  color: #e0e0e0;
 }
 
 .notes-text ul,
 .notes-text ol {
   margin: 15px 0;
   padding-left: 30px;
+  color: #e0e0e0;
 }
 
 .notes-text li {
   margin-bottom: 8px;
+  color: #e0e0e0;
+}
+
+.notes-text strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+.notes-text em {
+  color: #ccc;
 }
 
 .notes-text code {
