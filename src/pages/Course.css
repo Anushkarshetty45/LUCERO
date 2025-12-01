@@ -434,9 +434,9 @@
   position: absolute;
   top: 40px;
   right: 40px;
-  background: rgba(253, 185, 19, 0.1);
-  color: #FDB913;
-  border: 1px solid rgba(253, 185, 19, 0.3);
+  background: rgba(0, 0, 0, 0.15);
+  color: #000;
+  border: 1px solid rgba(0, 0, 0, 0.3);
   padding: 10px 20px;
   border-radius: 8px;
   font-size: 14px;
@@ -449,8 +449,7 @@
 }
 
 .btn-notes:hover {
-  background: #FDB913;
-  color: #000;
+  background: rgba(0, 0, 0, 0.25);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(253, 185, 19, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
