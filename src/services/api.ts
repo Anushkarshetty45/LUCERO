@@ -125,7 +125,7 @@ export const getLessons = async (courseId: string): Promise<Lesson[]> => {
   // .order('order_index', { ascending: true })
 
   if (error) throw error
-  return data
+  return (data || []).sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
 }
 
 export const getLesson = async (lessonId: string): Promise<Lesson> => {
