@@ -9,6 +9,7 @@ import CreateCourseModal from '../components/CreateCourseModal'
 import CourseCard from '../components/CourseCard'
 import AllNotesModal from '../components/AllNotesModal'
 import StudyTimerModal from '../components/StudyTimerModal'
+import ChatbotModal from '../components/ChatbotModal'
 import './Dashboard.css'
 
 export default function Dashboard() {
@@ -21,6 +22,7 @@ export default function Dashboard() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showAllNotes, setShowAllNotes] = useState(false)
   const [showTimer, setShowTimer] = useState(false)
+  const [showChatbot, setShowChatbot] = useState(false)
   const [streak, setStreak] = useState(0)
 
   useEffect(() => {
@@ -130,6 +132,10 @@ export default function Dashboard() {
             <span className="nav-icon">🏠</span>
             Home
           </Link>
+          <button className="sidebar-nav-item" onClick={() => setShowChatbot(true)}>
+            <span className="nav-icon">💬</span>
+            Chat
+          </button>
           <button className="sidebar-nav-item" onClick={() => setShowAllNotes(true)}>
             <span className="nav-icon">📝</span>
             Notes
@@ -347,6 +353,12 @@ export default function Dashboard() {
       {showTimer && (
         <StudyTimerModal
           onClose={() => setShowTimer(false)}
+        />
+      )}
+
+      {showChatbot && (
+        <ChatbotModal
+          onClose={() => setShowChatbot(false)}
         />
       )}
     </div>
