@@ -9,10 +9,8 @@
   padding: 40px;
   background: linear-gradient(180deg, rgba(26, 26, 26, 0.95) 0%, rgba(26, 26, 26, 0.8) 100%);
   border-bottom: 1px solid rgba(253, 185, 19, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  backdrop-filter: blur(20px);
+  position: relative;
+  z-index: 10;
 }
 
 .course-header-content {
