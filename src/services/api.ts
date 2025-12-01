@@ -140,9 +140,20 @@ export const getLesson = async (lessonId: string): Promise<Lesson> => {
 }
 
 export const createLesson = async (lesson: Omit<Lesson, 'id' | 'created_at' | 'updated_at'>) => {
+  // Get current max order_index
+  const { data: maxOrder } = await supabase
+    .from('lessons')
+    .select('order_index')
+    .eq('course_id', lesson.course_id)
+    .order('order_index', { ascending: false })
+    .limit(1)
+    .single()
+
+  const nextOrder = (maxOrder?.order_index || 0) + 1
+
   const { data, error } = await supabase
     .from('lessons')
-    .insert([lesson])
+    .insert([{ ...lesson, order_index: nextOrder }])
     .select()
     .single()
 
