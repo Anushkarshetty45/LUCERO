@@ -1,4 +1,4 @@
-// FORCE RECOMPILE - VERSION 3
+// FORCE RECOMPILE - VERSION 2
 import { useEffect, useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { useNavigate, Link } from 'react-router-dom'
@@ -33,7 +33,7 @@ export default function Dashboard() {
   const loadDashboardData = async () => {
     try {
       setLoading(true)
-
+      
       // Load profile (or create a default one if missing)
       try {
         const profileData = await getProfile(user!.id)
@@ -52,24 +52,25 @@ export default function Dashboard() {
           updated_at: new Date().toISOString()
         })
       }
-
+      
       // Load courses
       const coursesData = await getCourses(user!.id)
-
+      
       // Load progress for each course
       const coursesWithProgress = await Promise.all(
         coursesData.map(course => getCourseWithProgress(course.id, user!.id))
       )
       setCourses(coursesWithProgress)
-
+      
       // Load today's study time
       const studyTime = await getTodayStudyTime(user!.id)
       setTodayStudyTime(studyTime)
-
+      
       // Calculate streak
       const streakDays = await calculateUserStreak(user!.id)
+      console.log('🔥 Streak calculation result:', streakDays)
       setStreak(streakDays)
-
+      
     } catch (error) {
       console.error('Error loading dashboard:', error)
     } finally {
@@ -78,11 +79,15 @@ export default function Dashboard() {
   }
 
   const handleSignOut = async () => {
+    console.log('🚪 Signing out...')
     try {
       await signOut()
+      console.log('✅ Sign out successful')
+      // Force redirect with window.location for reliable logout
       window.location.href = '/auth'
     } catch (error) {
       console.error('❌ Sign out error:', error)
+      // Force redirect anyway
       window.location.href = '/auth'
     }
   }
@@ -103,120 +108,177 @@ export default function Dashboard() {
 
   const firstName = profile?.first_name || 'there'
   const greeting = getGreeting(firstName)
+  const quote = getMotivationalQuote()
+  
+  // Calculate stats
+  const totalCourses = courses.length
+  
+  // Get continue learning course (most recently accessed)
+  const continueLearningCourse = courses
+    .filter(c => c.last_accessed !== null)
+    .sort((a, b) => {
+      const dateA = a.last_accessed ? new Date(a.last_accessed).getTime() : 0
+      const dateB = b.last_accessed ? new Date(b.last_accessed).getTime() : 0
+      return dateB - dateA
+    })[0]
 
   return (
-    <div className="dashboard-container">
-      {/* Sidebar */}
-      <aside className="sidebar">
-        <div className="sidebar-header">
-          <h1 className="sidebar-logo">LUCERO</h1>
+    <div className="dashboard-page">
+      {/* Navigation */}
+      <nav className="dashboard-nav">
+        <div className="nav-left">
+          <h1 className="nav-logo">LUCERO</h1>
         </div>
-
-        <nav className="sidebar-nav">
-          <Link to="/dashboard" className="nav-item active">
-            <span className="nav-icon">🏠</span>
-            Home
-          </Link>
-          <button className="nav-item" onClick={() => setShowAllNotes(true)}>
-            <span className="nav-icon">📝</span>
-            Notes
+        <div className="nav-right">
+          <button className="nav-icon-btn" title="Notifications">
+            🔔
+            <span className="notification-badge">3</span>
           </button>
-          <button className="nav-item" onClick={() => setShowTimer(true)}>
-            <span className="nav-icon">⏱️</span>
-            Timer
-          </button>
-        </nav>
-
-        <div className="sidebar-courses">
-          <div className="sidebar-section-header">
-            <h3>Courses</h3>
-            <button className="btn-icon-small" onClick={() => setShowCreateModal(true)}>+</button>
-          </div>
-          <div className="sidebar-course-list">
-            {courses.map(course => (
-              <Link key={course.id} to={`/course/${course.id}`} className="sidebar-course-item">
-                <span className="course-dot" style={{ background: course.color }}></span>
-                {course.title}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        <div className="sidebar-footer">
-          <div className="user-profile">
-            <div className="user-avatar-small">
-              {firstName.charAt(0).toUpperCase()}
+          <div className="user-menu">
+            <button className="user-button">
+              <div className="user-avatar">
+                {firstName.charAt(0).toUpperCase()}
+              </div>
+              <span>{firstName}</span>
+            </button>
+            <div className="user-dropdown">
+              <Link to="/profile">Profile</Link>
+              <Link to="/settings">Settings</Link>
+              <button onClick={handleSignOut}>Sign Out</button>
             </div>
-            <span className="user-name">{firstName}</span>
           </div>
-          <button onClick={handleSignOut} className="btn-logout" title="Sign Out">
-            🚪
-          </button>
         </div>
-      </aside>
+      </nav>
 
       {/* Main Content */}
-      <main className="main-content">
-        <header className="content-header">
-          <div className="header-greeting">
-            <h1>Hi {firstName}, <br />ready to <span className="highlight-text">crush it?</span></h1>
+      <main className="dashboard-content">
+        {/* Welcome Section */}
+        <div className="welcome-section">
+          <div className="welcome-text">
+            <h2>{greeting}</h2>
+            <p>{quote}</p>
           </div>
-          <div className="streak-display">
-            <div className="streak-count">{streak} day streak,</div>
-            <div className="streak-label">great work!</div>
-            <img src="/horse-logo.png" alt="Mascot" className="streak-mascot" />
+          <div className="streak-badge">
+            🔥 {streak} day streak
           </div>
-        </header>
+        </div>
 
-        {/* Hero / Upload Section */}
-        <section className="hero-upload-section">
-          <div className="upload-card">
-            <img src="/horse-logo.png" alt="Upload" className="upload-mascot" />
-            <h2>Create a new course to get started!</h2>
-            <p>We will help you organize your learning journey.</p>
-            <button className="btn-black" onClick={() => setShowCreateModal(true)}>
-              Create Course
-            </button>
-          </div>
-        </section>
-
-        {/* Courses Section */}
-        <section className="courses-section">
-          <div className="section-header">
-            <h2>Courses</h2>
-            <div className="header-actions">
-              <button className="btn-outline" onClick={() => setShowCreateModal(true)}>+ Course</button>
+        {/* Quick Stats */}
+        <div className="quick-stats">
+          <div className="stat-card">
+            <div className="stat-icon">📚</div>
+            <div className="stat-content">
+              <h3>{totalCourses}</h3>
+              <p>Total Courses</p>
             </div>
           </div>
+          
+          <div className="stat-card">
+            <div className="stat-icon">🔥</div>
+            <div className="stat-content">
+              <h3>{streak}</h3>
+              <p>Day Streak</p>
+            </div>
+          </div>
+          
+          <div className="stat-card">
+            <div className="stat-icon">⏱️</div>
+            <div className="stat-content">
+              <h3>{formatTime(todayStudyTime)}</h3>
+              <p>Today's Study Time</p>
+            </div>
+          </div>
+        </div>
 
-          <div className="courses-list-horizontal">
-            {courses.length === 0 ? (
-              <div className="empty-courses-text">No courses yet. Create one above!</div>
-            ) : (
-              courses.map(course => (
-                <div key={course.id} className="course-list-item" onClick={() => navigate(`/course/${course.id}`)}>
-                  <div className="course-icon-wrapper">
-                    <div className="course-icon" style={{ background: course.color }}>
-                      {course.title.charAt(0)}
-                    </div>
-                  </div>
-                  <div className="course-info">
-                    <h3>{course.title}</h3>
-                    <div className="course-meta">
-                      <span>{course.subject}</span>
-                      <span className="bullet">•</span>
-                      <span>{new Date(course.created_at).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                  <div className="course-arrow">→</div>
+        {/* Continue Learning */}
+        {continueLearningCourse && (
+          <section className="dashboard-section">
+            <h3 className="section-title">Continue Learning</h3>
+            <div className="continue-learning-card">
+              <div className="continue-card-header" style={{ background: continueLearningCourse.color }}>
+                <h4>{continueLearningCourse.title}</h4>
+                <span className="course-subject">{continueLearningCourse.subject}</span>
+              </div>
+              <div className="continue-card-body">
+                <div className="progress-info">
+                  <span>📚 {continueLearningCourse.total_lessons} Topics</span>
+                  <span>🕒 Last studied: {new Date(continueLearningCourse.last_accessed!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                 </div>
-              ))
-            )}
+                <button 
+                  className="btn-continue"
+                  onClick={() => navigate(`/course/${continueLearningCourse.id}`)}
+                >
+                  Continue Learning →
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* My Courses */}
+        <section className="dashboard-section">
+          <div className="section-header">
+            <h3 className="section-title">My Courses</h3>
+            <button 
+              className="btn-primary"
+              onClick={() => setShowCreateModal(true)}
+            >
+              + Create Course
+            </button>
+          </div>
+
+          {courses.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-icon">📚</div>
+              <h3>No courses yet</h3>
+              <p>Create your first course to start learning!</p>
+              <button 
+                className="btn-primary"
+                onClick={() => setShowCreateModal(true)}
+              >
+                Create Your First Course
+              </button>
+            </div>
+          ) : (
+            <div className="courses-grid">
+              {courses.map(course => (
+                <CourseCard 
+                  key={course.id} 
+                  course={course}
+                  onUpdate={loadDashboardData}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Study Tools */}
+        <section className="dashboard-section">
+          <h3 className="section-title">Study Tools</h3>
+          <div className="tools-grid">
+            <button className="tool-card">
+              <span className="tool-icon">💭</span>
+              <span className="tool-name">AI Assistant</span>
+              <span className="tool-badge">Coming Soon</span>
+            </button>
+            <button className="tool-card" onClick={() => setShowAllNotes(true)}>
+              <span className="tool-icon">📝</span>
+              <span className="tool-name">Notes</span>
+            </button>
+            <button className="tool-card">
+              <span className="tool-icon">🃏</span>
+              <span className="tool-name">Flashcards</span>
+              <span className="tool-badge">Coming Soon</span>
+            </button>
+            <button className="tool-card" onClick={() => setShowTimer(true)}>
+              <span className="tool-icon">⏱️</span>
+              <span className="tool-name">Study Timer</span>
+            </button>
           </div>
         </section>
       </main>
 
-      {/* Modals */}
+      {/* Create Course Modal */}
       {showCreateModal && (
         <CreateCourseModal
           onClose={() => setShowCreateModal(false)}
@@ -224,6 +286,7 @@ export default function Dashboard() {
         />
       )}
 
+      {/* All Notes Modal */}
       {showAllNotes && user && (
         <AllNotesModal
           userId={user.id}
@@ -235,6 +298,7 @@ export default function Dashboard() {
         />
       )}
 
+      {/* Study Timer Modal */}
       {showTimer && (
         <StudyTimerModal
           onClose={() => setShowTimer(false)}
