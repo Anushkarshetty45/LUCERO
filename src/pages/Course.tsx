@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-import { getCourse, getLessons, deleteLesson } from '../services/api'
+import { getCourse, getLessons, deleteLesson, getCourseWithProgress } from '../services/api'
 import { Course as CourseType, Lesson } from '../types'
 import AddTopicModal from '../components/AddTopicModal'
 import './Course.css'
@@ -27,10 +27,19 @@ export default function Course() {
   const loadCourseData = async () => {
     try {
       setLoading(true)
-      const courseData = await getCourse(courseId!)
+      // Use getCourseWithProgress to get total_lessons count for verification
+      const courseData = await getCourseWithProgress(courseId!, user?.id || '')
       setCourse(courseData)
+      console.log('Course data loaded:', courseData)
 
       const lessonsData = await getLessons(courseId!)
+      console.log('Lessons loaded:', lessonsData.length)
+
+      // If we have a mismatch, log it
+      if (courseData.total_lessons > 0 && lessonsData.length === 0) {
+        console.warn('Mismatch: Course has lessons but getLessons returned empty')
+      }
+
       setLessons(lessonsData)
     } catch (error) {
       console.error('Error loading course:', error)
