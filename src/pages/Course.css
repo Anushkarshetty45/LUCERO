@@ -40,18 +40,25 @@
 .course-header h1 {
   font-size: 36px;
   margin: 0 0 10px 0;
-  background: linear-gradient(135deg, #ffffff 0%, #FDB913 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #000;
   font-weight: 800;
+}
+
+/* Override gradient when course has colored background */
+.course-header[style*="background"] h1 {
+  color: #000 !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: #000 !important;
+  background-clip: unset !important;
 }
 
 .course-subject {
   display: inline-block;
   padding: 4px 12px;
-  background: rgba(253, 185, 19, 0.1);
-  color: #FDB913;
-  border: 1px solid rgba(253, 185, 19, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+  color: #000;
+  border: 1px solid rgba(0, 0, 0, 0.3);
   border-radius: 20px;
   font-size: 14px;
   font-weight: 600;
@@ -60,10 +67,11 @@
 
 .course-description {
   font-size: 16px;
-  color: #ccc;
+  color: #000;
   margin: 10px 0 0 0;
   line-height: 1.6;
   max-width: 800px;
+  opacity: 0.8;
 }
 
 /* Content Layout */
