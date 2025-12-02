@@ -85,34 +85,54 @@ export const getCourseWithProgress = async (courseId: string, userId: string) =>
   // Get course
   const course = await getCourse(courseId)
 
-  // Get lessons count
-  const { data: lessons, error: lessonsError } = await supabase
-    .from('lessons')
-    .select('id')
-    .eq('course_id', courseId)
+  try {
+    // Get lessons count
+    const { data: lessons, error: lessonsError } = await supabase
+      .from('lessons')
+      .select('id')
+      .eq('course_id', courseId)
 
-  if (lessonsError) throw lessonsError
+    if (lessonsError) {
+      console.error('Error fetching lessons for progress:', lessonsError)
+      return { ...course, total_lessons: 0, last_accessed: null }
+    }
 
-  const lessonIds = lessons?.map(l => l.id) || []
+    const lessonIds = lessons?.map(l => l.id) || []
+    let lastAccessed = null
 
-  // Get last accessed date
-  const { data: progress, error: progressError } = await supabase
-    .from('lesson_progress')
-    .select('last_accessed')
-    .eq('user_id', userId)
-    .in('lesson_id', lessonIds)
-    .order('last_accessed', { ascending: false })
-    .limit(1)
+    if (lessonIds.length > 0 && userId) {
+      try {
+        // Get last accessed date
+        const { data: progress, error: progressError } = await supabase
+          .from('lesson_progress')
+          .select('last_accessed')
+          .eq('user_id', userId)
+          .in('lesson_id', lessonIds)
+          .order('last_accessed', { ascending: false })
+          .limit(1)
 
-  if (progressError) throw progressError
+        if (!progressError && progress && progress.length > 0) {
+          lastAccessed = progress[0].last_accessed
+        }
+      } catch (err) {
+        console.error('Error fetching progress details:', err)
+        // Continue without progress data
+      }
+    }
 
-  const totalLessons = lessons?.length || 0
-  const lastAccessed = progress && progress.length > 0 ? progress[0].last_accessed : null
-
-  return {
-    ...course,
-    total_lessons: totalLessons,
-    last_accessed: lastAccessed
+    return {
+      ...course,
+      total_lessons: lessons?.length || 0,
+      last_accessed: lastAccessed
+    }
+  } catch (error) {
+    console.error('Error in getCourseWithProgress:', error)
+    // Fallback to just returning the course
+    return {
+      ...course,
+      total_lessons: 0,
+      last_accessed: null
+    }
   }
 }
 

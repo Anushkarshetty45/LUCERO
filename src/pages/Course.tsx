@@ -27,6 +27,7 @@ export default function Course() {
   const loadCourseData = async () => {
     try {
       setLoading(true)
+      console.log('Loading course:', courseId, 'User:', user?.id)
       // Use getCourseWithProgress to get total_lessons count for verification
       const courseData = await getCourseWithProgress(courseId!, user?.id || '')
       setCourse(courseData)
