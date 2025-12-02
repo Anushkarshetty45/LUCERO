@@ -145,7 +145,8 @@ export const getLessons = async (courseId: string): Promise<Lesson[]> => {
   // .order('order_index', { ascending: true })
 
   if (error) throw error
-  return (data || []).sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
+  // Sort by created_at as fallback since order_index might not exist
+  return (data || []).sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
 }
 
 export const getLesson = async (lessonId: string): Promise<Lesson> => {
@@ -160,20 +161,9 @@ export const getLesson = async (lessonId: string): Promise<Lesson> => {
 }
 
 export const createLesson = async (lesson: Omit<Lesson, 'id' | 'created_at' | 'updated_at'>) => {
-  // Get current max order_index
-  const { data: maxOrder } = await supabase
-    .from('lessons')
-    .select('order_index')
-    .eq('course_id', lesson.course_id)
-    .order('order_index', { ascending: false })
-    .limit(1)
-    .single()
-
-  const nextOrder = (maxOrder?.order_index || 0) + 1
-
   const { data, error } = await supabase
     .from('lessons')
-    .insert([{ ...lesson, order_index: nextOrder }])
+    .insert([lesson])
     .select()
     .single()
 
