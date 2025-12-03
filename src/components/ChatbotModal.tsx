@@ -80,6 +80,12 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
             if (!response.ok) {
                 const errorData = await response.json()
                 console.error('❌ API Error Response:', errorData)
+
+                // Check for quota exceeded error
+                if (errorData.error?.message?.includes('quota') || errorData.error?.message?.includes('billing')) {
+                    throw new Error('QUOTA_EXCEEDED')
+                }
+
                 throw new Error(`API Error: ${errorData.error?.message || 'Unknown error'}`)
             }
 
@@ -94,11 +100,19 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
             }
 
             setMessages(prev => [...prev, assistantMessage])
-        } catch (error) {
+        } catch (error: any) {
             console.error('❌ Error getting AI response:', error)
+
+            let errorContent = 'Sorry, I encountered an error. Please try again.'
+
+            // Provide specific error message for quota issues
+            if (error.message === 'QUOTA_EXCEEDED') {
+                errorContent = '⚠️ The Gemini API quota has been exceeded. Please update your API key in the .env file with a new key from https://aistudio.google.com/app/apikey'
+            }
+
             const errorMessage: Message = {
                 role: 'assistant',
-                content: 'Sorry, I encountered an error. Please try again.',
+                content: errorContent,
                 timestamp: new Date()
             }
             setMessages(prev => [...prev, errorMessage])
