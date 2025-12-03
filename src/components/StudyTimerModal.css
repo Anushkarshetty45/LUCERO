@@ -318,6 +318,108 @@
   font-size: 14px;
 }
 
+/* Timer Display Container */
+.timer-display-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 40px auto;
+}
+
+.timer-progress-ring {
+  display: block;
+}
+
+.timer-progress-ring-bg {
+  fill: none;
+  stroke: #333;
+  stroke-width: 12;
+}
+
+.timer-progress-ring-progress {
+  fill: none;
+  stroke: #FDB913;
+  stroke-width: 12;
+  stroke-linecap: round;
+  transform-origin: center;
+  transform: rotate(-90deg);
+  transition: stroke-dashoffset 1s linear;
+}
+
+.timer-display {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 48px;
+  font-weight: 700;
+  color: #fff;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+}
+
+/* Timer Buttons */
+.timer-btn {
+  padding: 14px 32px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  width: 100%;
+  margin-top: 30px;
+}
+
+.timer-btn-start {
+  background: linear-gradient(135deg, #FDB913, #E5A50D);
+  color: #000;
+}
+
+.timer-btn-start:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(253, 185, 19, 0.4);
+}
+
+.timer-btn-pause,
+.timer-btn-reset {
+  padding: 12px 24px;
+  margin-top: 0;
+  width: auto;
+}
+
+.timer-btn-pause {
+  background: #444;
+  color: white;
+  flex: 1;
+}
+
+.timer-btn-pause:hover {
+  background: #555;
+  transform: translateY(-2px);
+}
+
+.timer-btn-reset {
+  background: transparent;
+  color: #ccc;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  flex: 1;
+}
+
+.timer-btn-reset:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #fff;
+  color: #fff;
+}
+
+.timer-controls {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
 /* SVG Gradient */
 svg defs {
   display: none;
