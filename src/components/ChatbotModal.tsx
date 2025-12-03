@@ -52,8 +52,11 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
         try {
             const apiKey = process.env.REACT_APP_GEMINI_API_KEY
             if (!apiKey) {
+                console.error('❌ Gemini API key not found in environment variables')
                 throw new Error('Gemini API key not found')
             }
+
+            console.log('🔑 API Key found, making request...')
 
             const response = await fetch(
                 `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
@@ -72,11 +75,16 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
                 }
             )
 
+            console.log('📡 Response status:', response.status)
+
             if (!response.ok) {
-                throw new Error('Failed to get response from AI')
+                const errorData = await response.json()
+                console.error('❌ API Error Response:', errorData)
+                throw new Error(`API Error: ${errorData.error?.message || 'Unknown error'}`)
             }
 
             const data = await response.json()
+            console.log('✅ API Response received:', data)
             const aiResponse = data.candidates[0]?.content?.parts[0]?.text || 'Sorry, I couldn\'t generate a response.'
 
             const assistantMessage: Message = {
@@ -87,7 +95,7 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
 
             setMessages(prev => [...prev, assistantMessage])
         } catch (error) {
-            console.error('Error getting AI response:', error)
+            console.error('❌ Error getting AI response:', error)
             const errorMessage: Message = {
                 role: 'assistant',
                 content: 'Sorry, I encountered an error. Please try again.',
