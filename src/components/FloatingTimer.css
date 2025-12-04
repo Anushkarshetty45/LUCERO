@@ -1,0 +1,134 @@
+/* Floating Timer Widget */
+.floating-timer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(34, 34, 34, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 16px 20px;
+    min-width: 200px;
+    cursor: pointer;
+    z-index: 999;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+    animation: slideInFromRight 0.4s ease-out;
+}
+
+@keyframes slideInFromRight {
+    from {
+        transform: translateX(300px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.floating-timer:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    border-color: #FDB913;
+}
+
+.floating-timer.paused {
+    border-color: rgba(255, 152, 0, 0.5);
+}
+
+.floating-timer-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.floating-timer-icon {
+    font-size: 28px;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.floating-timer.paused .floating-timer-icon {
+    animation: none;
+    opacity: 0.6;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.floating-timer-info {
+    flex: 1;
+}
+
+.floating-timer-time {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    font-family: 'Courier New', monospace;
+    line-height: 1.2;
+}
+
+.floating-timer-status {
+    font-size: 12px;
+    color: #999;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+
+.floating-timer.paused .floating-timer-status {
+    color: #ff9800;
+}
+
+.floating-timer-progress {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.floating-timer-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #FDB913, #E5A50D);
+    border-radius: 2px;
+    transition: width 1s linear;
+}
+
+.floating-timer.paused .floating-timer-progress-bar {
+    background: linear-gradient(90deg, #ff9800, #f57c00);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .floating-timer {
+        top: 10px;
+        right: 10px;
+        min-width: 160px;
+        padding: 12px 16px;
+    }
+
+    .floating-timer-icon {
+        font-size: 24px;
+    }
+
+    .floating-timer-time {
+        font-size: 16px;
+    }
+
+    .floating-timer-status {
+        font-size: 10px;
+    }
+}
