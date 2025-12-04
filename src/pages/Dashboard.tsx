@@ -9,9 +9,8 @@ import CreateCourseModal from '../components/CreateCourseModal'
 import CourseCard from '../components/CourseCard'
 import AllNotesModal from '../components/AllNotesModal'
 import StudyTimerModal from '../components/StudyTimerModal'
-import FloatingTimer from '../components/FloatingTimer'
 import ChatbotModal from '../components/ChatbotModal'
-import { useTimer } from '../hooks/useTimer'
+import { useTimerContext } from '../contexts/TimerContext'
 import './Dashboard.css'
 
 export default function Dashboard() {
@@ -23,13 +22,11 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showAllNotes, setShowAllNotes] = useState(false)
-  const [showTimer, setShowTimer] = useState(false)
   const [showChatbot, setShowChatbot] = useState(false)
   const [streak, setStreak] = useState(0)
-  const [isTimerMinimized, setIsTimerMinimized] = useState(false)
 
-  // Use timer hook to persist timer state
-  const timer = useTimer()
+  // Use timer context for app-level timer state
+  const { timer, isMinimized, setIsMinimized, showTimerModal, setShowTimerModal } = useTimerContext()
 
   useEffect(() => {
     if (user) {
@@ -101,19 +98,14 @@ export default function Dashboard() {
   }
 
   const handleTimerMinimize = () => {
-    setIsTimerMinimized(true)
-    setShowTimer(false)
-  }
-
-  const handleTimerRestore = () => {
-    setIsTimerMinimized(false)
-    setShowTimer(true)
+    setIsMinimized(true)
+    setShowTimerModal(false)
   }
 
   const handleTimerClose = () => {
     timer.resetTimer()
-    setShowTimer(false)
-    setIsTimerMinimized(false)
+    setShowTimerModal(false)
+    setIsMinimized(false)
   }
 
   if (loading) {
@@ -162,7 +154,7 @@ export default function Dashboard() {
             <span className="nav-icon">📝</span>
             Notes
           </button>
-          <button className="sidebar-nav-item" onClick={() => setShowTimer(true)}>
+          <button className="sidebar-nav-item" onClick={() => setShowTimerModal(true)}>
             <span className="nav-icon">⏱️</span>
             Timer
           </button>
@@ -344,7 +336,7 @@ export default function Dashboard() {
                 <span className="tool-name">Flashcards</span>
                 <span className="tool-badge">Coming Soon</span>
               </button>
-              <button className="tool-card" onClick={() => setShowTimer(true)}>
+              <button className="tool-card" onClick={() => setShowTimerModal(true)}>
                 <span className="tool-icon">⏱️</span>
                 <span className="tool-name">Study Timer</span>
               </button>
@@ -372,20 +364,11 @@ export default function Dashboard() {
         />
       )}
 
-      {showTimer && (
+      {showTimerModal && (
         <StudyTimerModal
           onClose={handleTimerClose}
           onMinimize={handleTimerMinimize}
           timer={timer}
-        />
-      )}
-
-      {isTimerMinimized && timer.isRunning && (
-        <FloatingTimer
-          timeRemaining={timer.timeRemaining}
-          totalTime={timer.totalTime}
-          isPaused={timer.isPaused}
-          onClick={handleTimerRestore}
         />
       )}
 
