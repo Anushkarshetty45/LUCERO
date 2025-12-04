@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
+import { TimerProvider } from './contexts/TimerContext'
 import Auth from './pages/Auth'
 import Dashboard from './pages/Dashboard'
 import Course from './pages/Course'
@@ -18,25 +19,27 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route 
-          path="/auth" 
-          element={user ? <Navigate to="/dashboard" /> : <Auth />} 
-        />
-        <Route 
-          path="/dashboard" 
-          element={user ? <Dashboard /> : <Navigate to="/auth" />} 
-        />
-        <Route 
-          path="/course/:courseId" 
-          element={user ? <Course /> : <Navigate to="/auth" />} 
-        />
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-      </Routes>
+      <TimerProvider>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route
+            path="/auth"
+            element={user ? <Navigate to="/dashboard" /> : <Auth />}
+          />
+          <Route
+            path="/dashboard"
+            element={user ? <Dashboard /> : <Navigate to="/auth" />}
+          />
+          <Route
+            path="/course/:courseId"
+            element={user ? <Course /> : <Navigate to="/auth" />}
+          />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+        </Routes>
+      </TimerProvider>
     </BrowserRouter>
   )
 }
