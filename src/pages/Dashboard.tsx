@@ -11,6 +11,7 @@ import AllNotesModal from '../components/AllNotesModal'
 import StudyTimerModal from '../components/StudyTimerModal'
 import ChatbotModal from '../components/ChatbotModal'
 import { useTimerContext } from '../contexts/TimerContext'
+import { useLiveStudy } from '../contexts/LiveStudyContext'
 import './Dashboard.css'
 
 export default function Dashboard() {
@@ -27,6 +28,7 @@ export default function Dashboard() {
 
   // Use timer context for app-level timer state
   const { timer, isMinimized, setIsMinimized, showTimerModal, setShowTimerModal } = useTimerContext()
+  const { setShowLiveStudy } = useLiveStudy()
 
   useEffect(() => {
     if (user) {
@@ -157,6 +159,10 @@ export default function Dashboard() {
           <button className="sidebar-nav-item" onClick={() => setShowTimerModal(true)}>
             <span className="nav-icon">⏱️</span>
             Timer
+          </button>
+          <button className="sidebar-nav-item" onClick={() => setShowLiveStudy(true)}>
+            <span className="nav-icon">📹</span>
+            Live Study
           </button>
         </nav>
 
