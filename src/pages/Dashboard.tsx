@@ -9,7 +9,9 @@ import CreateCourseModal from '../components/CreateCourseModal'
 import CourseCard from '../components/CourseCard'
 import AllNotesModal from '../components/AllNotesModal'
 import StudyTimerModal from '../components/StudyTimerModal'
+import FloatingTimer from '../components/FloatingTimer'
 import ChatbotModal from '../components/ChatbotModal'
+import { useTimer } from '../hooks/useTimer'
 import './Dashboard.css'
 
 export default function Dashboard() {
@@ -24,6 +26,10 @@ export default function Dashboard() {
   const [showTimer, setShowTimer] = useState(false)
   const [showChatbot, setShowChatbot] = useState(false)
   const [streak, setStreak] = useState(0)
+  const [isTimerMinimized, setIsTimerMinimized] = useState(false)
+
+  // Use timer hook to persist timer state
+  const timer = useTimer()
 
   useEffect(() => {
     if (user) {
@@ -92,6 +98,22 @@ export default function Dashboard() {
   const handleCourseCreated = () => {
     setShowCreateModal(false)
     loadDashboardData() // Reload courses
+  }
+
+  const handleTimerMinimize = () => {
+    setIsTimerMinimized(true)
+    setShowTimer(false)
+  }
+
+  const handleTimerRestore = () => {
+    setIsTimerMinimized(false)
+    setShowTimer(true)
+  }
+
+  const handleTimerClose = () => {
+    timer.resetTimer()
+    setShowTimer(false)
+    setIsTimerMinimized(false)
   }
 
   if (loading) {
@@ -352,7 +374,18 @@ export default function Dashboard() {
 
       {showTimer && (
         <StudyTimerModal
-          onClose={() => setShowTimer(false)}
+          onClose={handleTimerClose}
+          onMinimize={handleTimerMinimize}
+          timer={timer}
+        />
+      )}
+
+      {isTimerMinimized && timer.isRunning && (
+        <FloatingTimer
+          timeRemaining={timer.timeRemaining}
+          totalTime={timer.totalTime}
+          isPaused={timer.isPaused}
+          onClick={handleTimerRestore}
         />
       )}
 
