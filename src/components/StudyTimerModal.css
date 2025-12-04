@@ -62,7 +62,14 @@
   font-weight: 700;
 }
 
-.close-btn {
+.modal-header-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.close-btn,
+.minimize-btn {
   background: none;
   border: none;
   font-size: 32px;
@@ -79,9 +86,20 @@
   transition: all 0.2s;
 }
 
-.close-btn:hover {
+.minimize-btn {
+  font-size: 36px;
+  font-weight: 300;
+}
+
+.close-btn:hover,
+.minimize-btn:hover {
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
+}
+
+.minimize-btn:hover {
+  background: rgba(253, 185, 19, 0.2);
+  color: #FDB913;
 }
 
 .modal-body {
