@@ -3,7 +3,7 @@ import { FaceDetectionResult } from '../../types/liveStudy'
 
 interface VideoPreviewProps {
     stream: MediaStream | null
-    videoRef: React.RefObject<HTMLVideoElement>
+    videoRef: React.RefObject<HTMLVideoElement | null>
     faceResult: FaceDetectionResult
     showPreview: boolean
     modelsLoaded: boolean
@@ -30,7 +30,7 @@ export default function VideoPreview({
     return (
         <div className="video-preview-container">
             <video
-                ref={videoRef}
+                ref={videoRef as React.RefObject<HTMLVideoElement>}
                 autoPlay
                 muted
                 playsInline
