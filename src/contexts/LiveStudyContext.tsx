@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react'
 import { Distraction } from '../types/liveStudy'
 import { useFaceDetection } from '../hooks/useFaceDetection'
 import { useTabVisibility } from '../hooks/useTabVisibility'
-import { playWarningSound, playTabSwitchWarning, getWarningLevel, getWarningMessage } from '../utils/warningSystem'
+import { playWarningSound, playTabSwitchWarning, playLoudAlarm, getWarningLevel, getWarningMessage } from '../utils/warningSystem'
 
 interface LiveStudyContextType {
     isActive: boolean
@@ -16,7 +16,7 @@ interface LiveStudyContextType {
     distractions: Distraction[]
     startSession: () => Promise<void>
     stopSession: () => void
-    videoRef: React.RefObject<HTMLVideoElement>
+    videoRef: React.RefObject<HTMLVideoElement | null>
     stream: MediaStream | null
     faceResult: any
     modelsLoaded: boolean
@@ -34,6 +34,11 @@ export function LiveStudyProvider({ children }: { children: ReactNode }) {
     const [distractions, setDistractions] = useState<Distraction[]>([])
     const [warningMessage, setWarningMessage] = useState<string | null>(null)
 
+    // Refs to track current state without restarting intervals
+    const faceResultRef = useRef<any>({ faceDetected: true, lookingDown: false })
+    const isTabVisibleRef = useRef(true)
+    const modelsLoadedRef = useRef(false)
+
     // Hooks
     const {
         stream,
@@ -44,7 +49,20 @@ export function LiveStudyProvider({ children }: { children: ReactNode }) {
         stopWebcam
     } = useFaceDetection(isActive)
 
-    const { isTabVisible, tabSwitchCount, resetCount } = useTabVisibility()
+    const { isTabVisible, resetCount } = useTabVisibility()
+
+    // Keep refs in sync
+    useEffect(() => {
+        faceResultRef.current = faceResult
+    }, [faceResult])
+
+    useEffect(() => {
+        isTabVisibleRef.current = isTabVisible
+    }, [isTabVisible])
+
+    useEffect(() => {
+        modelsLoadedRef.current = modelsLoaded
+    }, [modelsLoaded])
 
     // Start session
     const startSession = async () => {
@@ -75,7 +93,7 @@ export function LiveStudyProvider({ children }: { children: ReactNode }) {
         setIsMinimized(false)
     }
 
-    // Timer logic
+    // Timer logic - uses refs to avoid interval restarts
     useEffect(() => {
         let interval: NodeJS.Timeout
 
@@ -83,24 +101,36 @@ export function LiveStudyProvider({ children }: { children: ReactNode }) {
             interval = setInterval(() => {
                 setSessionTime(prev => prev + 1)
 
-                // Calculate focus time (face detected + tab visible)
-                // If models missing, assume face detected (fallback)
-                const isFaceFocused = modelsLoaded ? (faceResult.faceDetected && !faceResult.lookingDown) : true
+                // Calculate focus time using refs (stable values)
+                const faceData = faceResultRef.current
+                const tabVisible = isTabVisibleRef.current
+                const hasModels = modelsLoadedRef.current
 
-                if (isFaceFocused && isTabVisible) {
+                // If models missing, assume face detected (fallback)
+                const isFaceFocused = hasModels
+                    ? (faceData.faceDetected && !faceData.lookingDown)
+                    : true
+
+                if (isFaceFocused && tabVisible) {
                     setFocusTime(prev => prev + 1)
                 }
             }, 1000)
         }
 
         return () => clearInterval(interval)
-    }, [isActive, faceResult, isTabVisible, modelsLoaded])
+    }, [isActive]) // Only depends on isActive now
 
-    // Distraction Handling: Tab Switching
+    // Distraction Handling: Tab Switching with ESCALATING warnings
     useEffect(() => {
         if (!isActive) return
 
+        let warningInterval: NodeJS.Timeout
+        let distractionStartTime: number
+
         if (!isTabVisible) {
+            distractionStartTime = Date.now()
+
+            // Immediate first warning (soft)
             playTabSwitchWarning()
             setWarningMessage(getWarningMessage('tab_switch'))
 
@@ -111,6 +141,7 @@ export function LiveStudyProvider({ children }: { children: ReactNode }) {
                 })
             }
 
+            // Log distraction once
             const newDistraction: Distraction = {
                 id: Date.now().toString(),
                 type: 'tab_switch',
@@ -120,8 +151,25 @@ export function LiveStudyProvider({ children }: { children: ReactNode }) {
                 resolved: false
             }
             setDistractions(prev => [...prev, newDistraction])
+
+            // Escalating warnings - check every 3 seconds
+            warningInterval = setInterval(() => {
+                const elapsed = Date.now() - distractionStartTime
+
+                if (elapsed > 5000) {
+                    // After 5 seconds: LOUD alarm (3 rapid beeps)
+                    playLoudAlarm()
+                } else {
+                    // First 5 seconds: soft beep
+                    playTabSwitchWarning()
+                }
+            }, 3000)
         } else {
             setWarningMessage(null)
+        }
+
+        return () => {
+            if (warningInterval) clearInterval(warningInterval)
         }
     }, [isTabVisible, isActive])
 
