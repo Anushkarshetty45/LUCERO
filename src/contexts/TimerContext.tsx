@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from 'react'
 import { useTimer } from '../hooks/useTimer'
-import FloatingTimer from '../components/FloatingTimer'
 
 interface TimerContextType {
     timer: ReturnType<typeof useTimer>
@@ -29,11 +28,6 @@ export function TimerProvider({ children }: TimerProviderProps) {
     const [isMinimized, setIsMinimized] = useState(false)
     const [showTimerModal, setShowTimerModal] = useState(false)
 
-    const handleFloatingTimerClick = () => {
-        setIsMinimized(false)
-        setShowTimerModal(true)
-    }
-
     return (
         <TimerContext.Provider
             value={{
@@ -45,14 +39,7 @@ export function TimerProvider({ children }: TimerProviderProps) {
             }}
         >
             {children}
-            {isMinimized && timer.isRunning && (
-                <FloatingTimer
-                    timeRemaining={timer.timeRemaining}
-                    totalTime={timer.totalTime}
-                    isPaused={timer.isPaused}
-                    onClick={handleFloatingTimerClick}
-                />
-            )}
         </TimerContext.Provider>
     )
 }
+
