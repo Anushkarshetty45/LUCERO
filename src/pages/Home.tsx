@@ -1,6 +1,24 @@
 import { Link } from 'react-router-dom'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import './Home.css'
+import {
+  HiOutlineDocumentText,
+  HiOutlineQuestionMarkCircle,
+  HiOutlineSquare3Stack3D,
+  HiOutlineChartBar,
+  HiOutlineChatBubbleLeftRight,
+  HiOutlineUserGroup,
+  HiOutlineBolt,
+  HiOutlineLightBulb,
+  HiOutlineArrowTrendingUp,
+  HiOutlineTrophy,
+  HiOutlineClipboardDocumentList,
+  HiOutlinePencilSquare,
+  HiOutlineSparkles,
+  HiOutlineArrowUpTray,
+  HiOutlineBookOpen,
+  HiOutlineChartBarSquare
+} from 'react-icons/hi2'
 
 export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
@@ -34,27 +52,27 @@ export default function Home() {
     },
     {
       question: "How is Lucero AI different from other AI models?",
-      answer: "Lucero is specifically designed for students and learning. Unlike general AI models, it organizes your study materials into structured notes, creates personalized quizzes, and builds a comprehensive Golden Note that grows with your learning journey."
+      answer: "Lucero is built for students. It organizes your study materials into structured notes, creates quizzes, and builds a Golden Note that summarizes everything."
     },
     {
       question: "What do I do if something doesn't work?",
-      answer: "If you encounter any issues, please contact our support team at support@lucero.com. We're here to help 24/7 and typically respond within a few hours."
+      answer: "Email us at support@lucero.com and we'll help you out."
     },
     {
       question: "Can Lucero help me with the exams?",
-      answer: "Absolutely! Lucero creates exam-style practice questions, provides instant feedback, and helps you identify weak areas before test day. Our exam simulator mimics real test conditions to prepare you thoroughly."
+      answer: "Yes. Lucero creates practice questions and shows you what topics need more work."
     },
     {
       question: "How does Lucero protect my data?",
-      answer: "We take data security seriously. All your notes and materials are encrypted in transit and at rest. We never share your data with third parties, and you can delete your account and all associated data at any time."
+      answer: "Your notes and materials are encrypted. We don't share your data with anyone. You can delete your account anytime."
     },
     {
       question: "How do I cancel my subscription?",
-      answer: "You can cancel your subscription anytime from your account settings. Simply go to Settings > Subscription > Cancel. You'll retain access until the end of your billing period."
+      answer: "Go to Settings > Subscription > Cancel. You keep access until your billing period ends."
     },
     {
       question: "Does Lucero work in my language?",
-      answer: "Lucero currently supports English, Spanish, French, German, Italian, Portuguese, and Chinese. We're constantly adding more languages based on user demand."
+      answer: "Lucero supports English, Spanish, French, German, Italian, Portuguese, and Chinese. More languages coming soon."
     }
   ]
   return (
@@ -78,9 +96,8 @@ export default function Home() {
               <span className="highlight-text">less time</span>
             </h1>
             <p className="hero-subtitle">
-              Transform your study materials into comprehensive, AI-powered notes and interactive exercises.
-              Lucero helps you master any subject faster with personalized learning paths, smart quizzes,
-              and real-time progress tracking.
+              Upload your study materials. Get organized notes, quizzes, and flashcards. 
+              Track what you know and what needs work.
             </p>
             <Link to="/auth" className="cta-button">Try Lucero now</Link>
 
@@ -98,34 +115,34 @@ export default function Home() {
 
           <div className="features-grid">
             <div className="feature-item animate-on-scroll delay-100">
-              <div className="feature-icon">📝</div>
+              <div className="feature-icon"><HiOutlineDocumentText /></div>
               <h3>Smart Notes</h3>
-              <p>AI-generated comprehensive notes from your study materials</p>
+              <p>Auto-generated notes from your materials</p>
             </div>
             <div className="feature-item animate-on-scroll delay-200">
-              <div className="feature-icon">❓</div>
-              <h3>Adaptive Quizzes</h3>
-              <p>Test your knowledge with intelligent, personalized quizzes</p>
+              <div className="feature-icon"><HiOutlineQuestionMarkCircle /></div>
+              <h3>Quizzes</h3>
+              <p>Test yourself on your material</p>
             </div>
             <div className="feature-item animate-on-scroll delay-300">
-              <div className="feature-icon">🗂️</div>
+              <div className="feature-icon"><HiOutlineSquare3Stack3D /></div>
               <h3>Flashcards</h3>
-              <p>Create and review flashcards for efficient memorization</p>
+              <p>Review key concepts</p>
             </div>
             <div className="feature-item animate-on-scroll delay-100">
-              <div className="feature-icon">📊</div>
+              <div className="feature-icon"><HiOutlineChartBar /></div>
               <h3>Progress Tracker</h3>
-              <p>Monitor your learning journey with detailed analytics</p>
+              <p>See your performance over time</p>
             </div>
             <div className="feature-item animate-on-scroll delay-200">
-              <div className="feature-icon">🤖</div>
-              <h3>AI Chat Assistant</h3>
-              <p>Get instant answers to your study questions 24/7</p>
+              <div className="feature-icon"><HiOutlineChatBubbleLeftRight /></div>
+              <h3>AI Chat</h3>
+              <p>Ask questions about your material</p>
             </div>
             <div className="feature-item animate-on-scroll delay-300">
-              <div className="feature-icon">👥</div>
+              <div className="feature-icon"><HiOutlineUserGroup /></div>
               <h3>Study Groups</h3>
-              <p>Collaborate with classmates and share resources</p>
+              <p>Share notes with classmates</p>
             </div>
           </div>
         </section>
@@ -146,29 +163,29 @@ export default function Home() {
         <section className="benefits-section">
           <div className="section-header">
             <h2>Why students love Lucero</h2>
-            <p>Join thousands of students who are achieving their academic goals faster</p>
+            <p>Study smarter, not harder</p>
           </div>
 
           <div className="benefits-grid">
             <div className="benefit-card animate-on-scroll delay-100">
-              <div className="benefit-icon">⚡</div>
+              <div className="benefit-icon"><HiOutlineBolt /></div>
               <h3>Save Time</h3>
-              <p>Reduce study time by up to 50% with AI-powered note generation and smart learning paths tailored to your needs.</p>
+              <p>Stop rewriting notes. Lucero does it for you.</p>
             </div>
             <div className="benefit-card animate-on-scroll delay-200">
-              <div className="benefit-icon">🎯</div>
-              <h3>Better Retention</h3>
-              <p>Proven spaced repetition techniques and active recall methods help you remember more and forget less.</p>
+              <div className="benefit-icon"><HiOutlineLightBulb /></div>
+              <h3>Remember More</h3>
+              <p>Spaced repetition and active recall built in.</p>
             </div>
             <div className="benefit-card animate-on-scroll delay-300">
-              <div className="benefit-icon">📈</div>
+              <div className="benefit-icon"><HiOutlineArrowTrendingUp /></div>
               <h3>Track Progress</h3>
-              <p>Visualize your improvement with detailed analytics, performance insights, and personalized recommendations.</p>
+              <p>See what you know and what needs work.</p>
             </div>
             <div className="benefit-card animate-on-scroll delay-100">
-              <div className="benefit-icon">🌟</div>
+              <div className="benefit-icon"><HiOutlineTrophy /></div>
               <h3>Ace Your Exams</h3>
-              <p>Practice with exam-style questions, get instant feedback, and identify weak areas before test day.</p>
+              <p>Practice questions and instant feedback.</p>
             </div>
           </div>
         </section>
@@ -179,27 +196,27 @@ export default function Home() {
             <div className="golden-note-text animate-on-scroll">
               <h2>Meet the future of note-taking</h2>
               <p className="golden-note-description">
-                Lucero refines your notes, connects topics, and builds a structured summary
-                — the <strong>Golden Note</strong> that grows with every study session.
+                Lucero refines your notes and connects topics into one structured summary
+                — the <strong>Golden Note</strong>.
               </p>
 
               <div className="golden-note-features">
                 <div className="gn-feature">
-                  <div className="gn-icon">📋</div>
+                  <div className="gn-icon"><HiOutlineClipboardDocumentList /></div>
                   <div>
                     <h4>Topics</h4>
                     <p>Lucero organizes your material by easy to understand topics.</p>
                   </div>
                 </div>
                 <div className="gn-feature">
-                  <div className="gn-icon">✏️</div>
+                  <div className="gn-icon"><HiOutlinePencilSquare /></div>
                   <div>
                     <h4>Note refinement</h4>
                     <p>Improve your messy notes with just one click.</p>
                   </div>
                 </div>
                 <div className="gn-feature">
-                  <div className="gn-icon">📄</div>
+                  <div className="gn-icon"><HiOutlineSparkles /></div>
                   <div>
                     <h4>Golden note</h4>
                     <p>Lucero pulls all your notes and materials into one simple, structured "cheat-sheet" — the Golden Note.</p>
@@ -312,15 +329,15 @@ export default function Home() {
           <div className="steps-grid">
             <div className="step-card animate-on-scroll delay-100">
               <h3>1. Upload PDF</h3>
-              <div className="step-image upload-image">📄</div>
+              <div className="step-image upload-image"><HiOutlineArrowUpTray /></div>
             </div>
             <div className="step-card animate-on-scroll delay-200">
               <h3>2. Study</h3>
-              <div className="step-image study-image">🧠</div>
+              <div className="step-image study-image"><HiOutlineBookOpen /></div>
             </div>
             <div className="step-card animate-on-scroll delay-300">
               <h3>3. Improve</h3>
-              <div className="step-image improve-image">📈</div>
+              <div className="step-image improve-image"><HiOutlineChartBarSquare /></div>
             </div>
           </div>
         </section>
@@ -405,8 +422,8 @@ export default function Home() {
         {/* Final CTA Section */}
         <section className="final-cta-section">
           <h2>Curious? Try it for free</h2>
-          <p>Join thousands of students already using Lucero to ace their exams</p>
-          <Link to="/auth" className="cta-button-large">Start Learning Now</Link>
+          <p>Free plan available. No credit card required.</p>
+          <Link to="/auth" className="cta-button-large">Get Started</Link>
         </section>
 
         {/* Testimonial Section */}
@@ -429,8 +446,8 @@ export default function Home() {
         <section className="footer-cta">
           <div className="cta-content">
             <h2>Meet the future <br />of note-taking</h2>
-            <p>Lucero refines your notes, connects topics, and builds a structured summary — the Golden Note that grows with every study session.</p>
-            <Link to="/auth" className="cta-button-white">Start Learning Now</Link>
+            <p>Your notes, organized and refined into one structured summary.</p>
+            <Link to="/auth" className="cta-button-white">Get Started</Link>
           </div>
         </section>
       </main>
