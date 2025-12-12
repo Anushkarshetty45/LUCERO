@@ -407,7 +407,8 @@
 }
 
 .feature-item {
-  background: var(--white);
+  background: var(--space-card);
+  backdrop-filter: blur(10px);
   padding: 3rem 2rem;
   border-radius: 12px;
   border: 1px solid var(--border);
@@ -435,7 +436,8 @@
 .feature-item:hover {
   transform: translateY(-12px) scale(1.02);
   box-shadow: var(--shadow-hover);
-  border-color: var(--primary-gold);
+  border-color: var(--border-glow);
+  background: var(--space-card-hover);
 }
 
 .feature-icon {
@@ -518,8 +520,10 @@
 /* ========== UNIVERSITIES ========== */
 .universities-section {
   padding: 5rem 6%;
-  background: var(--light-gray);
+  background: transparent;
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 .universities-label {
@@ -558,7 +562,9 @@
 /* ========== BENEFITS ========== */
 .benefits-section {
   padding: 7rem 6%;
-  background: var(--white);
+  background: transparent;
+  position: relative;
+  z-index: 1;
 }
 
 .benefits-grid {
@@ -570,7 +576,8 @@
 }
 
 .benefit-card {
-  background: var(--white);
+  background: var(--space-card);
+  backdrop-filter: blur(10px);
   padding: 3.5rem 2.5rem;
   border-radius: 16px;
   border: 1px solid var(--border);
@@ -599,7 +606,8 @@
 .benefit-card:hover {
   transform: translateY(-12px);
   box-shadow: var(--shadow-hover);
-  border-color: var(--primary-gold);
+  border-color: var(--border-glow);
+  background: var(--space-card-hover);
 }
 
 .benefit-icon {
@@ -671,7 +679,9 @@
 /* ========== GOLDEN NOTE ========== */
 .golden-note-section {
   padding: 8rem 6%;
-  background: var(--light-gray);
+  background: transparent;
+  position: relative;
+  z-index: 1;
 }
 
 .golden-note-content {
@@ -790,7 +800,8 @@
 }
 
 .gn-card {
-  background: var(--white);
+  background: var(--space-card);
+  backdrop-filter: blur(10px);
   border-radius: 16px;
   padding: 2.5rem;
   box-shadow: var(--shadow-soft);
@@ -801,11 +812,13 @@
 .gn-card:hover {
   transform: translateY(-8px);
   box-shadow: var(--shadow-hover);
+  border-color: var(--border-glow);
+  background: var(--space-card-hover);
 }
 
 .gn-card-golden {
   border: 2px solid var(--primary-gold);
-  box-shadow: 0 4px 20px rgba(253, 185, 19, 0.12);
+  box-shadow: 0 4px 20px rgba(253, 185, 19, 0.2);
 }
 
 .gn-card-header {
@@ -829,7 +842,9 @@
 /* ========== COMPARISON TABLE ========== */
 .comparison-section {
   padding: 7rem 6%;
-  background: var(--white);
+  background: transparent;
+  position: relative;
+  z-index: 1;
 }
 
 .comparison-table-container {
@@ -839,7 +854,8 @@
   border-radius: 16px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow-soft);
-  background: var(--white);
+  background: var(--space-card);
+  backdrop-filter: blur(10px);
 }
 
 .comparison-table {
@@ -852,7 +868,7 @@
   padding: 2rem 1.5rem;
   font-weight: 700;
   font-size: 1.05rem;
-  background: var(--off-white);
+  background: rgba(30, 41, 59, 0.5);
   color: var(--text-dark);
   border-bottom: 2px solid var(--border);
   text-align: center;
@@ -870,8 +886,8 @@
 }
 
 .highlight-col {
-  background: #fffbf0 !important;
-  color: var(--text-dark) !important;
+  background: rgba(253, 185, 19, 0.1) !important;
+  color: var(--primary-gold) !important;
   font-weight: 700 !important;
 }
 
@@ -914,7 +930,9 @@
 /* ========== HOW IT WORKS ========== */
 .how-it-works-section {
   padding: 7rem 6%;
-  background: var(--light-gray);
+  background: transparent;
+  position: relative;
+  z-index: 1;
 }
 
 .how-it-works-section .section-header h2 {
@@ -941,7 +959,8 @@
 }
 
 .step-card {
-  background: var(--white);
+  background: var(--space-card);
+  backdrop-filter: blur(10px);
   padding: 3.5rem 2.5rem;
   border-radius: 16px;
   min-height: 350px;
@@ -984,7 +1003,8 @@
 .step-card:hover {
   transform: translateY(-12px);
   box-shadow: var(--shadow-hover);
-  border-color: var(--primary-gold);
+  border-color: var(--border-glow);
+  background: var(--space-card-hover);
 }
 
 .step-card h3 {
@@ -1039,7 +1059,9 @@
 /* ========== PRICING ========== */
 .pricing-section {
   padding: 7rem 6%;
-  background: var(--white);
+  background: transparent;
+  position: relative;
+  z-index: 1;
 }
 
 .pricing-toggle {
@@ -1078,7 +1100,8 @@
 }
 
 .pricing-card {
-  background: var(--white);
+  background: var(--space-card);
+  backdrop-filter: blur(10px);
   border: 2px solid var(--border);
   border-radius: 20px;
   padding: 3.5rem 3rem;
@@ -1107,15 +1130,17 @@
 
 .pricing-card:hover {
   transform: translateY(-12px);
-  box-shadow: 0 20px 60px rgba(253, 185, 19, 0.3);
-  border-color: var(--primary-gold);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--border-glow);
+  background: var(--space-card-hover);
   animation: none;
 }
 
 .pricing-card.featured {
   border-color: var(--primary-gold);
   border-width: 3px;
-  box-shadow: 0 8px 28px rgba(253, 185, 19, 0.15);
+  box-shadow: 0 8px 28px rgba(253, 185, 19, 0.3);
+  background: rgba(253, 185, 19, 0.05);
 }
 
 .pricing-card.featured::before {
@@ -1205,14 +1230,14 @@
 }
 
 .pricing-button.outline {
-  background: var(--white);
+  background: transparent;
   color: var(--text-dark);
   border: 2px solid var(--border);
 }
 
 .pricing-button.outline:hover {
-  border-color: var(--text-dark);
-  background: var(--off-white);
+  border-color: var(--border-glow);
+  background: rgba(167, 139, 250, 0.1);
 }
 
 .pricing-button.solid {
@@ -1275,7 +1300,9 @@
 /* ========== FAQ ========== */
 .faq-section {
   padding: 7rem 6%;
-  background: var(--white);
+  background: transparent;
+  position: relative;
+  z-index: 1;
 }
 
 .faq-container {
@@ -1284,7 +1311,8 @@
 }
 
 .faq-item {
-  background: var(--white);
+  background: var(--space-card);
+  backdrop-filter: blur(10px);
   border: 1px solid var(--border);
   border-radius: 10px;
   margin-bottom: 1.2rem;
@@ -1294,8 +1322,9 @@
 
 .faq-item.active,
 .faq-item:hover {
-  border-color: var(--primary-gold);
-  box-shadow: 0 4px 16px rgba(253, 185, 19, 0.1);
+  border-color: var(--border-glow);
+  box-shadow: var(--shadow-glow);
+  background: var(--space-card-hover);
 }
 
 .faq-question {
@@ -1352,9 +1381,11 @@
 /* ========== FINAL CTA ========== */
 .final-cta-section {
   padding: 9rem 6%;
-  background: var(--text-dark);
+  background: rgba(167, 139, 250, 0.05);
   text-align: center;
   color: var(--white);
+  position: relative;
+  z-index: 1;
 }
 
 .final-cta-section h2 {
@@ -1402,8 +1433,10 @@
 /* ========== TESTIMONIAL ========== */
 .testimonial-section {
   padding: 8rem 6%;
-  background: var(--light-gray);
+  background: transparent;
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 .testimonial-content {
@@ -1452,10 +1485,12 @@ blockquote {
 
 /* ========== FOOTER CTA ========== */
 .footer-cta {
-  background: linear-gradient(135deg, #b8c5d6 0%, #a5b1c2 100%);
+  background: rgba(96, 165, 250, 0.05);
   padding: 7rem 6%;
   text-align: center;
   color: var(--text-dark);
+  position: relative;
+  z-index: 1;
 }
 
 .cta-content h2 {
@@ -1501,8 +1536,10 @@ blockquote {
 /* ========== FOOTER ========== */
 .home-footer {
   padding: 5rem 6%;
-  background: var(--white);
+  background: var(--space-deeper);
   border-top: 1px solid var(--border);
+  position: relative;
+  z-index: 1;
 }
 
 .footer-content {
