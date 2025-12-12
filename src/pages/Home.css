@@ -213,38 +213,13 @@
   margin-bottom: 1.5rem;
   letter-spacing: -0.05em;
   color: var(--text-dark);
-  animation: titleGlow 3s ease-in-out infinite;
 }
 
-@keyframes titleGlow {
-  0%, 100% {
-    text-shadow: 0 0 20px rgba(102, 126, 234, 0.3),
-                 0 0 40px rgba(118, 75, 162, 0.2);
-  }
-  50% {
-    text-shadow: 0 0 30px rgba(102, 126, 234, 0.5),
-                 0 0 60px rgba(118, 75, 162, 0.3),
-                 0 0 80px rgba(240, 147, 251, 0.2);
-  }
-}
 
 .highlight-text {
-  color: var(--primary-gold);
+  color: var(--text-dark);
   position: relative;
   display: inline-block;
-}
-
-.highlight-text::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: linear-gradient(90deg, #FDB913, #ff6b6b, #667eea, #FDB913);
-  background-size: 200% 100%;
-  border-radius: 2px;
-  animation: underlineSlide 3s linear infinite;
 }
 
 @keyframes underlineSlide {
@@ -269,59 +244,43 @@
 
 .cta-button {
   display: inline-block;
-  background: linear-gradient(90deg, var(--primary-gold), #ff6b6b, var(--primary-gold));
-  background-size: 200% 100%;
-  color: #000;
+  background: #ffffff;
+  color: #000000;
   padding: 1.3rem 3.5rem;
-  border-radius: 50px;
+  border-radius: 12px;
   text-decoration: none;
   font-family: var(--font-heading);
-  font-weight: 700;
+  font-weight: 600;
   font-size: 1.05rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 8px 20px rgba(253, 185, 19, 0.25);
-  letter-spacing: 0.5px;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  border: none;
+  letter-spacing: 0.3px;
   position: relative;
   overflow: hidden;
-  animation: shimmer 3s linear infinite;
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
 }
 
 .cta-button::before {
   content: '';
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transform: rotate(45deg);
-  animation: shine 3s linear infinite;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.05);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes shine {
-  0% {
-    transform: translateX(-100%) translateY(-100%) rotate(45deg);
-  }
-  100% {
-    transform: translateX(100%) translateY(100%) rotate(45deg);
-  }
+.cta-button:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .cta-button:hover {
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: 0 14px 32px rgba(253, 185, 19, 0.35);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
 }
 
 .hero-illustration {
@@ -329,17 +288,13 @@
 }
 
 .horse-mascot {
-  width: 220px;
-  height: 220px;
+  width: 160px;
+  height: 160px;
   object-fit: contain;
   animation: float 3s ease-in-out infinite;
-  filter: invert(1) brightness(1.8)
-    drop-shadow(0 0 20px rgba(167, 139, 250, 0.9))
-    drop-shadow(0 0 40px rgba(167, 139, 250, 0.6))
-    drop-shadow(0 0 60px rgba(167, 139, 250, 0.4))
-    drop-shadow(0 10px 30px rgba(96, 165, 250, 0.5));
+  filter: invert(1);
   mix-blend-mode: screen;
-  opacity: 0.95;
+  opacity: 1;
 }
 
 @keyframes float {
@@ -422,21 +377,6 @@
   text-align: center;
   position: relative;
   overflow: hidden;
-}
-
-.feature-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(253, 185, 19, 0.1), transparent);
-  transition: left 0.5s ease;
-}
-
-.feature-item:hover::before {
-  left: 100%;
 }
 
 .feature-item:hover {
@@ -915,8 +855,8 @@
 
 .cta-button-black {
   display: inline-block;
-  background: var(--text-dark);
-  color: var(--white);
+  background: #ffffff;
+  color: #000000;
   padding: 1.1rem 3rem;
   border-radius: 50px;
   text-decoration: none;
@@ -1089,6 +1029,7 @@
   color: var(--text-medium);
   transition: all 0.3s ease;
   letter-spacing: -0.01em;
+  user-select: none;
 }
 
 .toggle-option.active {
@@ -1298,15 +1239,12 @@
 }
 
 .horse-mascot-small {
-  width: 130px;
-  height: 130px;
+  width: 100px;
+  height: 100px;
   object-fit: contain;
-  filter: invert(1) brightness(1.8)
-    drop-shadow(0 0 15px rgba(167, 139, 250, 0.8))
-    drop-shadow(0 0 30px rgba(167, 139, 250, 0.5))
-    drop-shadow(0 5px 20px rgba(96, 165, 250, 0.4));
+  filter: invert(1);
   mix-blend-mode: screen;
-  opacity: 0.95;
+  opacity: 1;
 }
 
 /* ========== FAQ ========== */
@@ -1489,12 +1427,12 @@ blockquote {
 }
 
 .horse-friend {
-  width: 90px;
-  height: 90px;
+  width: 70px;
+  height: 70px;
   object-fit: contain;
-  background: transparent;
+  filter: invert(1);
   mix-blend-mode: screen;
-  filter: invert(1) drop-shadow(0 4px 12px rgba(167, 139, 250, 0.2));
+  opacity: 1;
 }
 
 /* ========== FOOTER CTA ========== */
@@ -1530,7 +1468,7 @@ blockquote {
 .cta-button-white {
   display: inline-block;
   background: var(--white);
-  color: var(--text-dark);
+  color: #000000;
   padding: 1.3rem 3.5rem;
   border-radius: 50px;
   text-decoration: none;
