@@ -6,14 +6,48 @@
 /* Left side - Logo section */
 .auth-logo-section {
   flex: 30%;
-  background: linear-gradient(135deg, #1a1a1a, #000);
+  background: #030510;
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, white, transparent),
+    radial-gradient(2px 2px at 60% 70%, white, transparent),
+    radial-gradient(1px 1px at 50% 50%, white, transparent),
+    radial-gradient(1px 1px at 80% 10%, white, transparent),
+    radial-gradient(2px 2px at 90% 60%, white, transparent),
+    radial-gradient(1px 1px at 33% 80%, white, transparent),
+    radial-gradient(1px 1px at 15% 90%, white, transparent);
+  background-size: 200% 200%;
+  background-position: 0% 0%;
+  animation: starsMove 120s linear infinite;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 40px;
   color: #fff;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: 1px solid rgba(148, 163, 184, 0.1);
+  position: relative;
+}
+
+.auth-logo-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(ellipse at top, rgba(167, 139, 250, 0.08) 0%, transparent 60%),
+              radial-gradient(ellipse at bottom, rgba(96, 165, 250, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes starsMove {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
 }
 
 .auth-horse-logo {
@@ -24,6 +58,8 @@
   filter: invert(1) drop-shadow(0 0 20px rgba(253, 185, 19, 0.3));
   mix-blend-mode: screen;
   animation: float 6s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
 }
 
 @keyframes float {
@@ -60,17 +96,21 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 10px 30px rgba(253, 185, 19, 0.2);
+  position: relative;
+  z-index: 1;
 }
 
 .auth-logo-section p {
   font-size: 20px;
-  color: #fff;
+  color: #f1f5f9;
   opacity: 1;
   text-align: center;
   max-width: 400px;
   line-height: 1.6;
   font-weight: 500;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 1;
 }
 
 /* Right side - Form section */
@@ -80,8 +120,9 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: #1a1a1a;
+  background: #030510;
   overflow-y: auto;
+  position: relative;
 }
 
 /* Responsive design */

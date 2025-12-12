@@ -1,12 +1,56 @@
+/* Space Theme Variables */
+:root {
+  --space-dark: #030510;
+  --space-card: rgba(10, 15, 30, 0.7);
+  --primary-gold: #FDB913;
+  --text-light: #f1f5f9;
+  --border-color: rgba(148, 163, 184, 0.1);
+  --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
 .legal-page {
   min-height: 100vh;
-  background: #1a1a1a;
-  color: #fff;
+  background: #030510;
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, white, transparent),
+    radial-gradient(2px 2px at 60% 70%, white, transparent),
+    radial-gradient(1px 1px at 50% 50%, white, transparent),
+    radial-gradient(1px 1px at 80% 10%, white, transparent),
+    radial-gradient(2px 2px at 90% 60%, white, transparent),
+    radial-gradient(1px 1px at 33% 80%, white, transparent),
+    radial-gradient(1px 1px at 15% 90%, white, transparent);
+  background-size: 200% 200%;
+  background-position: 0% 0%;
+  animation: starsMove 120s linear infinite;
+  color: #f1f5f9;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  position: relative;
+}
+
+.legal-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(ellipse at top, rgba(167, 139, 250, 0.08) 0%, transparent 60%),
+              radial-gradient(ellipse at bottom, rgba(96, 165, 250, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes starsMove {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
 }
 
 .legal-header {
-  background: rgba(26, 26, 26, 0.95);
+  background: rgba(10, 14, 39, 0.95);
   backdrop-filter: blur(20px);
   padding: 20px 40px;
   display: flex;
@@ -14,8 +58,8 @@
   align-items: center;
   position: relative;
   z-index: 100;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-soft);
 }
 
 .legal-logo-text {
@@ -54,11 +98,14 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 60px 40px 40px;
-  background: #222;
+  background: var(--space-card);
+  backdrop-filter: blur(10px);
   border-radius: 20px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--border-color);
   margin-bottom: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .legal-content h1 {

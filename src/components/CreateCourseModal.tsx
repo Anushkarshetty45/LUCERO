@@ -13,20 +13,9 @@ export default function CreateCourseModal({ onClose, onSuccess }: CreateCourseMo
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [subject, setSubject] = useState('')
-  const [selectedColor, setSelectedColor] = useState('#6C5CE7')
+  const [selectedColor] = useState('#ffffff') // Default to white
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-
-  const colors = [
-    '#FDB913', // Gold
-    '#FFD700', // Goldenrod
-    '#FFA500', // Orange
-    '#DAA520', // Goldenrod
-    '#E5A50D', // Dark Gold
-    '#F4C430', // Saffron
-    '#FFB347', // Pastel Orange
-    '#FFCC33'  // Sunglow
-  ]
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -96,24 +85,6 @@ export default function CreateCourseModal({ onClose, onSuccess }: CreateCourseMo
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
             />
-          </div>
-
-          <div className="form-group">
-            <label>Course Color</label>
-            <div className="color-picker">
-              {colors.map(color => (
-                <button
-                  key={color}
-                  type="button"
-                  className={`color-option ${selectedColor === color ? 'selected' : ''}`}
-                  style={{ background: color }}
-                  onClick={() => setSelectedColor(color)}
-                  title={color}
-                >
-                  {selectedColor === color && <span>✓</span>}
-                </button>
-              ))}
-            </div>
           </div>
 
           <div className="modal-actions">

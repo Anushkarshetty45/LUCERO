@@ -1,14 +1,65 @@
+/* Space Theme Variables */
+:root {
+  --space-dark: #030510;
+  --space-deeper: #010205;
+  --space-card: rgba(10, 15, 30, 0.7);
+  --space-card-hover: rgba(15, 20, 40, 0.85);
+  --primary-gold: #FDB913;
+  --text-light: #f1f5f9;
+  --text-medium: #cbd5e1;
+  --border-color: rgba(148, 163, 184, 0.1);
+  --border-glow: rgba(167, 139, 250, 0.2);
+  --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.3);
+  --shadow-hover: 0 12px 32px rgba(167, 139, 250, 0.3);
+  --shadow-glow: 0 0 30px rgba(167, 139, 250, 0.15);
+}
+
 .course-page {
   min-height: 100vh;
-  background: #1a1a1a;
-  color: #ffffff;
+  background: #030510;
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, white, transparent),
+    radial-gradient(2px 2px at 60% 70%, white, transparent),
+    radial-gradient(1px 1px at 50% 50%, white, transparent),
+    radial-gradient(1px 1px at 80% 10%, white, transparent),
+    radial-gradient(2px 2px at 90% 60%, white, transparent),
+    radial-gradient(1px 1px at 33% 80%, white, transparent),
+    radial-gradient(1px 1px at 15% 90%, white, transparent);
+  background-size: 200% 200%;
+  background-position: 0% 0%;
+  animation: starsMove 120s linear infinite;
+  color: #f1f5f9;
+  position: relative;
+}
+
+.course-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(ellipse at top, rgba(167, 139, 250, 0.08) 0%, transparent 60%),
+              radial-gradient(ellipse at bottom, rgba(96, 165, 250, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes starsMove {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
 }
 
 /* Header */
 .course-header {
   padding: 40px;
-  background: linear-gradient(180deg, rgba(26, 26, 26, 0.95) 0%, rgba(26, 26, 26, 0.8) 100%);
-  border-bottom: 1px solid rgba(253, 185, 19, 0.1);
+  background: linear-gradient(180deg, rgba(10, 14, 39, 0.95) 0%, rgba(10, 14, 39, 0.8) 100%);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color);
   position: relative;
   z-index: 10;
 }
@@ -81,12 +132,15 @@
   max-width: 1400px;
   margin: 0 auto;
   min-height: calc(100vh - 200px);
+  position: relative;
+  z-index: 1;
 }
 
 /* Sidebar */
 .topics-sidebar {
-  background: #1a1a1a;
-  border: 1px solid rgba(253, 185, 19, 0.1);
+  background: var(--space-card);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 24px;
   height: fit-content;
@@ -94,7 +148,9 @@
   overflow-y: auto;
   position: sticky;
   top: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-soft);
+  position: relative;
+  z-index: 1;
 }
 
 .topics-sidebar::-webkit-scrollbar {
@@ -287,7 +343,7 @@
 
 .notes-text {
   line-height: 1.8;
-  color: #e0e0e0;
+  color: #b6b6c6;
   font-size: 16px;
 }
 
@@ -314,7 +370,7 @@
 
 .notes-text p {
   margin-bottom: 15px;
-  color: #e0e0e0;
+  color: #b6b6c6;
 }
 
 .notes-text ul,

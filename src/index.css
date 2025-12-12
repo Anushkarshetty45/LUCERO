@@ -3,15 +3,27 @@
 :root {
   --primary-color: #FDB913;
   --primary-dark: #E5A50D;
-  --bg-dark: #1a1a1a;
-  --bg-card: #222;
-  --bg-card-hover: #2a2a2a;
-  --text-light: #ffffff;
-  --text-gray: #ccc;
-  --border-color: rgba(255, 255, 255, 0.1);
+  --primary-gold: #FDB913;
+  --accent-purple: #a78bfa;
+  --accent-blue: #60a5fa;
+  --space-dark: #030510;
+  --space-deeper: #010205;
+  --space-card: rgba(10, 15, 30, 0.7);
+  --space-card-hover: rgba(15, 20, 40, 0.85);
+  --bg-dark: #030510;
+  --bg-card: rgba(10, 15, 30, 0.7);
+  --bg-card-hover: rgba(15, 20, 40, 0.85);
+  --text-light: #f1f5f9;
+  --text-medium: #cbd5e1;
+  --text-gray: #94a3b8;
+  --border-color: rgba(148, 163, 184, 0.1);
+  --border-glow: rgba(167, 139, 250, 0.2);
   --shadow-color: rgba(0, 0, 0, 0.3);
-  --shadow-hover: rgba(0, 0, 0, 0.5);
-  --glow-color: rgba(253, 185, 19, 0.2);
+  --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.3);
+  --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 12px 32px rgba(167, 139, 250, 0.3);
+  --shadow-glow: 0 0 30px rgba(167, 139, 250, 0.15);
+  --glow-color: rgba(167, 139, 250, 0.2);
 }
 
 body {
@@ -21,7 +33,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--bg-dark);
+  background-color: var(--space-dark);
   color: var(--text-light);
   overflow-x: hidden;
 }

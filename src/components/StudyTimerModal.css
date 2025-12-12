@@ -98,8 +98,8 @@
 }
 
 .minimize-btn:hover {
-  background: rgba(253, 185, 19, 0.2);
-  color: #FDB913;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
 }
 
 .modal-body {
@@ -131,15 +131,15 @@
 }
 
 .mode-btn:hover:not(:disabled) {
-  border-color: #FDB913;
-  background: rgba(253, 185, 19, 0.1);
-  color: #FDB913;
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
 .mode-btn.active {
-  background: #FDB913;
+  background: #ffffff;
   color: #000;
-  border-color: #FDB913;
+  border-color: #ffffff;
 }
 
 .mode-btn:disabled {
@@ -197,7 +197,7 @@
 
 .time-input-group input:focus {
   outline: none;
-  border-color: #FDB913;
+  border-color: #ffffff;
 }
 
 .time-separator {
@@ -276,16 +276,16 @@
 }
 
 .btn-start {
-  background: #FDB913;
+  background: #ffffff;
   color: #000;
   flex: 1;
   max-width: 200px;
 }
 
 .btn-start:hover {
-  background: #E5A50D;
+  background: #ffffff;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(253, 185, 19, 0.3);
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.3);
 }
 
 .btn-pause {
@@ -313,10 +313,10 @@
 }
 
 .timer-tips {
-  background: rgba(253, 185, 19, 0.1);
+  background: rgba(255, 255, 255, 0.1);
   padding: 20px;
   border-radius: 12px;
-  border: 1px solid rgba(253, 185, 19, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .timer-tips p {
@@ -357,7 +357,7 @@
 
 .timer-progress-ring-progress {
   fill: none;
-  stroke: #FDB913;
+  stroke: #ffffff;
   stroke-width: 12;
   stroke-linecap: round;
   transform-origin: center;
@@ -391,13 +391,13 @@
 }
 
 .timer-btn-start {
-  background: linear-gradient(135deg, #FDB913, #E5A50D);
+  background: #ffffff;
   color: #000;
 }
 
 .timer-btn-start:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(253, 185, 19, 0.4);
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.4);
 }
 
 .timer-btn-pause,

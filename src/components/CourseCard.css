@@ -12,7 +12,7 @@
 .course-card:hover {
   transform: translateY(-8px) scale(1.02);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-  border-color: #FDB913;
+  border-color: #ffffff;
   z-index: 10;
 }
 
@@ -30,6 +30,7 @@
   font-size: 20px;
   margin: 0 0 12px 0;
   font-weight: 600;
+  color: #c8c7cf;
 }
 
 .course-subject-badge {
@@ -40,6 +41,7 @@
   font-size: 12px;
   font-weight: 600;
   align-self: flex-start;
+  color: #000;
 }
 
 .course-card-body {
@@ -87,7 +89,7 @@
 .stat-value.stat-small {
   font-size: 14px;
   font-weight: 600;
-  color: #FDB913;
+  color: #ffffff;
 }
 
 .course-footer-info {
@@ -113,7 +115,7 @@
 .btn-open {
   flex: 1;
   padding: 10px;
-  background: #FDB913;
+  background: #ffffff;
   color: #000;
   border: none;
   border-radius: 6px;
@@ -125,9 +127,9 @@
 }
 
 .btn-open:hover {
-  background: #E5A50D;
+  background: #ffffff;
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(253, 185, 19, 0.3);
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
 }
 
 .btn-menu {
@@ -144,7 +146,7 @@
 
 .btn-menu:hover {
   background: rgba(255, 255, 255, 0.2);
-  color: #FDB913;
+  color: #ffffff;
 }
 
 .course-menu {
@@ -175,8 +177,8 @@
 }
 
 .course-menu button:hover {
-  background: rgba(253, 185, 19, 0.1);
-  color: #FDB913;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
 .course-menu .delete-btn {
@@ -208,6 +210,7 @@
 .delete-confirm-modal h3 {
   font-size: 22px;
   margin-bottom: 12px;
+  color: #000;
 }
 
 .delete-confirm-modal p {

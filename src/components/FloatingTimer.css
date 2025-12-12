@@ -31,7 +31,7 @@
 .floating-timer:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-    border-color: #FDB913;
+    border-color: #ffffff;
 }
 
 .floating-timer.paused {
@@ -102,7 +102,7 @@
 
 .floating-timer-progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, #FDB913, #E5A50D);
+    background: linear-gradient(90deg, #ffffff, #ffffff);
     border-radius: 2px;
     transition: width 1s linear;
 }

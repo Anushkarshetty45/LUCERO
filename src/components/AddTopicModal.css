@@ -16,7 +16,7 @@
 
 .modal-content {
   background: #1a1a1a;
-  border: 1px solid rgba(253, 185, 19, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 16px;
   width: 100%;
   max-width: 500px;
@@ -38,7 +38,7 @@
 .modal-header h2 {
   margin: 0;
   font-size: 24px;
-  color: #FDB913;
+  color: #ffffff;
   font-weight: 700;
 }
 
@@ -67,17 +67,17 @@
 }
 
 .course-info {
-  background: rgba(253, 185, 19, 0.1);
+  background: rgba(255, 255, 255, 0.1);
   padding: 12px 16px;
   border-radius: 8px;
   margin-bottom: 20px;
   font-size: 14px;
   color: #ccc;
-  border: 1px solid rgba(253, 185, 19, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .course-info strong {
-  color: #FDB913;
+  color: #ffffff;
 }
 
 .form-group {
@@ -108,7 +108,7 @@
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #FDB913;
+  border-color: #ffffff;
   background: #2a2a2a;
 }
 
@@ -140,24 +140,24 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: rgba(253, 185, 19, 0.1);
+  background: rgba(255, 255, 255, 0.1);
   padding: 16px;
   border-radius: 8px;
   margin-top: 16px;
-  border: 1px solid rgba(253, 185, 19, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .generating-status p {
   margin: 0;
-  color: #FDB913;
+  color: #ffffff;
   font-weight: 500;
 }
 
 .spinner-small {
   width: 20px;
   height: 20px;
-  border: 2px solid rgba(253, 185, 19, 0.3);
-  border-top-color: #FDB913;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   flex-shrink: 0;
@@ -191,14 +191,14 @@
 }
 
 .btn-primary {
-  background: #FDB913;
+  background: #ffffff;
   color: #000;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #e5a50d;
+  background: #ffffff;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(253, 185, 19, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
 }
 
 .btn-primary:disabled {

@@ -19,7 +19,7 @@
     height: 80vh;
     max-height: 700px;
     background: #1a1a1a;
-    border: 1px solid rgba(253, 185, 19, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 16px;
     display: flex;
     flex-direction: column;
@@ -64,7 +64,7 @@
     margin: 0;
     font-size: 18px;
     font-weight: 700;
-    color: #FDB913;
+    color: #ffffff;
 }
 
 .chatbot-header p {
@@ -150,7 +150,7 @@
 }
 
 .message.user .message-avatar {
-    background: rgba(253, 185, 19, 0.2);
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .message-content {
@@ -174,7 +174,7 @@
 }
 
 .message.user .message-text {
-    background: linear-gradient(135deg, #FDB913 0%, #E5A50D 100%);
+    background: #ffffff;
     color: #000;
     font-weight: 500;
 }
@@ -246,7 +246,7 @@
 
 .chatbot-input:focus {
     outline: none;
-    border-color: #FDB913;
+    border-color: #ffffff;
     background: #2a2a2a;
 }
 
@@ -255,7 +255,7 @@
 }
 
 .chatbot-send-btn {
-    background: linear-gradient(135deg, #FDB913 0%, #E5A50D 100%);
+    background: #ffffff;
     border: none;
     border-radius: 8px;
     width: 48px;
@@ -271,7 +271,7 @@
 
 .chatbot-send-btn:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(253, 185, 19, 0.3);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
 }
 
 .chatbot-send-btn:disabled {
