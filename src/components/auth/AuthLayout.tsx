@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 import './AuthLayout.css'
-import horseLogo from '../../assets/horse-logo.png'
+import horseLogo from '../../assets/lucero-new-logo.png'
 
 interface AuthLayoutProps {
   children: ReactNode
