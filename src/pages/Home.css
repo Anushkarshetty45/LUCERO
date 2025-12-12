@@ -333,7 +333,13 @@
   height: 220px;
   object-fit: contain;
   animation: float 3s ease-in-out infinite;
-  filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.08));
+  filter: invert(1) brightness(1.8)
+    drop-shadow(0 0 20px rgba(167, 139, 250, 0.9))
+    drop-shadow(0 0 40px rgba(167, 139, 250, 0.6))
+    drop-shadow(0 0 60px rgba(167, 139, 250, 0.4))
+    drop-shadow(0 10px 30px rgba(96, 165, 250, 0.5));
+  mix-blend-mode: screen;
+  opacity: 0.95;
 }
 
 @keyframes float {
@@ -1295,6 +1301,12 @@
   width: 130px;
   height: 130px;
   object-fit: contain;
+  filter: invert(1) brightness(1.8)
+    drop-shadow(0 0 15px rgba(167, 139, 250, 0.8))
+    drop-shadow(0 0 30px rgba(167, 139, 250, 0.5))
+    drop-shadow(0 5px 20px rgba(96, 165, 250, 0.4));
+  mix-blend-mode: screen;
+  opacity: 0.95;
 }
 
 /* ========== FAQ ========== */
@@ -1480,7 +1492,9 @@ blockquote {
   width: 90px;
   height: 90px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.08));
+  background: transparent;
+  mix-blend-mode: screen;
+  filter: invert(1) drop-shadow(0 4px 12px rgba(167, 139, 250, 0.2));
 }
 
 /* ========== FOOTER CTA ========== */
