@@ -22,6 +22,7 @@ import {
 
 export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [isAnnual, setIsAnnual] = useState(true)
 
   // Intersection Observer for scroll animations
   useEffect(() => {
@@ -102,7 +103,7 @@ export default function Home() {
             <Link to="/auth" className="cta-button">Try Lucero now</Link>
 
             <div className="hero-illustration">
-              <img src="/horse-mascot.png" alt="Lucero Horse Mascot" className="horse-mascot" />
+              <img src="/lucero-new-logo.png" alt="Lucero Horse Mascot" className="horse-mascot" />
             </div>
           </div>
         </section>
@@ -347,8 +348,18 @@ export default function Home() {
           <div className="section-header">
             <h2>Select a plan to get started</h2>
             <div className="pricing-toggle">
-              <span className="toggle-option active">Annual 50% off</span>
-              <span className="toggle-option">Monthly</span>
+              <span
+                className={`toggle-option ${isAnnual ? 'active' : ''}`}
+                onClick={() => setIsAnnual(true)}
+              >
+                Annual 50% off
+              </span>
+              <span
+                className={`toggle-option ${!isAnnual ? 'active' : ''}`}
+                onClick={() => setIsAnnual(false)}
+              >
+                Monthly
+              </span>
             </div>
           </div>
 
@@ -378,10 +389,12 @@ export default function Home() {
               </div>
               <div className="price-display">
                 <span className="currency">$</span>
-                <span className="amount">4.99</span>
+                <span className="amount">{isAnnual ? '4.99' : '9.99'}</span>
                 <span className="period">/month</span>
               </div>
-              <p className="billing-info">$59.99 billed annually</p>
+              <p className="billing-info">
+                {isAnnual ? '$59.99 billed annually' : '$9.99 billed monthly'}
+              </p>
               <Link to="/auth" className="pricing-button solid">Get started</Link>
               <ul className="features-list">
                 <li><span className="check-icon">✔</span> Unlimited notes</li>
@@ -390,7 +403,7 @@ export default function Home() {
                 <li><span className="check-icon">✔</span> Unlimited AI chat</li>
               </ul>
               <div className="card-illustration">
-                <img src="/horse-mascot.png" alt="Lucero Horse" className="horse-mascot-small" />
+                <img src="/lucero-new-logo.png" alt="Lucero Horse" className="horse-mascot-small" />
               </div>
             </div>
           </div>
@@ -436,7 +449,7 @@ export default function Home() {
             <div className="testimonial-author">
               <p>Student at Copenhagen Business School</p>
               <div className="bunny-friends">
-                <img src="/horse-mascot.png" alt="Horse" className="horse-friend" />
+                <img src="/lucero-new-logo.png" alt="Horse" className="horse-friend" />
               </div>
             </div>
           </div>
