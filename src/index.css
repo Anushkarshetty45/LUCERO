@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --primary-color: #FDB913;
-  --primary-dark: #E5A50D;
-  --primary-gold: #FDB913;
+  --primary-color: #eae8e3;
+  --primary-dark: #cac9c6;
+  --primary-gold: #eeedea;
   --accent-purple: #a78bfa;
   --accent-blue: #60a5fa;
   --space-dark: #030510;
