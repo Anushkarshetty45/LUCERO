@@ -5,6 +5,8 @@ export interface Profile {
   last_name: string
   full_name: string
   avatar_url: string
+  bio?: string
+  location?: string
   created_at: string
   updated_at: string
 }
