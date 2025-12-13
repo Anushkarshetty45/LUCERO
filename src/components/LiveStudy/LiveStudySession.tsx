@@ -136,18 +136,19 @@ export default function LiveStudySession() {
         }
 
         .live-study-container {
-          background: #1a1a1a;
+          background: #030510;
           border-radius: 20px;
           width: 800px;
           max-width: 95vw;
-          border: 1px solid #333;
+          border: 1px solid rgba(255, 255, 255, 0.2);
           overflow: hidden;
           box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
         .live-header {
           padding: 20px;
-          border-bottom: 1px solid #333;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          background: linear-gradient(135deg, #212660 0%, #020000 100%);
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -175,13 +176,20 @@ export default function LiveStudySession() {
         .minimize-btn, .close-btn {
           background: none;
           border: none;
-          color: #888;
+          color: #999;
           font-size: 24px;
           cursor: pointer;
-          padding: 0 8px;
+          padding: 4px 8px;
           line-height: 1;
+          border-radius: 6px;
+          transition: all 0.2s;
         }
-        
+
+        .minimize-btn:hover, .close-btn:hover {
+          background: rgba(255, 255, 255, 0.1);
+          color: #fff;
+        }
+
         .minimize-btn {
           font-size: 20px;
           margin-top: -5px;
@@ -218,8 +226,8 @@ export default function LiveStudySession() {
         .start-btn {
           margin-top: 15px;
           padding: 10px 24px;
-          background: #3498db;
-          color: white;
+          background: #ffffff;
+          color: #000;
           border: none;
           border-radius: 8px;
           font-weight: 600;
@@ -228,8 +236,9 @@ export default function LiveStudySession() {
         }
 
         .start-btn:hover {
-          background: #2980b9;
+          background: #ffffff;
           transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
         }
 
         .controls-row {
@@ -240,11 +249,17 @@ export default function LiveStudySession() {
         .control-btn {
           flex: 1;
           padding: 10px;
-          background: #333;
-          color: white;
-          border: none;
+          background: transparent;
+          color: #ffffff;
+          border: 1px solid rgba(255, 255, 255, 0.2);
           border-radius: 8px;
           cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .control-btn:hover {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: #fff;
         }
 
         .stop-btn {
@@ -255,6 +270,12 @@ export default function LiveStudySession() {
           border: none;
           border-radius: 8px;
           cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .stop-btn:hover {
+          background: #c0392b;
+          transform: translateY(-1px);
         }
 
         .live-stats-section {
@@ -264,7 +285,9 @@ export default function LiveStudySession() {
         }
 
         .stat-card {
-          background: #252525;
+          background: rgba(10, 15, 30, 0.7);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.15);
           padding: 20px;
           border-radius: 12px;
           display: flex;
@@ -274,9 +297,11 @@ export default function LiveStudySession() {
         }
 
         .stat-label {
-          color: #888;
+          color: rgba(255, 255, 255, 0.7);
           font-size: 0.9rem;
           margin-bottom: 5px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
         }
 
         .stat-value {
@@ -299,7 +324,7 @@ export default function LiveStudySession() {
         .focus-inner {
           width: 70px;
           height: 70px;
-          background: #252525;
+          background: rgba(10, 15, 30, 0.9);
           border-radius: 50%;
           display: flex;
           align-items: center;
