@@ -163,6 +163,29 @@ export default function Profile() {
             <p className="profile-email">{profile?.email || user?.email}</p>
           </div>
 
+          {/* Statistics Section */}
+          <div className="profile-stats-section">
+            <h3>Study Statistics</h3>
+            <div className="stats-grid">
+              <div className="stat-box">
+                <div className="stat-value">{totalCourses}</div>
+                <div className="stat-label">Total Courses</div>
+              </div>
+              <div className="stat-box">
+                <div className="stat-value">{streak}</div>
+                <div className="stat-label">Day Streak</div>
+              </div>
+              <div className="stat-box">
+                <div className="stat-value">{Math.floor(todayStudyTime / 60)}h {todayStudyTime % 60}m</div>
+                <div className="stat-label">Today's Study</div>
+              </div>
+              <div className="stat-box">
+                <div className="stat-value">{Math.floor(totalStudyTime / 60)}h</div>
+                <div className="stat-label">Total Study Time</div>
+              </div>
+            </div>
+          </div>
+
           <div className="profile-info-section">
             <h3>Personal Information</h3>
 
