@@ -9,17 +9,18 @@
 .search-box input {
   width: 100%;
   padding: 12px 16px;
-  background: #222;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   font-size: 15px;
   color: #fff;
-  transition: border-color 0.2s;
+  transition: all 0.2s;
 }
 
 .search-box input:focus {
   outline: none;
-  border-color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .notes-grid {
@@ -32,7 +33,8 @@
 }
 
 .note-card {
-  background: #222;
+  background: rgba(10, 15, 30, 0.7);
+  backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 16px;
@@ -40,9 +42,10 @@
 }
 
 .note-card:hover {
-  border-color: #ffffff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   transform: translateY(-2px);
+  background: rgba(15, 20, 40, 0.85);
 }
 
 .note-card-header {
@@ -154,4 +157,107 @@
   color: #888;
   font-size: 14px;
   text-align: center;
+}
+
+.btn-create-note {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-create-note:hover {
+  background: #ffffff;
+  color: #000;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+}
+
+.empty-notes {
+  text-align: center;
+  padding: 60px 20px;
+  color: #888;
+}
+
+.empty-notes p {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+.empty-notes .hint {
+  font-size: 14px;
+  color: #666;
+  margin-top: 10px;
+}
+
+/* Note Editor View */
+.note-editor-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 500px;
+}
+
+.note-editor-header {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.note-editor-header h3 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  color: #ffffff;
+}
+
+.note-editor-textarea {
+  flex: 1;
+  min-height: 400px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 15px;
+  font-family: inherit;
+  line-height: 1.6;
+  color: #ffffff;
+  resize: vertical;
+  transition: all 0.2s;
+}
+
+.note-editor-textarea:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.note-editor-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.note-editor-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.note-editor-footer .last-saved {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.note-editor-actions {
+  display: flex;
+  gap: 12px;
 }
