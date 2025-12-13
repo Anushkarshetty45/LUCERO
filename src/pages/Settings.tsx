@@ -1,26 +1,123 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../services/supabase'
 import './Settings.css'
 
+interface UserSettings {
+  id?: string
+  user_id: string
+  notifications_enabled: boolean
+  email_updates: boolean
+  dark_mode: boolean
+  study_reminders: boolean
+  reminder_time: string
+  auto_save_notes: boolean
+  sound_effects: boolean
+  language: string
+  timezone: string
+  created_at?: string
+  updated_at?: string
+}
+
 export default function Settings() {
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, signOut } = useAuth()
   const [notificationsEnabled, setNotificationsEnabled] = useState(true)
   const [emailUpdates, setEmailUpdates] = useState(true)
   const [darkMode, setDarkMode] = useState(true)
+  const [studyReminders, setStudyReminders] = useState(false)
+  const [reminderTime, setReminderTime] = useState('09:00')
+  const [autoSaveNotes, setAutoSaveNotes] = useState(true)
+  const [soundEffects, setSoundEffects] = useState(true)
+  const [language, setLanguage] = useState('en')
+  const [timezone, setTimezone] = useState('UTC')
   const [saving, setSaving] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [changePassword, setChangePassword] = useState(false)
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
 
+  useEffect(() => {
+    if (user) {
+      loadSettings()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
+
+  const loadSettings = async () => {
+    try {
+      setLoading(true)
+      const { data, error } = await supabase
+        .from('user_settings')
+        .select('*')
+        .eq('user_id', user!.id)
+        .single()
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 is "not found" error
+        throw error
+      }
+
+      if (data) {
+        setNotificationsEnabled(data.notifications_enabled)
+        setEmailUpdates(data.email_updates)
+        setDarkMode(data.dark_mode)
+        setStudyReminders(data.study_reminders)
+        setReminderTime(data.reminder_time)
+        setAutoSaveNotes(data.auto_save_notes)
+        setSoundEffects(data.sound_effects)
+        setLanguage(data.language)
+        setTimezone(data.timezone)
+      }
+    } catch (error) {
+      console.error('Error loading settings:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleSaveSettings = async () => {
     try {
       setSaving(true)
-      // Settings would be saved to a user_settings table
-      // For now, just show success
-      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      const settings: UserSettings = {
+        user_id: user!.id,
+        notifications_enabled: notificationsEnabled,
+        email_updates: emailUpdates,
+        dark_mode: darkMode,
+        study_reminders: studyReminders,
+        reminder_time: reminderTime,
+        auto_save_notes: autoSaveNotes,
+        sound_effects: soundEffects,
+        language: language,
+        timezone: timezone,
+        updated_at: new Date().toISOString()
+      }
+
+      // Check if settings exist
+      const { data: existingSettings } = await supabase
+        .from('user_settings')
+        .select('id')
+        .eq('user_id', user!.id)
+        .single()
+
+      if (existingSettings) {
+        // Update existing settings
+        const { error } = await supabase
+          .from('user_settings')
+          .update(settings)
+          .eq('user_id', user!.id)
+
+        if (error) throw error
+      } else {
+        // Create new settings
+        const { error } = await supabase
+          .from('user_settings')
+          .insert({ ...settings, created_at: new Date().toISOString() })
+
+        if (error) throw error
+      }
+
       alert('Settings saved successfully!')
     } catch (error) {
       console.error('Error saving settings:', error)
@@ -59,6 +156,83 @@ export default function Settings() {
     } finally {
       setSaving(false)
     }
+  }
+
+  const handleExportData = async () => {
+    try {
+      // Fetch all user data
+      const [courses, notes, sessions] = await Promise.all([
+        supabase.from('courses').select('*').eq('user_id', user!.id),
+        supabase.from('user_notes').select('*').eq('user_id', user!.id),
+        supabase.from('study_sessions').select('*').eq('user_id', user!.id)
+      ])
+
+      const exportData = {
+        courses: courses.data,
+        notes: notes.data,
+        study_sessions: sessions.data,
+        exported_at: new Date().toISOString()
+      }
+
+      // Create and download JSON file
+      const dataStr = JSON.stringify(exportData, null, 2)
+      const dataBlob = new Blob([dataStr], { type: 'application/json' })
+      const url = URL.createObjectURL(dataBlob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `lucero-data-export-${new Date().toISOString().split('T')[0]}.json`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+
+      alert('Data exported successfully!')
+    } catch (error) {
+      console.error('Error exporting data:', error)
+      alert('Failed to export data')
+    }
+  }
+
+  const handleDeleteAccount = async () => {
+    const confirmation = window.prompt(
+      'Are you absolutely sure? This action cannot be undone.\n\nType "DELETE" to confirm:'
+    )
+
+    if (confirmation !== 'DELETE') {
+      alert('Account deletion cancelled')
+      return
+    }
+
+    try {
+      setSaving(true)
+
+      // Delete all user data
+      await Promise.all([
+        supabase.from('courses').delete().eq('user_id', user!.id),
+        supabase.from('user_notes').delete().eq('user_id', user!.id),
+        supabase.from('study_sessions').delete().eq('user_id', user!.id),
+        supabase.from('profiles').delete().eq('id', user!.id),
+        supabase.from('user_settings').delete().eq('user_id', user!.id)
+      ])
+
+      alert('Account deleted successfully. You will be signed out.')
+      await signOut()
+      navigate('/auth')
+    } catch (error) {
+      console.error('Error deleting account:', error)
+      alert('Failed to delete account. Please contact support.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="loading-screen">
+        <div className="spinner"></div>
+        <p>Loading settings...</p>
+      </div>
+    )
   }
 
   return (
