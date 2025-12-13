@@ -1,5 +1,5 @@
 .course-card {
-  background: #222;
+  background: #171931;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
@@ -18,7 +18,7 @@
 
 .course-card-header {
   padding: 24px;
-  color: white;
+  color: rgb(222, 217, 217);
   cursor: pointer;
   min-height: 120px;
   display: flex;
@@ -30,7 +30,7 @@
   font-size: 20px;
   margin: 0 0 12px 0;
   font-weight: 600;
-  color: #c8c7cf;
+  color: #1f1946;
 }
 
 .course-subject-badge {
@@ -50,7 +50,7 @@
 
 .course-description {
   font-size: 14px;
-  color: #ccc;
+  color: #d7d7d7;
   margin-bottom: 16px;
   line-height: 1.6;
   display: -webkit-box;
@@ -237,8 +237,8 @@
 }
 
 .btn-cancel {
-  background: #FBE4D8;
-  color: #522B5B;
+  background: #f3f2f2;
+  color: #110d27;
 }
 
 .btn-cancel:hover {
