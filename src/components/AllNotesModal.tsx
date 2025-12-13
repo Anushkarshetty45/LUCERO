@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../services/supabase'
 import { UserNote } from '../types'
+import CreateNoteModal from './CreateNoteModal'
 import './AllNotesModal.css'
 
 interface AllNotesModalProps {
@@ -13,6 +14,10 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
   const [notes, setNotes] = useState<(UserNote & { course_title?: string })[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [selectedNote, setSelectedNote] = useState<(UserNote & { course_title?: string }) | null>(null)
+  const [noteContent, setNoteContent] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
     loadAllNotes()
@@ -81,6 +86,49 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
     }
   }
 
+  const handleNoteCreated = () => {
+    loadAllNotes()
+  }
+
+  const handleOpenNote = (note: UserNote & { course_title?: string }) => {
+    setSelectedNote(note)
+    setNoteContent(note.content)
+  }
+
+  const handleSaveNote = async () => {
+    if (!selectedNote) return
+
+    try {
+      setIsSaving(true)
+      const { error } = await supabase
+        .from('user_notes')
+        .update({ content: noteContent, updated_at: new Date().toISOString() })
+        .eq('id', selectedNote.id)
+
+      if (error) throw error
+
+      // Update the note in the local state
+      setNotes(notes.map(n =>
+        n.id === selectedNote.id
+          ? { ...n, content: noteContent, updated_at: new Date().toISOString() }
+          : n
+      ))
+
+      setSelectedNote(null)
+      setNoteContent('')
+    } catch (error) {
+      console.error('Error saving note:', error)
+      alert('Failed to save note')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleBackToList = () => {
+    setSelectedNote(null)
+    setNoteContent('')
+  }
+
   const filteredNotes = notes.filter(note =>
     note.topic.toLowerCase().includes(searchQuery.toLowerCase()) ||
     note.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -88,71 +136,119 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
   )
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content all-notes-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>📝 All My Notes</h2>
-          <button className="close-btn" onClick={onClose}>×</button>
-        </div>
-
-        <div className="modal-body">
-          <div className="search-box">
-            <input
-              type="text"
-              placeholder="Search notes..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+    <>
+      <div className="modal-overlay" onClick={onClose}>
+        <div className="modal-content all-notes-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-header">
+            <h2>📝 All My Notes</h2>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <button className="btn-create-note" onClick={() => setShowCreateModal(true)}>
+                <span>+</span> New Note
+              </button>
+              <button className="close-btn" onClick={onClose}>×</button>
+            </div>
           </div>
 
-          {loading ? (
-            <div className="loading-state">
-              <div className="spinner-small"></div>
-              <p>Loading notes...</p>
-            </div>
-          ) : filteredNotes.length === 0 ? (
-            <div className="empty-notes">
-              <p>📚 No notes found</p>
-              {searchQuery && <p className="hint">Try a different search term</p>}
-              {!searchQuery && <p className="hint">Create notes from your courses</p>}
+        <div className="modal-body">
+          {selectedNote ? (
+            /* Note Editor View */
+            <div className="note-editor-view">
+              <div className="note-editor-header">
+                <div>
+                  <h3>{selectedNote.topic}</h3>
+                  <span className="course-badge">{selectedNote.course_title}</span>
+                </div>
+              </div>
+              <textarea
+                className="note-editor-textarea"
+                value={noteContent}
+                onChange={(e) => setNoteContent(e.target.value)}
+                placeholder="Write your notes here..."
+              />
+              <div className="note-editor-footer">
+                <span className="last-saved">
+                  Last saved: {new Date(selectedNote.updated_at).toLocaleString()}
+                </span>
+                <div className="note-editor-actions">
+                  <button
+                    className="btn-secondary"
+                    onClick={handleBackToList}
+                    disabled={isSaving}
+                  >
+                    ← Back
+                  </button>
+                  <button
+                    className="btn-primary"
+                    onClick={handleSaveNote}
+                    disabled={isSaving}
+                  >
+                    {isSaving ? 'Saving...' : '💾 Save Changes'}
+                  </button>
+                </div>
+              </div>
             </div>
           ) : (
-            <div className="notes-grid">
-              {filteredNotes.map((note) => (
-                <div key={note.id} className="note-card">
-                  <div className="note-card-header">
-                    <h3>{note.topic}</h3>
-                    <span className="course-badge">{note.course_title}</span>
-                  </div>
-                  <div className="note-card-preview">
-                    {note.content.slice(0, 150)}...
-                  </div>
-                  <div className="note-card-footer">
-                    <span className="note-date">
-                      {new Date(note.updated_at).toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric',
-                        year: 'numeric'
-                      })}
-                    </span>
-                    <div className="note-actions">
-                      <button
-                        className="btn-view"
-                        onClick={() => onOpenNote(note.course_id, note.id)}
-                      >
-                        Open
-                      </button>
-                      <button
-                        className="btn-delete-note"
-                        onClick={() => handleDelete(note.id)}
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  </div>
+            /* Notes List View */
+            <>
+              <div className="search-box">
+                <input
+                  type="text"
+                  placeholder="Search notes..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+
+              {loading ? (
+                <div className="loading-state">
+                  <div className="spinner-small"></div>
+                  <p>Loading notes...</p>
                 </div>
-              ))}
-            </div>
+              ) : filteredNotes.length === 0 ? (
+                <div className="empty-notes">
+                  <p>📚 No notes found</p>
+                  {searchQuery && <p className="hint">Try a different search term</p>}
+                  {!searchQuery && <p className="hint">Create notes from your courses</p>}
+                </div>
+              ) : (
+                <div className="notes-grid">
+                  {filteredNotes.map((note) => (
+                    <div key={note.id} className="note-card">
+                      <div className="note-card-header">
+                        <h3>{note.topic}</h3>
+                        <span className="course-badge">{note.course_title}</span>
+                      </div>
+                      <div className="note-card-preview">
+                        {note.content.slice(0, 150)}...
+                      </div>
+                      <div className="note-card-footer">
+                        <span className="note-date">
+                          {new Date(note.updated_at).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </span>
+                        <div className="note-actions">
+                          <button
+                            className="btn-view"
+                            onClick={() => handleOpenNote(note)}
+                          >
+                            Open
+                          </button>
+                          <button
+                            className="btn-delete-note"
+                            onClick={() => handleDelete(note.id)}
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -163,6 +259,15 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
         </div>
       </div>
     </div>
+
+    {showCreateModal && (
+      <CreateNoteModal
+        userId={userId}
+        onClose={() => setShowCreateModal(false)}
+        onNoteCreated={handleNoteCreated}
+      />
+    )}
+    </>
   )
 }
 
