@@ -71,7 +71,7 @@ export default function StudyTimerModal({ onClose, onMinimize, timer }: StudyTim
         <div className="modal-body">
           {!timer.isRunning ? (
             <>
-              <h3 style={{ textAlign: 'center', marginBottom: '30px', color: '#2B124C' }}>
+              <h3 style={{ textAlign: 'center', marginBottom: '30px', color: 'white' }}>
                 Set Your Study Time
               </h3>
 
