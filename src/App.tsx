@@ -10,6 +10,8 @@ import Terms from './pages/Terms'
 import Privacy from './pages/Privacy'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
+import Profile from './pages/Profile'
+import Settings from './pages/Settings'
 import FloatingLiveStudy from './components/LiveStudy/FloatingLiveStudy'
 import LiveStudySession from './components/LiveStudy/LiveStudySession'
 import FloatingTimer from './components/FloatingTimer'
@@ -38,6 +40,14 @@ function App() {
             <Route
               path="/course/:courseId"
               element={user ? <Course /> : <Navigate to="/auth" />}
+            />
+            <Route
+              path="/profile"
+              element={user ? <Profile /> : <Navigate to="/auth" />}
+            />
+            <Route
+              path="/settings"
+              element={user ? <Settings /> : <Navigate to="/auth" />}
             />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
