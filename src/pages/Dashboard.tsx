@@ -25,9 +25,10 @@ export default function Dashboard() {
   const [showAllNotes, setShowAllNotes] = useState(false)
   const [showChatbot, setShowChatbot] = useState(false)
   const [streak, setStreak] = useState(0)
+  const [showProfileMenu, setShowProfileMenu] = useState(false)
 
   // Use timer context for app-level timer state
-  const { timer, isMinimized, setIsMinimized, showTimerModal, setShowTimerModal } = useTimerContext()
+  const { timer, setIsMinimized, showTimerModal, setShowTimerModal } = useTimerContext()
   const { setShowLiveStudy } = useLiveStudy()
 
   useEffect(() => {
@@ -36,6 +37,21 @@ export default function Dashboard() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement
+      if (showProfileMenu && !target.closest('.user-menu')) {
+        setShowProfileMenu(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showProfileMenu])
 
   const loadDashboardData = async () => {
     try {
@@ -207,17 +223,19 @@ export default function Dashboard() {
               <span className="notification-badge">3</span>
             </button>
             <div className="user-menu">
-              <button className="user-button">
+              <button className="user-button" onClick={() => setShowProfileMenu(!showProfileMenu)}>
                 <div className="user-avatar">
                   {firstName.charAt(0).toUpperCase()}
                 </div>
                 <span>{firstName}</span>
               </button>
-              <div className="user-dropdown">
-                <Link to="/profile">Profile</Link>
-                <Link to="/settings">Settings</Link>
-                <button onClick={handleSignOut}>Sign Out</button>
-              </div>
+              {showProfileMenu && (
+                <div className="user-dropdown">
+                  <Link to="/profile" onClick={() => setShowProfileMenu(false)}>Profile</Link>
+                  <Link to="/settings" onClick={() => setShowProfileMenu(false)}>Settings</Link>
+                  <button onClick={handleSignOut}>Sign Out</button>
+                </div>
+              )}
             </div>
           </div>
         </nav>
@@ -231,14 +249,14 @@ export default function Dashboard() {
               <p>{quote}</p>
             </div>
             <div className="streak-badge">
-              🔥 {streak} day streak
+               {streak} day streak
             </div>
           </div>
 
           {/* Quick Stats */}
           <div className="quick-stats">
             <div className="stat-card">
-              <div className="stat-icon">📚</div>
+              <div className="stat-icon"></div>
               <div className="stat-content">
                 <h3>{totalCourses}</h3>
                 <p>Total Courses</p>
@@ -246,7 +264,7 @@ export default function Dashboard() {
             </div>
 
             <div className="stat-card">
-              <div className="stat-icon">🔥</div>
+              <div className="stat-icon"></div>
               <div className="stat-content">
                 <h3>{streak}</h3>
                 <p>Day Streak</p>
@@ -254,7 +272,7 @@ export default function Dashboard() {
             </div>
 
             <div className="stat-card">
-              <div className="stat-icon">⏱️</div>
+              <div className="stat-icon"></div>
               <div className="stat-content">
                 <h3>{formatTime(todayStudyTime)}</h3>
                 <p>Today's Study Time</p>
@@ -273,7 +291,7 @@ export default function Dashboard() {
                 </div>
                 <div className="continue-card-body">
                   <div className="progress-info">
-                    <span>📚 {continueLearningCourse.total_lessons} Topics</span>
+                    <span> {continueLearningCourse.total_lessons} Topics</span>
                     <span>🕒 Last studied: {new Date(continueLearningCourse.last_accessed!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                   </div>
                   <button
@@ -363,7 +381,7 @@ export default function Dashboard() {
         <AllNotesModal
           userId={user.id}
           onClose={() => setShowAllNotes(false)}
-          onOpenNote={(courseId, noteId) => {
+          onOpenNote={(courseId) => {
             setShowAllNotes(false)
             navigate(`/course/${courseId}`)
           }}
