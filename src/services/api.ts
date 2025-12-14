@@ -480,3 +480,275 @@ export const deleteUserNote = async (noteId: string) => {
 
   if (error) throw error
 }
+
+// ==================== FOCUS TRACKING ====================
+export const createFocusEvent = async (
+  sessionId: string,
+  userId: string,
+  eventType: 'face_detected' | 'face_lost' | 'looking_away' | 'resumed_focus',
+  confidence?: number,
+  metadata?: any
+) => {
+  const { data, error } = await supabase
+    .from('focus_events')
+    .insert([{
+      session_id: sessionId,
+      user_id: userId,
+      event_type: eventType,
+      confidence,
+      metadata,
+      timestamp: new Date().toISOString()
+    }])
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export const getFocusEvents = async (sessionId: string) => {
+  const { data, error } = await supabase
+    .from('focus_events')
+    .select('*')
+    .eq('session_id', sessionId)
+    .order('timestamp', { ascending: true })
+
+  if (error) throw error
+  return data || []
+}
+
+// ==================== SESSION ANALYTICS ====================
+export const createSessionAnalytics = async (
+  sessionId: string,
+  userId: string,
+  analytics: {
+    focusScore: number
+    totalFocusedTime: number
+    totalDistractedTime: number
+    distractionCount: number
+    longestFocusStreak: number
+    averageFocusStreak: number
+    focusTimeline: any[]
+    insights?: any
+  }
+) => {
+  const { data, error } = await supabase
+    .from('session_analytics')
+    .insert([{
+      session_id: sessionId,
+      user_id: userId,
+      focus_score: analytics.focusScore,
+      total_focused_time: analytics.totalFocusedTime,
+      total_distracted_time: analytics.totalDistractedTime,
+      distraction_count: analytics.distractionCount,
+      longest_focus_streak: analytics.longestFocusStreak,
+      average_focus_streak: analytics.averageFocusStreak,
+      focus_timeline: analytics.focusTimeline,
+      insights: analytics.insights || null
+    }])
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export const getSessionAnalytics = async (sessionId: string) => {
+  const { data, error } = await supabase
+    .from('session_analytics')
+    .select('*')
+    .eq('session_id', sessionId)
+    .single()
+
+  if (error && error.code !== 'PGRST116') throw error
+  return data
+}
+
+export const getUserSessionAnalytics = async (userId: string, limit = 10) => {
+  const { data, error } = await supabase
+    .from('session_analytics')
+    .select('*, study_sessions(*)')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+  if (error) throw error
+  return data || []
+}
+
+// ==================== ACHIEVEMENTS ====================
+export const getAllAchievements = async () => {
+  const { data, error } = await supabase
+    .from('achievements')
+    .select('*')
+    .order('points', { ascending: false })
+
+  if (error) throw error
+  return data || []
+}
+
+export const getUserAchievements = async (userId: string) => {
+  const { data, error } = await supabase
+    .from('user_achievements')
+    .select('*, achievements(*)')
+    .eq('user_id', userId)
+    .order('unlocked_at', { ascending: false })
+
+  if (error) throw error
+  return data || []
+}
+
+export const unlockAchievement = async (
+  userId: string,
+  achievementId: string,
+  metadata?: any
+) => {
+  const { data, error} = await supabase
+    .from('user_achievements')
+    .insert([{
+      user_id: userId,
+      achievement_id: achievementId,
+      metadata
+    }])
+    .select('*, achievements(*)')
+    .single()
+
+  if (error) {
+    // Ignore duplicate key errors (already unlocked)
+    if (error.code === '23505') return null
+    throw error
+  }
+  return data
+}
+
+export const checkAndUnlockAchievements = async (
+  userId: string,
+  sessionData: {
+    focusScore: number
+    focusStreak: number
+    duration: number
+    distractionCount: number
+    studyStreak?: number
+    startHour?: number
+  }
+) => {
+  const unlockedAchievements = []
+
+  // Get all achievements
+  const achievements = await getAllAchievements()
+
+  // Check each achievement
+  for (const achievement of achievements) {
+    const criteria = achievement.criteria as any
+
+    let meetsСriteria = false
+
+    // Check different criteria types
+    if (criteria.focusStreak && sessionData.focusStreak >= criteria.focusStreak) {
+      meetsСriteria = true
+    }
+    if (criteria.focusScore && sessionData.focusScore >= criteria.focusScore) {
+      meetsСriteria = true
+    }
+    if (criteria.studyStreak && sessionData.studyStreak && sessionData.studyStreak >= criteria.studyStreak) {
+      meetsСriteria = true
+    }
+    if (criteria.hourBefore && sessionData.startHour && sessionData.startHour < criteria.hourBefore) {
+      meetsСriteria = true
+    }
+    if (criteria.hourAfter && sessionData.startHour && sessionData.startHour >= criteria.hourAfter) {
+      meetsСriteria = true
+    }
+    if (criteria.distractionCount !== undefined && sessionData.distractionCount <= criteria.distractionCount) {
+      if (criteria.minDuration && sessionData.duration >= criteria.minDuration) {
+        meetsСriteria = true
+      } else if (!criteria.minDuration) {
+        meetsСriteria = true
+      }
+    }
+
+    if (meetsСriteria) {
+      const unlocked = await unlockAchievement(userId, achievement.id, { sessionData })
+      if (unlocked) {
+        unlockedAchievements.push(unlocked)
+      }
+    }
+  }
+
+  return unlockedAchievements
+}
+
+// ==================== DAILY STATISTICS ====================
+export const getDailyStats = async (userId: string, date: string) => {
+  const { data, error } = await supabase
+    .from('daily_stats')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('date', date)
+    .single()
+
+  if (error && error.code !== 'PGRST116') throw error
+  return data
+}
+
+export const getWeeklyStats = async (userId: string) => {
+  const today = new Date()
+  const weekAgo = new Date(today)
+  weekAgo.setDate(weekAgo.getDate() - 7)
+
+  const { data, error } = await supabase
+    .from('daily_stats')
+    .select('*')
+    .eq('user_id', userId)
+    .gte('date', weekAgo.toISOString().split('T')[0])
+    .lte('date', today.toISOString().split('T')[0])
+    .order('date', { ascending: true })
+
+  if (error) throw error
+  return data || []
+}
+
+export const getMonthlyStats = async (userId: string) => {
+  const today = new Date()
+  const monthAgo = new Date(today)
+  monthAgo.setMonth(monthAgo.getMonth() - 1)
+
+  const { data, error } = await supabase
+    .from('daily_stats')
+    .select('*')
+    .eq('user_id', userId)
+    .gte('date', monthAgo.toISOString().split('T')[0])
+    .lte('date', today.toISOString().split('T')[0])
+    .order('date', { ascending: true })
+
+  if (error) throw error
+  return data || []
+}
+
+export const updateDailyStats = async (
+  userId: string,
+  date: string,
+  stats: {
+    totalStudyTime?: number
+    totalFocusTime?: number
+    averageFocusScore?: number
+    bestFocusStreak?: number
+    sessionsCount?: number
+    distractionsCount?: number
+    achievementsEarned?: number
+  }
+) => {
+  const { data, error } = await supabase
+    .from('daily_stats')
+    .upsert({
+      user_id: userId,
+      date,
+      ...stats,
+      updated_at: new Date().toISOString()
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
