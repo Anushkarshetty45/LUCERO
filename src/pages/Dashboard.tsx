@@ -12,6 +12,7 @@ import StudyTimerModal from '../components/StudyTimerModal'
 import ChatbotModal from '../components/ChatbotModal'
 import { useTimerContext } from '../contexts/TimerContext'
 import { useLiveStudy } from '../contexts/LiveStudyContext'
+import { IoBookSharp, IoFlame, IoTimer } from 'react-icons/io5'
 import './Dashboard.css'
 
 export default function Dashboard() {
@@ -251,7 +252,7 @@ export default function Dashboard() {
           {/* Quick Stats */}
           <div className="quick-stats">
             <div className="stat-card">
-              <div className="stat-icon">📚</div>
+              <div className="stat-icon"><IoBookSharp /></div>
               <div className="stat-content">
                 <h3>{totalCourses}</h3>
                 <p>Total Courses</p>
@@ -259,7 +260,7 @@ export default function Dashboard() {
             </div>
 
             <div className="stat-card">
-              <div className="stat-icon">🔥</div>
+              <div className="stat-icon"><IoFlame /></div>
               <div className="stat-content">
                 <h3>{streak}</h3>
                 <p>Day Streak</p>
@@ -267,7 +268,7 @@ export default function Dashboard() {
             </div>
 
             <div className="stat-card">
-              <div className="stat-icon">⏱️</div>
+              <div className="stat-icon"><IoTimer /></div>
               <div className="stat-content">
                 <h3>{formatTime(todayStudyTime)}</h3>
                 <p>Today's Study Time</p>
