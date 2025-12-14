@@ -251,7 +251,7 @@ export default function Dashboard() {
           {/* Quick Stats */}
           <div className="quick-stats">
             <div className="stat-card">
-              <div className="stat-icon"></div>
+              <div className="stat-icon">📚</div>
               <div className="stat-content">
                 <h3>{totalCourses}</h3>
                 <p>Total Courses</p>
@@ -259,7 +259,7 @@ export default function Dashboard() {
             </div>
 
             <div className="stat-card">
-              <div className="stat-icon"></div>
+              <div className="stat-icon">🔥</div>
               <div className="stat-content">
                 <h3>{streak}</h3>
                 <p>Day Streak</p>
@@ -267,7 +267,7 @@ export default function Dashboard() {
             </div>
 
             <div className="stat-card">
-              <div className="stat-icon"></div>
+              <div className="stat-icon">⏱️</div>
               <div className="stat-content">
                 <h3>{formatTime(todayStudyTime)}</h3>
                 <p>Today's Study Time</p>
