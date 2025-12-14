@@ -55,16 +55,10 @@ export default function Dashboard() {
 
   const loadDashboardData = async () => {
     try {
-      setLoading(true)
-
-      // Load profile (or create a default one if missing)
-      try {
-        const profileData = await getProfile(user!.id)
-        setProfile(profileData)
-      } catch (error: any) {
-        console.log('Profile not found, using default')
-        // Use user email data as fallback
-        setProfile({
+      // Parallelize all independent API calls for faster loading
+      const [profileResult, coursesData, studyTime, streakDays] = await Promise.all([
+        // Load profile with fallback
+        getProfile(user!.id).catch(() => ({
           id: user!.id,
           email: user!.email || '',
           first_name: user!.user_metadata?.first_name || 'there',
@@ -73,29 +67,30 @@ export default function Dashboard() {
           avatar_url: user!.user_metadata?.avatar_url || '',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
-        })
-      }
+        })),
+        // Load courses
+        getCourses(user!.id),
+        // Load today's study time
+        getTodayStudyTime(user!.id),
+        // Calculate streak
+        calculateUserStreak(user!.id)
+      ])
 
-      // Load courses
-      const coursesData = await getCourses(user!.id)
+      setProfile(profileResult)
+      setTodayStudyTime(studyTime)
+      setStreak(streakDays)
 
-      // Load progress for each course
+      // Hide loading screen early to show UI faster
+      setLoading(false)
+
+      // Load progress for each course in background (progressive loading)
       const coursesWithProgress = await Promise.all(
         coursesData.map(course => getCourseWithProgress(course.id, user!.id))
       )
       setCourses(coursesWithProgress)
 
-      // Load today's study time
-      const studyTime = await getTodayStudyTime(user!.id)
-      setTodayStudyTime(studyTime)
-
-      // Calculate streak
-      const streakDays = await calculateUserStreak(user!.id)
-      setStreak(streakDays)
-
     } catch (error) {
       console.error('Error loading dashboard:', error)
-    } finally {
       setLoading(false)
     }
   }
