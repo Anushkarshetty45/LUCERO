@@ -80,58 +80,55 @@ export const deleteCourse = async (courseId: string) => {
   if (error) throw error
 }
 
-// Get course with progress
+// Get course with progress (optimized to reduce queries)
 export const getCourseWithProgress = async (courseId: string, userId: string) => {
-  // Get course
-  const course = await getCourse(courseId)
-
   try {
-    // Get lessons count
-    const { data: lessons, error: lessonsError } = await supabase
-      .from('lessons')
-      .select('id')
-      .eq('course_id', courseId)
+    // Parallelize course data and lessons info
+    const [course, lessonsResult] = await Promise.all([
+      // Get course
+      getCourse(courseId),
+      // Get lessons with count
+      supabase
+        .from('lessons')
+        .select('id')
+        .eq('course_id', courseId)
+    ])
 
-    if (lessonsError) {
-      console.error('Error fetching lessons for progress:', lessonsError)
-      return { ...course, total_lessons: 0, last_accessed: null }
-    }
+    const lessonIds = lessonsResult.data?.map(l => l.id) || []
 
-    const lessonIds = lessons?.map(l => l.id) || []
+    // Get last accessed date if there are lessons
     let lastAccessed = null
+    if (lessonIds.length > 0) {
+      const { data: progressData } = await supabase
+        .from('lesson_progress')
+        .select('last_accessed')
+        .eq('user_id', userId)
+        .in('lesson_id', lessonIds)
+        .order('last_accessed', { ascending: false })
+        .limit(1)
+        .maybeSingle()
 
-    if (lessonIds.length > 0 && userId) {
-      try {
-        // Get last accessed date
-        const { data: progress, error: progressError } = await supabase
-          .from('lesson_progress')
-          .select('last_accessed')
-          .eq('user_id', userId)
-          .in('lesson_id', lessonIds)
-          .order('last_accessed', { ascending: false })
-          .limit(1)
-
-        if (!progressError && progress && progress.length > 0) {
-          lastAccessed = progress[0].last_accessed
-        }
-      } catch (err) {
-        console.error('Error fetching progress details:', err)
-        // Continue without progress data
-      }
+      lastAccessed = progressData?.last_accessed || null
     }
 
     return {
       ...course,
-      total_lessons: lessons?.length || 0,
+      total_lessons: lessonIds.length,
       last_accessed: lastAccessed
     }
   } catch (error) {
     console.error('Error in getCourseWithProgress:', error)
-    // Fallback to just returning the course
-    return {
-      ...course,
-      total_lessons: 0,
-      last_accessed: null
+    // Fallback: get just the course without progress
+    try {
+      const course = await getCourse(courseId)
+      return {
+        ...course,
+        total_lessons: 0,
+        last_accessed: null
+      }
+    } catch (fallbackError) {
+      console.error('Fallback failed:', fallbackError)
+      throw fallbackError
     }
   }
 }
