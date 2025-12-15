@@ -1,5 +1,7 @@
 import { useLiveStudy } from '../../contexts/LiveStudyContext'
 import VideoPreview from './VideoPreview'
+import FocusMetricsOverlay from '../FocusMetricsOverlay'
+import SessionReportModal from '../SessionReportModal'
 
 export default function LiveStudySession() {
     const {
@@ -16,7 +18,12 @@ export default function LiveStudySession() {
         stream,
         faceResult,
         modelsLoaded,
-        warningMessage
+        warningMessage,
+        focusMetrics,
+        showSessionReport,
+        setShowSessionReport,
+        sessionAnalytics,
+        unlockedAchievements
     } = useLiveStudy()
 
     if (!showLiveStudy) return null
@@ -87,27 +94,15 @@ export default function LiveStudySession() {
                         )}
                     </div>
 
-                    {/* Right: Stats */}
+                    {/* Right: Session Info */}
                     <div className="live-stats-section">
                         <div className="stat-card timer-card">
                             <span className="stat-label">Session Time</span>
-                            <span className="stat-value">{formatTime(sessionTime)}</span>
+                            <span className="stat-value">{isActive ? formatTime(sessionTime) : '00:00'}</span>
                         </div>
 
-                        <div className="stat-card focus-card">
-                            <span className="stat-label">Focus Score</span>
-                            <div className="focus-ring" style={{
-                                background: `conic-gradient(#4cd137 ${focusScore}%, #333 ${focusScore}%)`
-                            }}>
-                                <div className="focus-inner">
-                                    {focusScore}%
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="stat-card distractions-card">
-                            <span className="stat-label">Distractions</span>
-                            <span className="stat-value">{distractions.length}</span>
+                        <div style={{ fontSize: '14px', color: '#94a3b8', marginTop: '10px', textAlign: 'center' }}>
+                            {isActive ? 'Focus metrics displayed on the right →' : 'Start session to track your focus'}
                         </div>
                     </div>
                 </div>
@@ -119,6 +114,22 @@ export default function LiveStudySession() {
                     </div>
                 )}
             </div>
+
+            {/* Focus Metrics Overlay - Shows on top right */}
+            {isActive && <FocusMetricsOverlay metrics={focusMetrics} />}
+
+            {/* Session Report Modal */}
+            {showSessionReport && sessionAnalytics && (
+                <SessionReportModal
+                    analytics={sessionAnalytics}
+                    achievements={unlockedAchievements}
+                    sessionDuration={sessionTime}
+                    onClose={() => {
+                        setShowSessionReport(false)
+                        setShowLiveStudy(false)
+                    }}
+                />
+            )}
 
             <style>{`
         .live-study-overlay {
