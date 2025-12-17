@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { detectFace, isLookingDown, loadFaceDetectionModels } from '../utils/faceDetectionSetup'
+import { detectFace, isLookingDown, isTalking, isHoldingPhone, loadFaceDetectionModels } from '../utils/faceDetectionSetup'
 import { FaceDetectionResult } from '../types/liveStudy'
 
 export function useFaceDetection(isActive: boolean) {
@@ -7,6 +7,8 @@ export function useFaceDetection(isActive: boolean) {
     const [faceResult, setFaceResult] = useState<FaceDetectionResult>({
         faceDetected: false,
         lookingDown: false,
+        isTalking: false,
+        holdingPhone: false,
         confidence: 0
     })
     const [modelsLoaded, setModelsLoaded] = useState(false)
@@ -54,6 +56,8 @@ export function useFaceDetection(isActive: boolean) {
             setFaceResult({
                 faceDetected: true, // Fallback to true so user can use other features
                 lookingDown: false,
+                isTalking: false,
+                holdingPhone: false,
                 confidence: 1
             })
             return
@@ -67,15 +71,27 @@ export function useFaceDetection(isActive: boolean) {
                     ? isLookingDown(detection.landmarks)
                     : false
 
+                const talkingResult = detection.landmarks
+                    ? isTalking(detection.landmarks)
+                    : false
+
+                const phoneResult = detection.landmarks
+                    ? isHoldingPhone(detection.landmarks)
+                    : false
+
                 setFaceResult({
                     faceDetected: true,
                     lookingDown: lookingDownResult,
+                    isTalking: talkingResult,
+                    holdingPhone: phoneResult,
                     confidence: detection.detection.score
                 })
             } else {
                 setFaceResult({
                     faceDetected: false,
                     lookingDown: false,
+                    isTalking: false,
+                    holdingPhone: false,
                     confidence: 0
                 })
             }
@@ -85,6 +101,8 @@ export function useFaceDetection(isActive: boolean) {
             setFaceResult({
                 faceDetected: true,
                 lookingDown: false,
+                isTalking: false,
+                holdingPhone: false,
                 confidence: 0
             })
         }
