@@ -245,7 +245,7 @@ export function LiveStudyProvider({ children }: { children: ReactNode }) {
 
                 // If models missing, assume face detected (fallback)
                 const isFaceFocused = hasModels
-                    ? (faceData.faceDetected && !faceData.lookingDown)
+                    ? (faceData.faceDetected && !faceData.lookingDown && !faceData.isTalking && !faceData.holdingPhone)
                     : true
 
                 const isCurrentlyFocused = isFaceFocused && tabVisible
@@ -276,7 +276,7 @@ export function LiveStudyProvider({ children }: { children: ReactNode }) {
             const hasModels = modelsLoadedRef.current
 
             const isFaceFocused = hasModels
-                ? (faceData.faceDetected && !faceData.lookingDown)
+                ? (faceData.faceDetected && !faceData.lookingDown && !faceData.isTalking && !faceData.holdingPhone)
                 : true
 
             const isCurrentlyFocused = isFaceFocused && tabVisible
@@ -400,6 +400,60 @@ export function LiveStudyProvider({ children }: { children: ReactNode }) {
 
         return () => clearTimeout(timeout)
     }, [faceResult.faceDetected, isActive, stream, distractions.length, modelsLoaded])
+
+    // Distraction Handling: Talking
+    useEffect(() => {
+        if (!isActive || !stream || !modelsLoaded) return
+
+        let timeout: NodeJS.Timeout
+
+        if (faceResult.isTalking) {
+            timeout = setTimeout(() => {
+                const level = getWarningLevel(distractions.length)
+                playWarningSound(level)
+                setWarningMessage('🗣️ Please focus - detected talking')
+
+                const newDistraction: Distraction = {
+                    id: Date.now().toString(),
+                    type: 'talking',
+                    timestamp: new Date(),
+                    duration: 0,
+                    severity: 'low',
+                    resolved: false
+                }
+                setDistractions(prev => [...prev, newDistraction])
+            }, 5000) // 5 seconds delay to avoid false positives (yawning, etc.)
+        }
+
+        return () => clearTimeout(timeout)
+    }, [faceResult.isTalking, isActive, stream, distractions.length, modelsLoaded])
+
+    // Distraction Handling: Phone Holding
+    useEffect(() => {
+        if (!isActive || !stream || !modelsLoaded) return
+
+        let timeout: NodeJS.Timeout
+
+        if (faceResult.holdingPhone) {
+            timeout = setTimeout(() => {
+                const level = getWarningLevel(distractions.length)
+                playWarningSound(level)
+                setWarningMessage('📱 Please focus - detected phone usage')
+
+                const newDistraction: Distraction = {
+                    id: Date.now().toString(),
+                    type: 'phone_holding',
+                    timestamp: new Date(),
+                    duration: 0,
+                    severity: 'high',
+                    resolved: false
+                }
+                setDistractions(prev => [...prev, newDistraction])
+            }, 3000)
+        }
+
+        return () => clearTimeout(timeout)
+    }, [faceResult.holdingPhone, isActive, stream, distractions.length, modelsLoaded])
 
     const focusScore = sessionTime > 0
         ? Math.round((focusTime / sessionTime) * 100)
