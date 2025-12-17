@@ -73,3 +73,54 @@ export function isLookingDown(landmarks: faceapi.FaceLandmarks68): boolean {
 export function getFaceConfidence(detection: faceapi.FaceDetection): number {
     return detection.score
 }
+
+/**
+ * Detects if the user is talking by measuring mouth opening
+ * Uses facial landmarks to calculate distance between upper and lower lip
+ */
+export function isTalking(landmarks: faceapi.FaceLandmarks68): boolean {
+    // Access landmark points as an array
+    // FaceLandmarks68 has 68 points indexed 0-67
+    const points = landmarks as any
+
+    // Mouth landmarks: 48-67 (20 points)
+    // Point 62: Top of upper lip (inner)
+    // Point 66: Bottom of lower lip (inner)
+    const upperLipCenter = points._positions ? points._positions[62] : points[62]
+    const lowerLipCenter = points._positions ? points._positions[66] : points[66]
+
+    if (!upperLipCenter || !lowerLipCenter) return false
+
+    // Calculate vertical distance between lips
+    const mouthOpening = Math.abs(lowerLipCenter.y - upperLipCenter.y)
+
+    // Threshold: if mouth opening > 8 pixels, consider talking
+    // This may need adjustment based on camera distance and resolution
+    return mouthOpening > 8
+}
+
+/**
+ * Detects if the user might be holding a phone to their ear
+ * Uses head tilt angle - people typically tilt head 15-30 degrees when holding phone
+ */
+export function isHoldingPhone(landmarks: faceapi.FaceLandmarks68): boolean {
+    const jawline = landmarks.getJawOutline()
+    if (jawline.length < 17) return false
+
+    // Get left and right jaw points
+    const leftJaw = jawline[0]   // Left side of jawline
+    const rightJaw = jawline[16]  // Right side of jawline
+
+    // Calculate horizontal distance between jaw points
+    const jawWidth = Math.abs(rightJaw.x - leftJaw.x)
+
+    // Calculate vertical difference (head tilt)
+    const verticalDiff = Math.abs(rightJaw.y - leftJaw.y)
+
+    // Calculate tilt ratio: higher ratio = more tilted head
+    const tiltRatio = verticalDiff / jawWidth
+
+    // Threshold: if tilt ratio > 0.15 (roughly 15-20 degrees), consider holding phone
+    // Normal upright head has tilt ratio < 0.1
+    return tiltRatio > 0.15
+}
