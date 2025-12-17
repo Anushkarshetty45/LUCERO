@@ -13,7 +13,7 @@ export interface StudySession {
 
 export interface Distraction {
     id: string
-    type: 'tab_switch' | 'face_away' | 'looking_down'
+    type: 'tab_switch' | 'face_away' | 'looking_down' | 'talking' | 'phone_holding'
     timestamp: Date
     duration: number // seconds
     severity: 'low' | 'medium' | 'high'
@@ -30,6 +30,8 @@ export interface SessionSettings {
 export interface FaceDetectionResult {
     faceDetected: boolean
     lookingDown: boolean
+    isTalking: boolean
+    holdingPhone: boolean
     confidence: number
 }
 
@@ -42,6 +44,8 @@ export interface SessionStats {
         tabSwitches: number
         faceAway: number
         lookingDown: number
+        talking: number
+        phoneHolding: number
     }
     quality: 'excellent' | 'good' | 'fair' | 'needs_improvement'
 }
