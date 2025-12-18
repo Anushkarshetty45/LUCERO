@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import './Home.css'
+import ParticleBurst from '../components/ParticleBurst'
 import {
   HiOutlineDocumentText,
   HiOutlineQuestionMarkCircle,
@@ -91,6 +92,7 @@ export default function Home() {
       <main className="home-content">
         {/* Hero Section */}
         <section className="hero-section">
+          <ParticleBurst />
           <div className="hero-content animate-on-scroll">
             <h1 className="hero-title">
               Get better grades in <br />
