@@ -178,6 +178,22 @@
   z-index: 1;
 }
 
+.hero-3d {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-3d canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 @keyframes gradientShift {
   0% {
     background-position: 0% 50%;
