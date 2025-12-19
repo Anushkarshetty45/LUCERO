@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
+import { Canvas, useFrame } from '@react-three/fiber'
+import { Points, PointMaterial, Sphere, MeshDistortMaterial } from '@react-three/drei'
+import * as THREE from 'three'
 import './Home.css'
-import ParticleBurst from '../components/ParticleBurst'
 import {
   HiOutlineDocumentText,
   HiOutlineQuestionMarkCircle,
@@ -20,6 +22,69 @@ import {
   HiOutlineBookOpen,
   HiOutlineChartBarSquare
 } from 'react-icons/hi2'
+
+// Particle Field Background
+function ParticleField({ count = 1500 }: { count?: number }) {
+  const points = useRef<THREE.Points>(null)
+
+  const particlesPosition = useMemo(() => {
+    const positions = new Float32Array(count * 3)
+    for (let i = 0; i < count; i++) {
+      const x = (Math.random() - 0.5) * 10
+      const y = (Math.random() - 0.5) * 10
+      const z = (Math.random() - 0.5) * 10
+      positions.set([x, y, z], i * 3)
+    }
+    return positions
+  }, [count])
+
+  useFrame((state) => {
+    if (points.current) {
+      points.current.rotation.x = state.clock.getElapsedTime() * 0.02
+      points.current.rotation.y = state.clock.getElapsedTime() * 0.03
+    }
+  })
+
+  return (
+    <group rotation={[0, 0, Math.PI / 4]}>
+      <Points ref={points} positions={particlesPosition} stride={3} frustumCulled={false}>
+        <PointMaterial
+          transparent
+          color="#ffffff"
+          size={0.015}
+          sizeAttenuation={true}
+          depthWrite={false}
+        />
+      </Points>
+    </group>
+  )
+}
+
+// Animated Sphere with Wireframe
+function AnimatedSphere() {
+  const meshRef = useRef<THREE.Mesh>(null)
+
+  useFrame((state) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.x = state.clock.getElapsedTime() * 0.08
+      meshRef.current.rotation.y = state.clock.getElapsedTime() * 0.1
+    }
+  })
+
+  return (
+    <Sphere ref={meshRef} args={[1.5, 48, 48]} scale={1.5}>
+      <MeshDistortMaterial
+        color="#cccccc"
+        attach="material"
+        distort={0.3}
+        speed={1}
+        roughness={0.4}
+        metalness={0.8}
+        wireframe={true}
+      />
+    </Sphere>
+  )
+}
 
 export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
@@ -83,8 +148,8 @@ export default function Home() {
         <div className="nav-content">
           <h1 className="logo">LUCERO</h1>
           <div className="nav-links">
-            <Link to="/auth" className="nav-link">Log In</Link>
-            <Link to="/auth" className="nav-button">Start Now</Link>
+            <Link to="/auth?mode=login" className="nav-link">Log In</Link>
+            <Link to="/auth?mode=register" className="nav-button">Start Now</Link>
           </div>
         </div>
       </nav>
@@ -92,7 +157,18 @@ export default function Home() {
       <main className="home-content">
         {/* Hero Section */}
         <section className="hero-section">
-          <ParticleBurst />
+          <div className="hero-3d">
+            <Canvas
+              camera={{ position: [0, 0, 5], fov: 75 }}
+              dpr={[1, 1.5]}
+              performance={{ min: 0.5 }}
+            >
+              <ambientLight intensity={0.5} />
+              <pointLight position={[10, 10, 10]} intensity={1} />
+              <ParticleField />
+              <AnimatedSphere />
+            </Canvas>
+          </div>
           <div className="hero-content animate-on-scroll">
             <h1 className="hero-title">
               Get better grades in <br />
@@ -102,7 +178,7 @@ export default function Home() {
               Upload your study materials. Get organized notes, quizzes, and flashcards. 
               Track what you know and what needs work.
             </p>
-            <Link to="/auth" className="cta-button">Try Lucero now</Link>
+            <Link to="/auth?mode=register" className="cta-button">Try Lucero now</Link>
 
             <div className="hero-illustration">
               <img src="/lucero-new-logo.png" alt="Lucero Horse Mascot" className="horse-mascot" />
@@ -318,7 +394,7 @@ export default function Home() {
           </div>
 
           <div className="comparison-cta">
-            <Link to="/auth" className="cta-button-black">Try it for yourself</Link>
+            <Link to="/auth?mode=register" className="cta-button-black">Try it for yourself</Link>
           </div>
         </section>
 
@@ -376,7 +452,7 @@ export default function Home() {
                 <span className="amount">Free</span>
                 <span className="period">Forever</span>
               </div>
-              <Link to="/auth" className="pricing-button outline">Get started</Link>
+              <Link to="/auth?mode=register" className="pricing-button outline">Get started</Link>
               <ul className="features-list">
                 <li><span className="check-icon">✔</span> Access to all features</li>
                 <li><span className="check-icon">✔</span> Only 5 uploads and 30 AI chats per month</li>
@@ -397,7 +473,7 @@ export default function Home() {
               <p className="billing-info">
                 {isAnnual ? '$59.99 billed annually' : '$9.99 billed monthly'}
               </p>
-              <Link to="/auth" className="pricing-button solid">Get started</Link>
+              <Link to="/auth?mode=register" className="pricing-button solid">Get started</Link>
               <ul className="features-list">
                 <li><span className="check-icon">✔</span> Unlimited notes</li>
                 <li><span className="check-icon">✔</span> Unlimited exercises</li>
@@ -438,7 +514,7 @@ export default function Home() {
         <section className="final-cta-section">
           <h2>Curious? Try it for free</h2>
           <p>Free plan available. No credit card required.</p>
-          <Link to="/auth" className="cta-button-large">Get Started</Link>
+          <Link to="/auth?mode=register" className="cta-button-large">Get Started</Link>
         </section>
 
         {/* Testimonial Section */}
@@ -462,7 +538,7 @@ export default function Home() {
           <div className="cta-content">
             <h2>Meet the future <br />of note-taking</h2>
             <p>Your notes, organized and refined into one structured summary.</p>
-            <Link to="/auth" className="cta-button-white">Get Started</Link>
+            <Link to="/auth?mode=register" className="cta-button-white">Get Started</Link>
           </div>
         </section>
       </main>
