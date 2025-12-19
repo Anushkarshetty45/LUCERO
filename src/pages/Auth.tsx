@@ -1,10 +1,21 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import AuthLayout from '../components/auth/AuthLayout'
 import LoginForm from '../components/auth/LoginForm'
 import RegisterForm from '../components/auth/RegisterForm'
 
 export default function Auth() {
-  const [isLogin, setIsLogin] = useState(false)
+  const [searchParams] = useSearchParams()
+  const mode = searchParams.get('mode')
+  const [isLogin, setIsLogin] = useState(mode === 'login')
+
+  useEffect(() => {
+    if (mode === 'login') {
+      setIsLogin(true)
+    } else if (mode === 'register') {
+      setIsLogin(false)
+    }
+  }, [mode])
 
   return (
     <AuthLayout>
