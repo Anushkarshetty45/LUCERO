@@ -76,3 +76,23 @@ export interface UserNote {
   created_at: string
   updated_at: string
 }
+
+export interface TopicChat {
+  id: string
+  user_id: string
+  course_id: string
+  topic_name: string
+  topic_context: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface TopicChatMessage {
+  id: string
+  chat_id: string
+  user_id: string
+  role: 'user' | 'assistant' | 'system'
+  content: string
+  timestamp: string
+  metadata?: Record<string, any>
+}

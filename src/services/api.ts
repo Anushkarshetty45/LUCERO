@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import { Course, Lesson, Material, LessonProgress, Profile } from '../types'
+import { Course, Lesson, Material, LessonProgress, Profile, TopicChat, TopicChatMessage } from '../types'
 
 // ==================== PROFILE ====================
 export const getProfile = async (userId: string): Promise<Profile> => {
@@ -751,4 +751,118 @@ export const updateDailyStats = async (
 
   if (error) throw error
   return data
+}
+
+// ==================== TOPIC CHATS ====================
+export const getTopicChats = async (userId: string, courseId: string): Promise<TopicChat[]> => {
+  const { data, error } = await supabase
+    .from('topic_chats')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('course_id', courseId)
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return data || []
+}
+
+export const getTopicChat = async (chatId: string): Promise<TopicChat> => {
+  const { data, error } = await supabase
+    .from('topic_chats')
+    .select('*')
+    .eq('id', chatId)
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export const createTopicChat = async (
+  userId: string,
+  courseId: string,
+  topicName: string,
+  topicContext?: string
+): Promise<TopicChat> => {
+  const { data, error } = await supabase
+    .from('topic_chats')
+    .insert([{
+      user_id: userId,
+      course_id: courseId,
+      topic_name: topicName,
+      topic_context: topicContext || null
+    }])
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export const updateTopicChat = async (
+  chatId: string,
+  updates: Partial<TopicChat>
+): Promise<TopicChat> => {
+  const { data, error } = await supabase
+    .from('topic_chats')
+    .update(updates)
+    .eq('id', chatId)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export const deleteTopicChat = async (chatId: string): Promise<void> => {
+  const { error } = await supabase
+    .from('topic_chats')
+    .delete()
+    .eq('id', chatId)
+
+  if (error) throw error
+}
+
+// ==================== TOPIC CHAT MESSAGES ====================
+export const getChatMessages = async (chatId: string): Promise<TopicChatMessage[]> => {
+  const { data, error } = await supabase
+    .from('topic_chat_messages')
+    .select('*')
+    .eq('chat_id', chatId)
+    .order('timestamp', { ascending: true })
+
+  if (error) throw error
+  return data || []
+}
+
+export const createChatMessage = async (
+  chatId: string,
+  userId: string,
+  role: 'user' | 'assistant' | 'system',
+  content: string,
+  metadata?: Record<string, any>
+): Promise<TopicChatMessage> => {
+  const { data, error } = await supabase
+    .from('topic_chat_messages')
+    .insert([{
+      chat_id: chatId,
+      user_id: userId,
+      role,
+      content,
+      metadata: metadata || null,
+      timestamp: new Date().toISOString()
+    }])
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export const deleteChatMessage = async (messageId: string): Promise<void> => {
+  const { error } = await supabase
+    .from('topic_chat_messages')
+    .delete()
+    .eq('id', messageId)
+
+  if (error) throw error
 }
