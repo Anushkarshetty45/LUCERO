@@ -41,10 +41,12 @@ export default function QuizTab({ analysisId, pdfContent, userId }: QuizTabProps
       const prompt = generateQuizPrompt(pdfContent.substring(0, 15000))
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${process.env.REACT_APP_GEMINI_API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.REACT_APP_GEMINI_API_KEY}`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+          },
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
             generationConfig: {
@@ -122,11 +124,12 @@ export default function QuizTab({ analysisId, pdfContent, userId }: QuizTabProps
   }
 
   if (quizComplete) {
-    const percentage = ((score / quiz.length) * 100).toFixed(1)
+    const percentageNum = (score / quiz.length) * 100
+    const percentage = percentageNum.toFixed(1)
     return (
       <div className="quiz-results">
         <div className="results-icon">
-          {percentage >= 80 ? '🎉' : percentage >= 60 ? '👍' : '📚'}
+          {percentageNum >= 80 ? '🎉' : percentageNum >= 60 ? '👍' : '📚'}
         </div>
         <h2>Quiz Complete!</h2>
         <div className="score-display">
@@ -134,9 +137,9 @@ export default function QuizTab({ analysisId, pdfContent, userId }: QuizTabProps
           <div className="score-percentage">{percentage}%</div>
         </div>
         <div className="score-message">
-          {percentage >= 80 && "Excellent work! You've mastered this material! 🌟"}
-          {percentage >= 60 && percentage < 80 && "Good job! Keep studying to improve further. 💪"}
-          {percentage < 60 && "Keep studying! Review the material and try again. 📖"}
+          {percentageNum >= 80 && "Excellent work! You've mastered this material! 🌟"}
+          {percentageNum >= 60 && percentageNum < 80 && "Good job! Keep studying to improve further. 💪"}
+          {percentageNum < 60 && "Keep studying! Review the material and try again. 📖"}
         </div>
         <button className="btn-restart" onClick={handleRestart}>
           🔄 Restart Quiz
