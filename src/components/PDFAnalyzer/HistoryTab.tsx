@@ -29,7 +29,7 @@ export default function HistoryTab({ userId, onLoadAnalysis }: HistoryTabProps) 
   }
 
   const handleDelete = async (analysisId: string) => {
-    if (!confirm('Are you sure you want to delete this analysis?')) return
+    if (!window.confirm('Are you sure you want to delete this analysis?')) return
 
     try {
       await deletePDFAnalysis(analysisId)
