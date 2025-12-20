@@ -10,6 +10,7 @@ import CourseCard from '../components/CourseCard'
 import AllNotesModal from '../components/AllNotesModal'
 import StudyTimerModal from '../components/StudyTimerModal'
 import ChatbotModal from '../components/ChatbotModal'
+import PDFAnalyzerModal from '../components/PDFAnalyzerModal'
 import { useTimerContext } from '../contexts/TimerContext'
 import { useLiveStudy } from '../contexts/LiveStudyContext'
 import { IoBookSharp, IoFlame, IoTimer } from 'react-icons/io5'
@@ -25,6 +26,7 @@ export default function Dashboard() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showAllNotes, setShowAllNotes] = useState(false)
   const [showChatbot, setShowChatbot] = useState(false)
+  const [showPDFAnalyzer, setShowPDFAnalyzer] = useState(false)
   const [streak, setStreak] = useState(0)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
 
@@ -171,6 +173,10 @@ export default function Dashboard() {
           <button className="sidebar-nav-item" onClick={() => setShowTimerModal(true)}>
             <span className="nav-icon">⏱️</span>
             Timer
+          </button>
+          <button className="sidebar-nav-item" onClick={() => setShowPDFAnalyzer(true)}>
+            <span className="nav-icon">📄</span>
+            PDF Analyzer
           </button>
           <button className="sidebar-nav-item" onClick={() => setShowLiveStudy(true)}>
             <span className="nav-icon">📹</span>
@@ -342,10 +348,10 @@ export default function Dashboard() {
           <section className="dashboard-section">
             <h3 className="section-title">Study Tools</h3>
             <div className="tools-grid">
-              <button className="tool-card">
-                <span className="tool-icon">💭</span>
-                <span className="tool-name">AI Assistant</span>
-                <span className="tool-badge">Coming Soon</span>
+              <button className="tool-card" onClick={() => setShowPDFAnalyzer(true)}>
+                <span className="tool-icon">📄</span>
+                <span className="tool-name">PDF Analyzer</span>
+                <span className="tool-badge new">New!</span>
               </button>
               <button className="tool-card" onClick={() => setShowAllNotes(true)}>
                 <span className="tool-icon">📝</span>
@@ -395,6 +401,12 @@ export default function Dashboard() {
       {showChatbot && (
         <ChatbotModal
           onClose={() => setShowChatbot(false)}
+        />
+      )}
+
+      {showPDFAnalyzer && (
+        <PDFAnalyzerModal
+          onClose={() => setShowPDFAnalyzer(false)}
         />
       )}
     </div>
