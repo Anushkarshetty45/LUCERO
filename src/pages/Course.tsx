@@ -28,7 +28,12 @@ export default function Course() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [chatInput, setChatInput] = useState('')
   const [chatLoading, setChatLoading] = useState(false)
+  const [chatSize, setChatSize] = useState<'small' | 'medium' | 'large'>('medium')
+  const [isSidebarMode, setIsSidebarMode] = useState(true)
+  const [isDragging, setIsDragging] = useState(false)
+  const [position, setPosition] = useState({ x: 0, y: 0 })
   const chatEndRef = useRef<HTMLDivElement>(null)
+  const dragRef = useRef<{ startX: number; startY: number; initialX: number; initialY: number } | null>(null)
   useEffect(() => {
     if (courseId) {
       loadCourseData()
@@ -111,23 +116,62 @@ export default function Course() {
       // Create context from the lesson content (strip HTML for cleaner context)
       const lessonContext = selectedLesson.content?.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() || ''
 
-      const prompt = `You are a helpful AI tutor assistant. The student is currently learning about "${selectedLesson.title}" in their ${course?.subject} course titled "${course?.title}".
+      // Build conversation history with system context
+      const systemPrompt = `You are a friendly, enthusiastic AI tutor who loves teaching! 🌟
 
-Here is the lesson content they are studying:
-${lessonContext.substring(0, 3000)}
+PERSONALITY:
+- Be warm, encouraging, and genuinely excited about helping students learn
+- Use a conversational, supportive tone (like a helpful friend who's really good at teaching)
+- Celebrate their questions and curiosity
+- Share enthusiasm for the subject matter
+- Remember everything discussed in this conversation and reference it naturally
+- Use friendly language and occasional emojis to keep things engaging
 
-Based on this lesson content, answer the following question from the student.
+CONTEXT:
+The student is learning about "${selectedLesson.title}" in their ${course?.subject} course titled "${course?.title}".
 
-IMPORTANT FORMATTING RULES:
-- Structure your response in clear, organized bullet points
-- Use bullet points (•) for main points
+LESSON CONTENT:
+${lessonContext.substring(0, 2500)}
+
+CONVERSATION MEMORY:
+Remember and reference our entire conversation history. Build upon what we've discussed. If the student asks follow-up questions, connect them to previous topics we covered.
+
+RESPONSE STYLE:
+- Start with a friendly acknowledgment or encouragement
+- Structure explanations in clear, organized bullet points
+- Use bullet points (•) for main ideas
 - Use sub-bullets (  ◦) for supporting details
-- Keep each point concise (1-2 sentences)
-- Start with a brief intro sentence if needed
-- Number steps if explaining a process
+- Keep explanations clear but conversational (1-3 sentences per point)
+- End with an encouraging note or helpful question to deepen understanding
 - Use line breaks between sections for readability
 
-Question: ${userMessage}`
+Be the tutor every student wishes they had - knowledgeable, patient, and genuinely excited to help! 😊`
+
+      // Build the full conversation with history
+      const contents = [
+        {
+          role: 'user',
+          parts: [{ text: systemPrompt }]
+        },
+        {
+          role: 'model',
+          parts: [{ text: "Hi! I'm so excited to help you learn! 🎓 I'll remember everything we discuss and build on our conversation. What would you like to explore first?" }]
+        }
+      ]
+
+      // Add all previous messages to maintain context
+      chatMessages.forEach(msg => {
+        contents.push({
+          role: msg.role === 'user' ? 'user' : 'model',
+          parts: [{ text: msg.content }]
+        })
+      })
+
+      // Add the current user message
+      contents.push({
+        role: 'user',
+        parts: [{ text: userMessage }]
+      })
 
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
@@ -137,13 +181,9 @@ Question: ${userMessage}`
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: prompt
-              }]
-            }],
+            contents: contents,
             generationConfig: {
-              temperature: 0.7,
+              temperature: 0.8,
               topK: 40,
               topP: 0.95,
               maxOutputTokens: 2048,
@@ -169,10 +209,60 @@ Question: ${userMessage}`
       console.error('Chat error:', error)
       setChatMessages([
         ...newMessages,
-        { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' }
+        { role: 'assistant', content: 'Oops! I ran into a small hiccup. 😅 Could you try asking that again? I promise I\'m listening!' }
       ])
     } finally {
       setChatLoading(false)
+    }
+  }
+
+  // Drag handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (isSidebarMode) return // Don't allow dragging in sidebar mode
+
+    setIsDragging(true)
+    dragRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      initialX: position.x,
+      initialY: position.y
+    }
+  }
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isDragging || !dragRef.current || isSidebarMode) return
+
+    const deltaX = e.clientX - dragRef.current.startX
+    const deltaY = e.clientY - dragRef.current.startY
+
+    setPosition({
+      x: dragRef.current.initialX + deltaX,
+      y: dragRef.current.initialY + deltaY
+    })
+  }
+
+  const handleMouseUp = () => {
+    setIsDragging(false)
+    dragRef.current = null
+  }
+
+  // Add global mouse event listeners for dragging
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove)
+      window.addEventListener('mouseup', handleMouseUp)
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove)
+        window.removeEventListener('mouseup', handleMouseUp)
+      }
+    }
+  }, [isDragging, position])
+
+  const toggleSidebarMode = () => {
+    setIsSidebarMode(!isSidebarMode)
+    if (!isSidebarMode) {
+      // Reset position when switching back to sidebar mode
+      setPosition({ x: 0, y: 0 })
     }
   }
 
@@ -197,7 +287,7 @@ Question: ${userMessage}`
   return (
     <div className="course-page">
       {/* Header */}
-      <header className="course-header" style={{ background: course.color }}>
+      <header className={`course-header ${showChat && isSidebarMode ? 'chat-sidebar-open' : ''}`} style={{ background: course.color }}>
         <div className="course-header-content">
           <Link to="/dashboard" className="back-button">← Back to Dashboard</Link>
           <h1>{course.title}</h1>
@@ -212,7 +302,7 @@ Question: ${userMessage}`
         </div>
       </header>
 
-      <div className="course-content">
+      <div className={`course-content ${showChat && isSidebarMode ? 'chat-sidebar-open' : ''}`}>
         {/* Sidebar - Topics List */}
         <aside className="topics-sidebar">
           <div className="sidebar-header">
@@ -321,22 +411,70 @@ Question: ${userMessage}`
 
           {/* Chat Panel */}
           {showChat && (
-            <div className="chat-panel">
-              <div className="chat-header">
-                <h3>AI Tutor Assistant</h3>
-                <button
-                  className="chat-close-btn"
-                  onClick={() => setShowChat(false)}
-                >
-                  ✕
-                </button>
+            <div
+              className={`chat-panel chat-${chatSize} ${isSidebarMode ? 'sidebar-mode' : 'floating-mode'} ${isDragging ? 'dragging' : ''}`}
+              style={!isSidebarMode ? {
+                transform: `translate(${position.x}px, ${position.y}px)`
+              } : {}}
+            >
+              <div
+                className="chat-header"
+                onMouseDown={handleMouseDown}
+                style={{ cursor: isSidebarMode ? 'default' : 'move' }}
+              >
+                <div className="chat-header-left">
+                  <h3>AI Tutor Assistant</h3>
+                  <button
+                    className="mode-toggle-btn"
+                    onClick={toggleSidebarMode}
+                    title={isSidebarMode ? 'Switch to floating mode' : 'Switch to sidebar mode'}
+                  >
+                    {isSidebarMode ? '📌' : '📍'}
+                  </button>
+                </div>
+                <div className="chat-header-right">
+                  {!isSidebarMode && (
+                    <div className="chat-size-controls">
+                      <button
+                        className={`size-btn ${chatSize === 'small' ? 'active' : ''}`}
+                        onClick={() => setChatSize('small')}
+                        title="Small"
+                      >
+                        S
+                      </button>
+                      <button
+                        className={`size-btn ${chatSize === 'medium' ? 'active' : ''}`}
+                        onClick={() => setChatSize('medium')}
+                        title="Medium"
+                      >
+                        M
+                      </button>
+                      <button
+                        className={`size-btn ${chatSize === 'large' ? 'active' : ''}`}
+                        onClick={() => setChatSize('large')}
+                        title="Large"
+                      >
+                        L
+                      </button>
+                    </div>
+                  )}
+                  <button
+                    className="chat-close-btn"
+                    onClick={() => setShowChat(false)}
+                  >
+                    ✕
+                  </button>
+                </div>
               </div>
 
               <div className="chat-messages">
                 {chatMessages.length === 0 ? (
                   <div className="chat-empty">
-                    <p>👋 Hi! I'm your AI tutor.</p>
-                    <p>Ask me anything about <strong>{selectedLesson.title}</strong>!</p>
+                    <p>👋 Hey there! I'm your friendly AI tutor!</p>
+                    <p>I'm here to help you master <strong>{selectedLesson.title}</strong>! 🎓</p>
+                    <p style={{ fontSize: '14px', opacity: 0.8, marginTop: '12px' }}>
+                      Ask me anything - I'll remember our entire conversation and build on what we discuss! ✨
+                    </p>
                   </div>
                 ) : (
                   chatMessages.map((msg, idx) => (
