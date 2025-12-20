@@ -787,6 +787,24 @@
   border-radius: 4px;
 }
 
+.tool-badge.new {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  animation: badgePulse 2s ease-in-out infinite;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+}
+
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.6);
+  }
+}
+
 /* Buttons */
 .btn-primary {
   padding: 12px 24px;
