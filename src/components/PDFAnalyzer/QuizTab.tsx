@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { getQuiz, createQuiz, createQuizAttempt } from '../../services/pdfAnalysisApi'
+import { recordDailyActivity } from '../../services/api'
 import { generateQuizPrompt } from '../../services/aiPrompts'
 import type { PDFQuiz, GenerateQuizResponse } from '../../types/pdfAnalysis'
 
@@ -37,6 +38,13 @@ export default function QuizTab({ analysisId, pdfContent, userId }: QuizTabProps
 
   const generateQuizQuestions = async () => {
     setGenerating(true)
+
+    if (!pdfContent || pdfContent.trim().length === 0) {
+      alert('PDF content not available. Please re-upload and analyze the PDF.')
+      setGenerating(false)
+      return
+    }
+
     try {
       const prompt = generateQuizPrompt(pdfContent.substring(0, 15000))
 
@@ -81,13 +89,16 @@ export default function QuizTab({ analysisId, pdfContent, userId }: QuizTabProps
     await createQuizAttempt(userId, quiz[currentQuestion].id, answer, isCorrect)
   }
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentQuestion < quiz.length - 1) {
       setCurrentQuestion(q => q + 1)
       setSelectedAnswer('')
       setShowExplanation(false)
     } else {
       setQuizComplete(true)
+
+      // Record quiz activity for streak
+      await recordDailyActivity(userId, 'quiz')
     }
   }
 

@@ -35,6 +35,13 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
   const generateFlashcards = async () => {
     setGenerating(true)
     setError('')
+
+    if (!pdfContent || pdfContent.trim().length === 0) {
+      setError('PDF content not available. Please re-upload and analyze the PDF.')
+      setGenerating(false)
+      return
+    }
+
     try {
       const prompt = generateFlashcardsPrompt(pdfContent.substring(0, 15000))
 

@@ -26,9 +26,12 @@ export default function CourseCard({ course, onUpdate }: CourseCardProps) {
 
   return (
     <div className="course-card">
-      <div 
-        className="course-card-header" 
-        style={{ background: course.color }}
+      <div
+        className="course-card-header"
+        style={{
+          background: `linear-gradient(135deg, var(--bg-card) 0%, ${course.color}15 50%, var(--bg-secondary) 100%)`,
+          borderLeft: `4px solid ${course.color}`
+        }}
         onClick={() => navigate(`/course/${course.id}`)}
       >
         <h4>{course.title}</h4>

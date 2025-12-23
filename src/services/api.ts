@@ -305,7 +305,7 @@ export const startStudySession = async (userId: string, courseId?: string) => {
   return data
 }
 
-export const endStudySession = async (sessionId: string, duration: number) => {
+export const endStudySession = async (sessionId: string, duration: number, userId: string) => {
   const { data, error } = await supabase
     .from('study_sessions')
     .update({
@@ -317,6 +317,12 @@ export const endStudySession = async (sessionId: string, duration: number) => {
     .single()
 
   if (error) throw error
+
+  // Record study session activity for streak (only if session was at least 5 minutes)
+  if (duration >= 300) {
+    await recordDailyActivity(userId, 'study_session')
+  }
+
   return data
 }
 
@@ -425,6 +431,177 @@ export const calculateUserStreak = async (userId: string): Promise<number> => {
 
   return streak
 }
+
+// ==================== STREAK TRACKING ====================
+
+/**
+ * Records daily activity and updates streak
+ * @param userId - User ID
+ * @param activityType - Type of activity: 'login', 'flashcard', 'quiz', 'study_session'
+ */
+export const recordDailyActivity = async (userId: string, activityType: string): Promise<void> => {
+  const today = new Date().toISOString().split('T')[0] // YYYY-MM-DD
+
+  try {
+    // Check if activity already recorded today
+    const { data: existingActivity } = await supabase
+      .from('daily_activities')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('activity_date', today)
+      .single()
+
+    if (existingActivity) {
+      // Update existing activity - add new activity type if not already present
+      const activityTypes = existingActivity.activity_types || []
+      if (!activityTypes.includes(activityType)) {
+        activityTypes.push(activityType)
+        await supabase
+          .from('daily_activities')
+          .update({
+            activity_types: activityTypes,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingActivity.id)
+      }
+    } else {
+      // Create new activity record for today
+      await supabase
+        .from('daily_activities')
+        .insert({
+          user_id: userId,
+          activity_date: today,
+          activity_types: [activityType],
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+    }
+
+    // Update streak in user_settings
+    await updateUserStreak(userId)
+  } catch (error) {
+    console.error('Error recording daily activity:', error)
+  }
+}
+
+/**
+ * Updates user's current streak based on daily activities
+ */
+export const updateUserStreak = async (userId: string): Promise<number> => {
+  try {
+    // Get all daily activities
+    const { data: activities, error } = await supabase
+      .from('daily_activities')
+      .select('activity_date')
+      .eq('user_id', userId)
+      .order('activity_date', { ascending: false })
+
+    if (error) throw error
+
+    if (!activities || activities.length === 0) {
+      // No activities, reset streak
+      await supabase
+        .from('user_settings')
+        .upsert({
+          user_id: userId,
+          current_streak: 0,
+          last_active_date: null
+        })
+      return 0
+    }
+
+    // Calculate streak
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const todayStr = today.toISOString().split('T')[0]
+
+    const yesterday = new Date(today)
+    yesterday.setDate(yesterday.getDate() - 1)
+    const yesterdayStr = yesterday.toISOString().split('T')[0]
+
+    const mostRecentDate = activities[0].activity_date
+
+    // If most recent activity is not today or yesterday, streak is broken
+    if (mostRecentDate !== todayStr && mostRecentDate !== yesterdayStr) {
+      await supabase
+        .from('user_settings')
+        .upsert({
+          user_id: userId,
+          current_streak: 0,
+          last_active_date: mostRecentDate
+        })
+      return 0
+    }
+
+    // Count consecutive days
+    let streak = 1
+    let currentDate = new Date(mostRecentDate)
+
+    for (let i = 1; i < activities.length; i++) {
+      const expectedDate = new Date(currentDate)
+      expectedDate.setDate(expectedDate.getDate() - 1)
+      const expectedDateStr = expectedDate.toISOString().split('T')[0]
+
+      if (activities[i].activity_date === expectedDateStr) {
+        streak++
+        currentDate = expectedDate
+      } else {
+        // Gap found, streak ends
+        break
+      }
+    }
+
+    // Get current longest streak
+    const { data: settings } = await supabase
+      .from('user_settings')
+      .select('longest_streak')
+      .eq('user_id', userId)
+      .single()
+
+    const longestStreak = Math.max(streak, settings?.longest_streak || 0)
+
+    // Update user_settings
+    await supabase
+      .from('user_settings')
+      .upsert({
+        user_id: userId,
+        current_streak: streak,
+        longest_streak: longestStreak,
+        last_active_date: mostRecentDate
+      })
+
+    return streak
+  } catch (error) {
+    console.error('Error updating user streak:', error)
+    return 0
+  }
+}
+
+/**
+ * Gets user's current streak from user_settings
+ */
+export const getUserStreak = async (userId: string): Promise<{ current: number; longest: number }> => {
+  try {
+    const { data, error } = await supabase
+      .from('user_settings')
+      .select('current_streak, longest_streak')
+      .eq('user_id', userId)
+      .single()
+
+    if (error || !data) {
+      return { current: 0, longest: 0 }
+    }
+
+    return {
+      current: data.current_streak || 0,
+      longest: data.longest_streak || 0
+    }
+  } catch (error) {
+    console.error('Error getting user streak:', error)
+    return { current: 0, longest: 0 }
+  }
+}
+
 // ==================== USER NOTES ====================
 export const getAllUserNotes = async (userId: string, courseId: string) => {
   const { data, error } = await supabase
@@ -865,4 +1042,236 @@ export const deleteChatMessage = async (messageId: string): Promise<void> => {
     .eq('id', messageId)
 
   if (error) throw error
+}
+
+// ==================== GROUP STUDY SESSIONS ====================
+
+export interface StudySession {
+  id: string
+  host_user_id: string
+  meeting_code: string
+  room_name: string
+  title: string | null
+  created_at: string
+  started_at: string | null
+  ended_at: string | null
+  is_active: boolean
+  max_participants: number
+}
+
+export interface StudySessionParticipant {
+  id: string
+  session_id: string
+  user_id: string
+  joined_at: string
+  left_at: string | null
+  is_currently_in_session: boolean
+}
+
+export const createStudySession = async (
+  userId: string,
+  title?: string
+): Promise<{ session: StudySession; meetingCode: string }> => {
+  try {
+    // Generate meeting code using database function
+    const { data: codeData, error: codeError } = await supabase
+      .rpc('generate_meeting_code')
+
+    if (codeError) throw codeError
+
+    const meetingCode = codeData as string
+    const roomName = `lucero-study-${meetingCode.toLowerCase()}-${Date.now()}`
+
+    // Create session
+    const { data: session, error: sessionError } = await supabase
+      .from('study_sessions')
+      .insert({
+        host_user_id: userId,
+        meeting_code: meetingCode,
+        room_name: roomName,
+        title: title || 'Group Study Session',
+        started_at: new Date().toISOString(),
+        is_active: true
+      })
+      .select()
+      .single()
+
+    if (sessionError) throw sessionError
+
+    // Add host as participant
+    await joinStudySession(session.id, userId)
+
+    return { session, meetingCode }
+  } catch (error) {
+    console.error('Error creating study session:', error)
+    throw error
+  }
+}
+
+export const joinStudySession = async (
+  sessionId: string,
+  userId: string
+): Promise<StudySessionParticipant> => {
+  try {
+    const { data, error } = await supabase
+      .from('study_session_participants')
+      .insert({
+        session_id: sessionId,
+        user_id: userId,
+        is_currently_in_session: true
+      })
+      .select()
+      .single()
+
+    if (error) {
+      // If already joined, just update the status
+      if (error.code === '23505') {
+        const { data: updated, error: updateError } = await supabase
+          .from('study_session_participants')
+          .update({
+            is_currently_in_session: true,
+            joined_at: new Date().toISOString(),
+            left_at: null
+          })
+          .eq('session_id', sessionId)
+          .eq('user_id', userId)
+          .select()
+          .single()
+
+        if (updateError) throw updateError
+        return updated
+      }
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error joining study session:', error)
+    throw error
+  }
+}
+
+export const getStudySessionByCode = async (
+  meetingCode: string
+): Promise<StudySession | null> => {
+  try {
+    const { data, error } = await supabase
+      .from('study_sessions')
+      .select('*')
+      .eq('meeting_code', meetingCode.toUpperCase())
+      .eq('is_active', true)
+      .single()
+
+    if (error) {
+      if (error.code === 'PGRST116') return null // Not found
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error getting study session by code:', error)
+    throw error
+  }
+}
+
+export const getActiveStudySessions = async (
+  userId: string
+): Promise<StudySession[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('study_sessions')
+      .select('*')
+      .eq('host_user_id', userId)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+    return data || []
+  } catch (error) {
+    console.error('Error getting active study sessions:', error)
+    return []
+  }
+}
+
+export const getSessionParticipants = async (
+  sessionId: string
+): Promise<StudySessionParticipant[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('study_session_participants')
+      .select('*')
+      .eq('session_id', sessionId)
+      .eq('is_currently_in_session', true)
+      .order('joined_at', { ascending: true })
+
+    if (error) throw error
+    return data || []
+  } catch (error) {
+    console.error('Error getting session participants:', error)
+    return []
+  }
+}
+
+export const leaveStudySession = async (
+  sessionId: string,
+  userId: string
+): Promise<void> => {
+  try {
+    const { error } = await supabase
+      .from('study_session_participants')
+      .update({
+        is_currently_in_session: false,
+        left_at: new Date().toISOString()
+      })
+      .eq('session_id', sessionId)
+      .eq('user_id', userId)
+
+    if (error) throw error
+  } catch (error) {
+    console.error('Error leaving study session:', error)
+    throw error
+  }
+}
+
+export const endStudySessionByHost = async (
+  sessionId: string,
+  userId: string
+): Promise<void> => {
+  try {
+    // Verify user is the host
+    const { data: session, error: sessionError } = await supabase
+      .from('study_sessions')
+      .select('host_user_id')
+      .eq('id', sessionId)
+      .single()
+
+    if (sessionError) throw sessionError
+    if (session.host_user_id !== userId) {
+      throw new Error('Only the host can end the session')
+    }
+
+    // End the session
+    const { error } = await supabase
+      .from('study_sessions')
+      .update({
+        is_active: false,
+        ended_at: new Date().toISOString()
+      })
+      .eq('id', sessionId)
+
+    if (error) throw error
+
+    // Mark all participants as left
+    await supabase
+      .from('study_session_participants')
+      .update({
+        is_currently_in_session: false,
+        left_at: new Date().toISOString()
+      })
+      .eq('session_id', sessionId)
+      .eq('is_currently_in_session', true)
+  } catch (error) {
+    console.error('Error ending study session:', error)
+    throw error
+  }
 }

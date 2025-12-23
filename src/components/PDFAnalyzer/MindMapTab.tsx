@@ -130,6 +130,13 @@ export default function MindMapTab({ analysisId, pdfContent }: MindMapTabProps) 
 
   const generateMindMapData = async () => {
     setGenerating(true)
+
+    if (!pdfContent || pdfContent.trim().length === 0) {
+      alert('PDF content not available. Please re-upload and analyze the PDF.')
+      setGenerating(false)
+      return
+    }
+
     try {
       const prompt = generateMindMapPrompt(pdfContent.substring(0, 10000))
 
