@@ -1,30 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@400;500;600;700;800&display=swap');
+@import './styles/themes.css';
 
-:root {
-  --primary-color: #eae8e3;
-  --primary-dark: #cac9c6;
-  --primary-gold: #eeedea;
-  --accent-purple: #a78bfa;
-  --accent-blue: #60a5fa;
-  --space-dark: #030510;
-  --space-deeper: #010205;
-  --space-card: rgba(10, 15, 30, 0.7);
-  --space-card-hover: rgba(15, 20, 40, 0.85);
-  --bg-dark: #030510;
-  --bg-card: rgba(10, 15, 30, 0.7);
-  --bg-card-hover: rgba(15, 20, 40, 0.85);
-  --text-light: #f1f5f9;
-  --text-medium: #cbd5e1;
-  --text-gray: #94a3b8;
-  --border-color: rgba(148, 163, 184, 0.1);
-  --border-glow: rgba(167, 139, 250, 0.2);
-  --shadow-color: rgba(0, 0, 0, 0.3);
-  --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.3);
-  --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.4);
-  --shadow-hover: 0 12px 32px rgba(167, 139, 250, 0.3);
-  --shadow-glow: 0 0 30px rgba(167, 139, 250, 0.15);
-  --glow-color: rgba(167, 139, 250, 0.2);
-}
+/* Font and global settings - color variables now managed by themes.css */
 
 html {
   scroll-behavior: smooth;
@@ -37,10 +14,9 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--space-dark);
-  color: var(--text-light);
   overflow-x: hidden;
   will-change: scroll-position;
+  /* background-color and color now in themes.css with transitions */
 }
 
 code {
