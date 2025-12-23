@@ -1,0 +1,75 @@
+.forest-leaves {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.leaf {
+  position: absolute;
+  animation: leafFall linear infinite;
+}
+
+.leaf-svg {
+  color: #00bfa5;
+  opacity: 0.75;
+  filter: drop-shadow(0 2px 4px rgba(0, 191, 165, 0.2));
+  animation: leafRotate 3s ease-in-out infinite;
+}
+
+/* Mix of mint green and baby pink leaves */
+.leaf:nth-child(2n) .leaf-svg {
+  color: #4db6ac;
+}
+
+.leaf:nth-child(3n) .leaf-svg {
+  color: #f8b4d9; /* baby pink */
+}
+
+.leaf:nth-child(4n) .leaf-svg {
+  color: #ffd1e8; /* light pink */
+}
+
+.leaf:nth-child(5n) .leaf-svg {
+  color: #80cbc4;
+}
+
+.leaf:nth-child(7n) .leaf-svg {
+  color: #ffb3d9; /* rose pink */
+}
+
+@keyframes leafFall {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.75;
+  }
+  90% {
+    opacity: 0.75;
+  }
+  100% {
+    transform: translateY(120vh) translateX(var(--drift)) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes leafRotate {
+  0%, 100% {
+    transform: rotateZ(0deg) rotateY(0deg);
+  }
+  25% {
+    transform: rotateZ(-15deg) rotateY(90deg);
+  }
+  50% {
+    transform: rotateZ(0deg) rotateY(180deg);
+  }
+  75% {
+    transform: rotateZ(15deg) rotateY(270deg);
+  }
+}
