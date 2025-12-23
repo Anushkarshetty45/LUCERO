@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { useTheme } from '../hooks/useTheme'
 import { supabase } from '../services/supabase'
+import ThemeModal from '../components/ThemeModal'
+import { themeMetadata } from '../styles/themeDefinitions'
 import './Settings.css'
 
 interface UserSettings {
@@ -23,6 +26,8 @@ interface UserSettings {
 export default function Settings() {
   const navigate = useNavigate()
   const { user, signOut } = useAuth()
+  const { currentTheme, particlesEnabled, setParticlesEnabled } = useTheme()
+  const [showThemeModal, setShowThemeModal] = useState(false)
   const [notificationsEnabled, setNotificationsEnabled] = useState(true)
   const [emailUpdates, setEmailUpdates] = useState(true)
   const [darkMode, setDarkMode] = useState(true)
@@ -303,6 +308,38 @@ export default function Settings() {
           </div>
 
           <div className="settings-section">
+            <h2>Appearance</h2>
+
+            <div className="setting-item">
+              <div className="setting-info">
+                <h3>Theme</h3>
+                <p>Customize your app's color scheme</p>
+              </div>
+              <button
+                className="btn-theme-picker"
+                onClick={() => setShowThemeModal(true)}
+              >
+                {themeMetadata[currentTheme].emoji} {themeMetadata[currentTheme].name}
+              </button>
+            </div>
+
+            <div className="setting-item">
+              <div className="setting-info">
+                <h3>Animated Background</h3>
+                <p>Show floating particles and visual effects</p>
+              </div>
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={particlesEnabled}
+                  onChange={(e) => setParticlesEnabled(e.target.checked)}
+                />
+                <span className="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div className="settings-section">
             <h2>Account Security</h2>
             <div className="account-info">
               <div className="info-item">
@@ -373,6 +410,11 @@ export default function Settings() {
           </div>
         </div>
       </div>
+
+      {/* Theme Modal */}
+      {showThemeModal && (
+        <ThemeModal onClose={() => setShowThemeModal(false)} />
+      )}
     </div>
   )
 }
