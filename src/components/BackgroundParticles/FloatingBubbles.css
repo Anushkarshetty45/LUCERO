@@ -1,0 +1,52 @@
+.floating-bubbles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(200, 200, 200, 0.8), rgba(150, 150, 150, 0.3));
+  box-shadow:
+    inset 0 0 10px rgba(255, 255, 255, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.1);
+  animation: bubbleFloat linear infinite;
+  border: 1px solid rgba(180, 180, 180, 0.3);
+}
+
+@keyframes bubbleFloat {
+  0% {
+    transform: translateY(0) translateX(0) scale(0.8);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(120vh) translateX(var(--drift)) scale(1.2);
+    opacity: 0;
+  }
+}
+
+/* Subtle pulse for some bubbles */
+.bubble:nth-child(3n) {
+  animation: bubbleFloat linear infinite, bubblePulse 5s ease-in-out infinite;
+}
+
+@keyframes bubblePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
