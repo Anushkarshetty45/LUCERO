@@ -1,0 +1,413 @@
+/* Group Study Modal */
+.group-study-modal {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.group-study-modal .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+}
+
+.group-study-modal .modal-header h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.group-study-modal .close-btn {
+  background: var(--bg-card-hover);
+  border: none;
+  color: var(--text-primary);
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.group-study-modal .close-btn:hover {
+  background: rgba(255, 77, 77, 0.2);
+  color: #ff6b6b;
+  transform: scale(1.1);
+}
+
+.group-study-modal .modal-body {
+  padding: 32px;
+  overflow-y: auto;
+}
+
+/* Study Menu */
+.study-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.menu-header {
+  text-align: center;
+}
+
+.menu-header h3 {
+  margin: 0 0 12px 0;
+  font-size: 24px;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.menu-header p {
+  margin: 0;
+  color: var(--text-tertiary);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.menu-options {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.menu-option-card {
+  flex: 1;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: 16px;
+  padding: 32px 24px;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.menu-option-card:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.option-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+}
+
+.menu-option-card h4 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.menu-option-card p {
+  margin: 0 0 20px 0;
+  color: var(--text-tertiary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.session-title-input,
+.meeting-code-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 16px;
+  transition: all 0.2s;
+}
+
+.meeting-code-input {
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  font-size: 20px;
+}
+
+.session-title-input:focus,
+.meeting-code-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2);
+}
+
+.menu-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.menu-divider span {
+  background: var(--bg-card);
+  padding: 8px 16px;
+  border-radius: 20px;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  font-size: 14px;
+  border: 2px solid var(--border-color);
+}
+
+.btn-primary,
+.btn-secondary {
+  width: 100%;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(167, 139, 250, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(167, 139, 250, 0.4);
+}
+
+.btn-secondary {
+  background: var(--bg-card-hover);
+  border: 2px solid var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--accent-primary);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Meeting Created */
+.meeting-created {
+  text-align: center;
+  padding: 20px;
+}
+
+.success-icon {
+  font-size: 80px;
+  margin-bottom: 24px;
+  animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.meeting-created h3 {
+  margin: 0 0 12px 0;
+  font-size: 28px;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.meeting-created > p {
+  margin: 0 0 32px 0;
+  color: var(--text-tertiary);
+  font-size: 16px;
+}
+
+.meeting-code-display {
+  background: var(--bg-secondary);
+  border: 2px solid var(--accent-primary);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 32px;
+}
+
+.code-label {
+  color: var(--text-tertiary);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.code-value {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--accent-primary);
+  letter-spacing: 8px;
+  margin-bottom: 20px;
+  font-family: 'Courier New', monospace;
+}
+
+.btn-copy {
+  background: var(--accent-primary);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-copy:hover {
+  background: var(--accent-secondary);
+  transform: scale(1.05);
+}
+
+.meeting-info {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.meeting-info p {
+  margin: 8px 0;
+  color: var(--text-primary);
+  font-size: 15px;
+}
+
+.meeting-info strong {
+  color: var(--accent-primary);
+  font-weight: 600;
+}
+
+.meeting-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.btn-start-video {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 16px rgba(167, 139, 250, 0.3);
+}
+
+.btn-start-video:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(167, 139, 250, 0.4);
+}
+
+.btn-cancel {
+  background: var(--bg-card-hover);
+  color: var(--text-tertiary);
+  border: 1px solid var(--border-color);
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-cancel:hover {
+  background: rgba(255, 77, 77, 0.2);
+  color: #ff6b6b;
+  border-color: #ff6b6b;
+}
+
+.error-message {
+  background: rgba(255, 77, 77, 0.1);
+  border: 1px solid rgba(255, 77, 77, 0.3);
+  color: #ff6b6b;
+  padding: 16px 20px;
+  border-radius: 12px;
+  font-size: 15px;
+  text-align: center;
+  font-weight: 600;
+  margin-top: 24px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .menu-options {
+    flex-direction: column;
+  }
+
+  .menu-divider {
+    width: 100%;
+  }
+
+  .menu-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--border-color);
+    z-index: -1;
+  }
+
+  .code-value {
+    font-size: 32px;
+    letter-spacing: 4px;
+  }
+
+  .meeting-actions {
+    flex-direction: column;
+  }
+
+  .meeting-actions button {
+    width: 100%;
+  }
+}
