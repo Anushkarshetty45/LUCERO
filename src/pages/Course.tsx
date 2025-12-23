@@ -287,7 +287,13 @@ Be the tutor every student wishes they had - knowledgeable, patient, and genuine
   return (
     <div className="course-page">
       {/* Header */}
-      <header className={`course-header ${showChat && isSidebarMode ? 'chat-sidebar-open' : ''}`} style={{ background: course.color }}>
+      <header
+        className={`course-header ${showChat && isSidebarMode ? 'chat-sidebar-open' : ''}`}
+        style={{
+          background: `linear-gradient(135deg, var(--bg-card) 0%, ${course.color}20 50%, var(--bg-secondary) 100%)`,
+          borderLeft: `4px solid ${course.color}`
+        }}
+      >
         <div className="course-header-content">
           <Link to="/dashboard" className="back-button">← Back to Dashboard</Link>
           <h1>{course.title}</h1>

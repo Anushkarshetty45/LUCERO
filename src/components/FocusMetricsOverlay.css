@@ -3,7 +3,7 @@
   position: fixed;
   top: 20px;
   right: 20px;
-  background: rgba(10, 15, 30, 0.95);
+  background: var(--bg-card);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(167, 139, 250, 0.2);
   border-radius: 16px;
@@ -42,7 +42,7 @@
 .btn-minimize {
   background: none;
   border: none;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 20px;
   cursor: pointer;
   padding: 4px 8px;
@@ -172,7 +172,7 @@
 
 .metric-label {
   font-size: 11px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   margin-top: 2px;
 }
 
@@ -229,7 +229,7 @@
   position: fixed;
   top: 20px;
   right: 20px;
-  background: rgba(10, 15, 30, 0.95);
+  background: var(--bg-card);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(167, 139, 250, 0.2);
   border-radius: 12px;
@@ -244,7 +244,7 @@
 }
 
 .focus-overlay-minimized:hover {
-  background: rgba(15, 20, 40, 0.95);
+  background: var(--bg-card-hover);
   border-color: rgba(167, 139, 250, 0.4);
   transform: scale(1.02);
 }

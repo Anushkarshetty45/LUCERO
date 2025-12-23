@@ -9,17 +9,17 @@
 .search-box input {
   width: 100%;
   padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-size: 15px;
-  color: #fff;
+  color: var(--text-primary);
   transition: all 0.2s;
 }
 
 .search-box input:focus {
   outline: none;
-  border-color: rgba(255, 255, 255, 0.4);
+  border-color: var(--accent-primary);
   background: rgba(255, 255, 255, 0.08);
 }
 
@@ -33,19 +33,19 @@
 }
 
 .note-card {
-  background: rgba(10, 15, 30, 0.7);
+  background: var(--bg-card);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 16px;
   transition: all 0.3s;
 }
 
 .note-card:hover {
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-soft);
   transform: translateY(-2px);
-  background: rgba(15, 20, 40, 0.85);
+  background: var(--bg-card-hover);
 }
 
 .note-card-header {
@@ -55,22 +55,22 @@
 .note-card-header h3 {
   font-size: 18px;
   margin: 0 0 8px 0;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .course-badge {
   display: inline-block;
   padding: 4px 10px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--bg-card-hover);
+  color: var(--text-primary)fff;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   font-size: 11px;
   font-weight: 600;
 }
 
 .note-card-preview {
-  color: #ccc;
+  color: var(--text-secondary);
   font-size: 14px;
   line-height: 1.5;
   margin-bottom: 16px;
@@ -82,12 +82,12 @@
   justify-content: space-between;
   align-items: center;
   padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--border-color);
 }
 
 .note-date {
   font-size: 12px;
-  color: #888;
+  color: var(--text-tertiary);
 }
 
 .note-actions {
@@ -97,8 +97,8 @@
 
 .btn-view {
   padding: 6px 14px;
-  background: #ffffff;
-  color: #000;
+  background: var(--accent-primary);
+  color: white;
   border: none;
   border-radius: 6px;
   font-size: 13px;
@@ -108,7 +108,7 @@
 }
 
 .btn-view:hover {
-  background: #ffffff;
+  background: var(--accent-primary);
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
 }
@@ -121,7 +121,7 @@
   cursor: pointer;
   opacity: 0.6;
   transition: all 0.2s;
-  color: #999;
+  color: var(--text-tertiary);
 }
 
 .btn-delete-note:hover {
@@ -133,14 +133,14 @@
 .loading-state {
   text-align: center;
   padding: 60px 20px;
-  color: #999;
+  color: var(--text-tertiary);
 }
 
 .loading-state .spinner-small {
   width: 40px;
   height: 40px;
   border: 4px solid rgba(255, 255, 255, 0.1);
-  border-top-color: #ffffff;
+  border-top-color: var(--text-primary)fff;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 20px;
@@ -154,14 +154,14 @@
 
 .notes-count {
   margin: 0;
-  color: #888;
+  color: var(--text-tertiary);
   font-size: 14px;
   text-align: center;
 }
 
 .btn-create-note {
   background: rgba(255, 255, 255, 0.15);
-  color: #ffffff;
+  color: var(--text-primary)fff;
   border: 1px solid rgba(255, 255, 255, 0.3);
   padding: 8px 16px;
   border-radius: 8px;
@@ -175,16 +175,16 @@
 }
 
 .btn-create-note:hover {
-  background: #ffffff;
-  color: #000;
+  background: var(--accent-primary);
+  color: white;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+  box-shadow: var(--shadow-soft);
 }
 
 .empty-notes {
   text-align: center;
   padding: 60px 20px;
-  color: #888;
+  color: var(--text-tertiary);
 }
 
 .empty-notes p {
@@ -194,7 +194,7 @@
 
 .empty-notes .hint {
   font-size: 14px;
-  color: #666;
+  color: var(--text-tertiary);
   margin-top: 10px;
 }
 
@@ -209,33 +209,33 @@
 .note-editor-header {
   margin-bottom: 20px;
   padding-bottom: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .note-editor-header h3 {
   margin: 0 0 8px 0;
   font-size: 20px;
-  color: #ffffff;
+  color: var(--text-primary)fff;
 }
 
 .note-editor-textarea {
   flex: 1;
   min-height: 400px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 16px;
   font-size: 15px;
   font-family: inherit;
   line-height: 1.6;
-  color: #ffffff;
+  color: var(--text-primary)fff;
   resize: vertical;
   transition: all 0.2s;
 }
 
 .note-editor-textarea:focus {
   outline: none;
-  border-color: rgba(255, 255, 255, 0.4);
+  border-color: var(--accent-primary);
   background: rgba(255, 255, 255, 0.08);
 }
 
@@ -249,12 +249,12 @@
   align-items: center;
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--border-color);
 }
 
 .note-editor-footer .last-saved {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-secondary);
 }
 
 .note-editor-actions {

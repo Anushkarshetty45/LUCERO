@@ -1,7 +1,7 @@
 /* Session Report Modal */
 .session-report-modal {
   position: relative;
-  background: linear-gradient(135deg, rgba(10, 15, 30, 0.98) 0%, rgba(15, 20, 40, 0.98) 100%);
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
   border: 1px solid rgba(167, 139, 250, 0.2);
   border-radius: 24px;
   padding: 40px;
@@ -60,7 +60,7 @@
 
 .report-header p {
   font-size: 16px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   margin: 0;
 }
 
@@ -71,10 +71,10 @@
   align-items: center;
   gap: 16px;
   padding: 32px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--bg-card-hover);
   border-radius: 20px;
   margin-bottom: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 2px solid var(--border-glow);
 }
 
 .score-circle {
@@ -132,7 +132,7 @@
 
 .score-quality p {
   font-size: 14px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   margin: 0;
 }
 
@@ -149,8 +149,8 @@
   align-items: flex-start;
   gap: 12px;
   padding: 20px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   transition: all 0.3s;
   animation: statFadeIn 0.4s ease-out backwards;
@@ -204,13 +204,13 @@
 .stat-label {
   font-size: 14px;
   font-weight: 500;
-  color: #cbd5e1;
+  color: var(--text-secondary);
   margin-bottom: 2px;
 }
 
 .stat-sublabel {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 /* Achievements */
@@ -253,7 +253,7 @@
   align-items: center;
   gap: 16px;
   padding: 16px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--bg-card-hover);
   border: 1px solid;
   border-radius: 12px;
   transition: all 0.3s;
@@ -318,7 +318,7 @@
 
 .achievement-desc {
   font-size: 13px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   margin-bottom: 6px;
 }
 
@@ -379,7 +379,7 @@
 .insight-item p {
   margin: 0;
   font-size: 14px;
-  color: #cbd5e1;
+  color: var(--text-secondary);
   line-height: 1.5;
 }
 

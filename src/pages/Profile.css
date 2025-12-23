@@ -74,7 +74,7 @@
 .profile-avatar-section {
   text-align: center;
   padding: 40px 30px;
-  background: linear-gradient(135deg, #212660 0%, #020000 100%);
+  background: var(--bg-card);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 

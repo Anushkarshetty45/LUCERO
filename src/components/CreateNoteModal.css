@@ -10,7 +10,7 @@
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #fff;
+  color: var(--text-primary);
   font-size: 14px;
 }
 
@@ -19,11 +19,11 @@
 .create-note-modal .form-group select {
   width: 100%;
   padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-size: 15px;
-  color: #fff;
+  color: var(--text-primary);
   transition: all 0.2s;
   font-family: inherit;
 }
@@ -33,15 +33,15 @@
 }
 
 .create-note-modal .form-group select option {
-  background: #1a1a1a;
-  color: #fff;
+  background: var(--bg-card);
+  color: var(--text-primary);
 }
 
 .create-note-modal .form-group input:focus,
 .create-note-modal .form-group textarea:focus,
 .create-note-modal .form-group select:focus {
   outline: none;
-  border-color: rgba(255, 255, 255, 0.4);
+  border-color: var(--accent-primary);
   background: rgba(255, 255, 255, 0.08);
 }
 
@@ -67,20 +67,20 @@
   display: block;
   margin-top: 6px;
   font-size: 13px;
-  color: #999;
+  color: var(--text-tertiary);
 }
 
 .create-note-modal .modal-body {
   padding: 24px;
-  background: #030510;
+  background: var(--bg-primary);
 }
 
 .create-note-modal .modal-footer {
   display: flex;
   gap: 12px;
   padding: 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(10, 14, 39, 0.8);
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-secondary);
   border-radius: 0 0 16px 16px;
 }
 
@@ -97,31 +97,31 @@
 }
 
 .create-note-modal .btn-primary {
-  background: #ffffff;
-  color: #000;
+  background: var(--accent-primary);
+  color: white;
 }
 
 .create-note-modal .btn-primary:hover:not(:disabled) {
-  background: #ffffff;
+  background: var(--accent-primary);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+  box-shadow: var(--shadow-soft);
 }
 
 .create-note-modal .btn-primary:disabled {
-  background: #444;
-  color: #888;
+  background: var(--bg-secondary);
+  color: var(--text-tertiary);
   cursor: not-allowed;
 }
 
 .create-note-modal .btn-secondary {
   background: transparent;
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
 }
 
 .create-note-modal .btn-secondary:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: #fff;
+  background: var(--bg-secondary);
+  border-color: var(--text-primary);
 }
 
 .create-note-modal .btn-secondary:disabled {

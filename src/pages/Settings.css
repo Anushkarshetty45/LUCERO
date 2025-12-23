@@ -1,27 +1,7 @@
 .settings-container {
   min-height: 100vh;
-  background: #030510;
-  background-image:
-    radial-gradient(2px 2px at 20% 30%, white, transparent),
-    radial-gradient(2px 2px at 60% 70%, white, transparent),
-    radial-gradient(1px 1px at 50% 50%, white, transparent),
-    radial-gradient(1px 1px at 80% 10%, white, transparent),
-    radial-gradient(2px 2px at 90% 60%, white, transparent),
-    radial-gradient(1px 1px at 33% 80%, white, transparent),
-    radial-gradient(1px 1px at 15% 90%, white, transparent);
-  background-size: 200% 200%;
-  background-position: 0% 0%;
-  animation: starsMove 120s linear infinite;
+  background: var(--bg-primary);
   padding: 40px 20px;
-}
-
-@keyframes starsMove {
-  0% {
-    background-position: 0% 0%;
-  }
-  100% {
-    background-position: 100% 100%;
-  }
 }
 
 .settings-header {
@@ -35,7 +15,7 @@
 .settings-header h1 {
   font-size: 32px;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -45,17 +25,17 @@
 }
 
 .settings-card {
-  background: rgba(10, 15, 30, 0.7);
+  background: var(--bg-card);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-soft);
 }
 
 .settings-section {
   padding: 30px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .settings-section:last-child {
@@ -65,7 +45,7 @@
 .settings-section h2 {
   font-size: 24px;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-primary);
   margin: 0 0 24px 0;
 }
 
@@ -74,8 +54,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   margin-bottom: 16px;
 }
@@ -87,13 +67,13 @@
 .setting-info h3 {
   font-size: 16px;
   font-weight: 600;
-  color: #fff;
+  color: var(--text-primary);
   margin: 0 0 4px 0;
 }
 
 .setting-info p {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-secondary);
   margin: 0;
 }
 
@@ -118,10 +98,10 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: var(--bg-secondary);
   transition: 0.3s;
   border-radius: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--border-color);
 }
 
 .slider:before {
@@ -131,24 +111,24 @@
   width: 22px;
   left: 3px;
   bottom: 3px;
-  background-color: white;
+  background-color: var(--text-tertiary);
   transition: 0.3s;
   border-radius: 50%;
 }
 
 input:checked + .slider {
-  background-color: #ffffff;
+  background-color: var(--accent-primary);
 }
 
 input:checked + .slider:before {
-  background-color: #000;
+  background-color: white;
   transform: translateX(26px);
 }
 
 .btn-save {
   padding: 12px 24px;
-  background: #ffffff;
-  color: #000;
+  background: var(--accent-primary);
+  color: white;
   border: none;
   border-radius: 8px;
   font-weight: 700;
@@ -159,14 +139,14 @@ input:checked + .slider:before {
 }
 
 .btn-save:hover:not(:disabled) {
-  background: #ffffff;
+  background: var(--accent-secondary);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+  box-shadow: var(--shadow-soft);
 }
 
 .btn-save:disabled {
-  background: #444;
-  color: #888;
+  background: var(--bg-secondary);
+  color: var(--text-tertiary);
   cursor: not-allowed;
 }
 
@@ -179,27 +159,27 @@ input:checked + .slider:before {
   justify-content: space-between;
   align-items: center;
   padding: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
 }
 
 .info-label {
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-secondary);
   font-size: 14px;
 }
 
 .info-value {
-  color: #fff;
+  color: var(--text-primary);
   font-size: 14px;
 }
 
 .btn-change-password {
   padding: 12px 24px;
   background: transparent;
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
@@ -208,8 +188,8 @@ input:checked + .slider:before {
 }
 
 .btn-change-password:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: #ffffff;
+  background: var(--bg-card-hover);
+  border-color: var(--accent-primary);
 }
 
 .password-form {
@@ -226,24 +206,24 @@ input:checked + .slider:before {
 
 .form-group label {
   font-weight: 600;
-  color: #fff;
+  color: var(--text-primary);
   font-size: 14px;
 }
 
 .form-group input {
   padding: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-size: 15px;
-  color: #fff;
+  color: var(--text-primary);
   transition: all 0.2s;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--accent-primary);
+  background: var(--bg-card-hover);
 }
 
 .password-actions {
@@ -264,40 +244,40 @@ input:checked + .slider:before {
 }
 
 .btn-primary {
-  background: #ffffff;
-  color: #000;
+  background: var(--accent-primary);
+  color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #ffffff;
+  background: var(--accent-secondary);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+  box-shadow: var(--shadow-soft);
 }
 
 .btn-primary:disabled {
-  background: #444;
-  color: #888;
+  background: var(--bg-secondary);
+  color: var(--text-tertiary);
   cursor: not-allowed;
 }
 
 .btn-secondary {
   background: transparent;
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: #ffffff;
+  background: var(--bg-card-hover);
+  border-color: var(--accent-primary);
 }
 
 .danger-zone {
-  background: rgba(139, 0, 0, 0.1);
-  border-top: 1px solid rgba(255, 77, 77, 0.3);
+  background: var(--bg-secondary);
+  border-top: 1px solid #ff4d4d;
 }
 
 .danger-warning {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-secondary);
   font-size: 14px;
   margin-bottom: 20px;
 }
@@ -319,4 +299,28 @@ input:checked + .slider:before {
   color: #fff;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(255, 77, 77, 0.3);
+}
+
+/* Theme Picker Button */
+.btn-theme-picker {
+  padding: 10px 20px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.btn-theme-picker:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
 }

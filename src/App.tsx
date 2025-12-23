@@ -4,6 +4,7 @@ import { ThemeProvider } from './contexts/ThemeContext'
 import { TimerProvider } from './contexts/TimerContext'
 import { LiveStudyProvider } from './contexts/LiveStudyContext'
 import ParticleSystem from './components/BackgroundParticles/ParticleSystem'
+import LoadingScreen from './components/LoadingScreen'
 import Auth from './pages/Auth'
 import Dashboard from './pages/Dashboard'
 import Course from './pages/Course'
@@ -22,7 +23,11 @@ function App() {
   const { user, loading } = useAuth()
 
   if (loading) {
-    return <div>Loading...</div>
+    return (
+      <ThemeProvider>
+        <LoadingScreen />
+      </ThemeProvider>
+    )
   }
 
   return (

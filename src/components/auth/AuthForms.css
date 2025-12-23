@@ -9,7 +9,7 @@
   margin-bottom: 30px;
   font-weight: 800;
   text-align: left;
-  color: #ffffff;
+  color: var(--text-primary);
   text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
 }
 
@@ -28,7 +28,7 @@
   margin-bottom: 8px;
   font-weight: 600;
   font-size: 14px;
-  color: #cbd5e1 !important;
+  color: var(--text-secondary) !important;
   letter-spacing: 0.5px;
 }
 
@@ -39,12 +39,12 @@
   border: 1px solid rgba(148, 163, 184, 0.1);
   border-radius: 8px;
   font-size: 16px;
-  color: #f1f5f9;
+  color: var(--text-primary);
   transition: all 0.2s;
 }
 
 .form-group input::placeholder {
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 /* Fix browser autofill styles */
@@ -52,14 +52,14 @@
 .form-group input:-webkit-autofill:hover,
 .form-group input:-webkit-autofill:focus,
 .form-group input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px rgba(10, 15, 30, 0.9) inset !important;
-  -webkit-text-fill-color: #f1f5f9 !important;
+  -webkit-box-shadow: 0 0 0 30px var(--bg-card) inset !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
   transition: background-color 5000s ease-in-out 0s;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #ffffff;
+  border-color: var(--text-primary);
   background: rgba(30, 41, 59, 0.8);
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1), 0 0 30px rgba(167, 139, 250, 0.15);
 }
@@ -98,11 +98,11 @@
 
 .checkbox-group input[type="checkbox"] {
   margin-right: 8px;
-  accent-color: #ffffff;
+  accent-color: var(--text-primary);
 }
 
 .checkbox-group a {
-  color: #ffffff;
+  color: var(--text-primary);
   text-decoration: none;
   margin: 0 4px;
 }
@@ -184,8 +184,8 @@
   flex: 1;
   padding: 12px;
   border: 1px solid rgba(148, 163, 184, 0.1);
-  background: rgba(10, 15, 30, 0.7);
-  color: #f1f5f9;
+  background: var(--bg-card);
+  color: var(--text-primary);
   border-radius: 8px;
   cursor: pointer;
   display: flex;
@@ -217,7 +217,7 @@
 .toggle-form button {
   background: none;
   border: none;
-  color: #ffffff;
+  color: var(--text-primary);
   text-decoration: none;
   cursor: pointer;
   font-size: 14px;
@@ -252,6 +252,6 @@
 }
 
 .forgot-password a:hover {
-  color: #ffffff;
+  color: var(--text-primary);
   text-decoration: underline;
 }

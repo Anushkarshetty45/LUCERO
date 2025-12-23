@@ -1,5 +1,5 @@
 .pdf-analyzer-modal {
-  background: rgba(15, 20, 40, 0.98);
+  background: var(--bg-card);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(235, 234, 232, 0.2);
   border-radius: 20px;
@@ -37,7 +37,7 @@
   margin: 0;
   font-size: 24px;
   font-weight: 700;
-  color: #ebeae8;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -92,7 +92,7 @@
 .upload-area h3 {
   margin: 0 0 12px 0;
   font-size: 24px;
-  color: #ebeae8;
+  color: var(--text-primary);
   font-weight: 700;
 }
 
@@ -195,7 +195,7 @@
 
 .processing-status p {
   margin: 0 0 8px 0;
-  color: #ebeae8;
+  color: var(--text-primary);
   font-size: 16px;
   font-weight: 600;
 }
@@ -233,13 +233,13 @@
 .results-header h3 {
   margin: 0;
   font-size: 20px;
-  color: #ebeae8;
+  color: var(--text-primary);
   font-weight: 700;
 }
 
 .btn-new-analysis {
   background: rgba(255, 255, 255, 0.1);
-  color: #ebeae8;
+  color: var(--text-primary);
   border: 1px solid rgba(235, 234, 232, 0.3);
   padding: 10px 20px;
   border-radius: 8px;
@@ -261,7 +261,7 @@
 .result-section h4 {
   margin: 0 0 16px 0;
   font-size: 18px;
-  color: #ebeae8;
+  color: var(--text-primary);
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -273,7 +273,7 @@
   border: 1px solid rgba(235, 234, 232, 0.1);
   border-radius: 12px;
   padding: 32px;
-  color: #e8e8e8;
+  color: var(--text-primary);
   font-size: 15px;
   line-height: 1.9;
   white-space: normal;
@@ -294,13 +294,13 @@
 }
 
 .result-content em {
-  color: #d4d3d1;
+  color: var(--text-secondary);
   font-style: italic;
 }
 
 /* Text Formatting */
 .section-heading {
-  color: #ebeae8;
+  color: var(--text-primary);
   font-size: 17px;
   font-weight: 700;
   margin: 24px 0 12px 0;
@@ -313,7 +313,7 @@
 }
 
 .bullet-point {
-  color: #667eea;
+  color: var(--accent-primary);
   font-weight: 600;
   margin-right: 8px;
 }

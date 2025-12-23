@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { useNavigate, Link } from 'react-router-dom'
-import { getProfile, getCourses, getTodayStudyTime, getCourseWithProgress, calculateUserStreak } from '../services/api'
+import { getProfile, getCourses, getTodayStudyTime, getCourseWithProgress, recordDailyActivity, getUserStreak } from '../services/api'
 import { Profile, CourseWithProgress } from '../types'
 import { getGreeting, formatTime, getMotivationalQuote } from '../utils/helpers'
 import CreateCourseModal from '../components/CreateCourseModal'
@@ -12,6 +12,7 @@ import StudyTimerModal from '../components/StudyTimerModal'
 import ChatbotModal from '../components/ChatbotModal'
 import PDFAnalyzerModal from '../components/PDFAnalyzer/PDFAnalyzerModal'
 import FlashcardsModal from '../components/FlashcardsModal'
+import GroupStudyModal from '../components/GroupStudyModal'
 import QuickThemeSwitcher from '../components/QuickThemeSwitcher'
 import { useTimerContext } from '../contexts/TimerContext'
 import { useLiveStudy } from '../contexts/LiveStudyContext'
@@ -30,6 +31,7 @@ export default function Dashboard() {
   const [showChatbot, setShowChatbot] = useState(false)
   const [showPDFAnalyzer, setShowPDFAnalyzer] = useState(false)
   const [showFlashcards, setShowFlashcards] = useState(false)
+  const [showGroupStudy, setShowGroupStudy] = useState(false)
   const [streak, setStreak] = useState(0)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
 
@@ -61,8 +63,11 @@ export default function Dashboard() {
 
   const loadDashboardData = async () => {
     try {
+      // Record daily login activity FIRST
+      await recordDailyActivity(user!.id, 'login')
+
       // Parallelize all independent API calls for faster loading
-      const [profileResult, coursesData, studyTime, streakDays] = await Promise.all([
+      const [profileResult, coursesData, studyTime, streakData] = await Promise.all([
         // Load profile with fallback
         getProfile(user!.id).catch(() => ({
           id: user!.id,
@@ -78,13 +83,13 @@ export default function Dashboard() {
         getCourses(user!.id),
         // Load today's study time
         getTodayStudyTime(user!.id),
-        // Calculate streak
-        calculateUserStreak(user!.id)
+        // Get user streak (updated by recordDailyActivity above)
+        getUserStreak(user!.id)
       ])
 
       setProfile(profileResult)
       setTodayStudyTime(studyTime)
-      setStreak(streakDays)
+      setStreak(streakData.current)
 
       // Hide loading screen early to show UI faster
       setLoading(false)
@@ -180,6 +185,10 @@ export default function Dashboard() {
           <button className="sidebar-nav-item" onClick={() => setShowPDFAnalyzer(true)}>
             <span className="nav-icon">📄</span>
             PDF Analyzer
+          </button>
+          <button className="sidebar-nav-item" onClick={() => setShowGroupStudy(true)}>
+            <span className="nav-icon">🎥</span>
+            Group Study
           </button>
           <button className="sidebar-nav-item" onClick={() => setShowLiveStudy(true)}>
             <span className="nav-icon">📹</span>
@@ -357,6 +366,11 @@ export default function Dashboard() {
                 <span className="tool-name">PDF Analyzer</span>
                 <span className="tool-badge new">New!</span>
               </button>
+              <button className="tool-card" onClick={() => setShowGroupStudy(true)}>
+                <span className="tool-icon">🎥</span>
+                <span className="tool-name">Group Study</span>
+                <span className="tool-badge new">New!</span>
+              </button>
               <button className="tool-card" onClick={() => setShowAllNotes(true)}>
                 <span className="tool-icon">📝</span>
                 <span className="tool-name">Notes</span>
@@ -417,6 +431,12 @@ export default function Dashboard() {
         <FlashcardsModal
           userId={user.id}
           onClose={() => setShowFlashcards(false)}
+        />
+      )}
+
+      {showGroupStudy && (
+        <GroupStudyModal
+          onClose={() => setShowGroupStudy(false)}
         />
       )}
     </div>

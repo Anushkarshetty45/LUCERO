@@ -1,24 +1,24 @@
 .course-card {
-  background: #171931;
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-hover) 100%);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-soft);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
   transform-style: preserve-3d;
 }
 
 .course-card:hover {
   transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-  border-color: #ffffff;
+  box-shadow: var(--shadow-hover);
+  border-color: var(--accent-primary);
   z-index: 10;
 }
 
 .course-card-header {
   padding: 24px;
-  color: rgb(222, 217, 217);
+  color: var(--text-primary);
   cursor: pointer;
   min-height: 120px;
   display: flex;
@@ -30,27 +30,32 @@
   font-size: 20px;
   margin: 0 0 12px 0;
   font-weight: 600;
-  color: #1f1946;
+  color: var(--text-primary);
 }
 
 .course-subject-badge {
   display: inline-block;
-  padding: 4px 12px;
-  background: rgba(255, 255, 255, 0.25);
+  padding: 6px 14px;
+  background: var(--bg-secondary);
   border-radius: 20px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   align-self: flex-start;
-  color: #000;
+  color: var(--accent-primary);
+  border: 1px solid var(--border-glow);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .course-card-body {
   padding: 20px;
+  background: linear-gradient(180deg, var(--bg-card-hover) 0%, var(--bg-secondary) 100%);
 }
 
 .course-description {
   font-size: 14px;
-  color: #d7d7d7;
+  color: var(--text-secondary);
   margin-bottom: 16px;
   line-height: 1.6;
   display: -webkit-box;
@@ -70,11 +75,22 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  padding: 12px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.stat:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .stat-label {
   font-size: 12px;
-  color: #999;
+  color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 1px;
   font-weight: 600;
@@ -83,24 +99,28 @@
 .stat-value {
   font-size: 24px;
   font-weight: 700;
-  color: #fff;
+  color: var(--accent-primary);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .stat-value.stat-small {
   font-size: 14px;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .course-footer-info {
-  padding: 12px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-color);
   margin-bottom: 16px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
 }
 
 .created-date {
   font-size: 13px;
-  color: #888;
+  color: var(--text-tertiary);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -115,8 +135,8 @@
 .btn-open {
   flex: 1;
   padding: 10px;
-  background: #ffffff;
-  color: #000;
+  background: var(--accent-primary);
+  color: white;
   border: none;
   border-radius: 6px;
   font-weight: 700;
@@ -127,26 +147,26 @@
 }
 
 .btn-open:hover {
-  background: #ffffff;
+  background: var(--accent-secondary);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+  box-shadow: var(--shadow-soft);
 }
 
 .btn-menu {
   width: 40px;
   padding: 10px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-secondary);
   border: none;
   border-radius: 6px;
   font-size: 20px;
   cursor: pointer;
   transition: all 0.2s;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .btn-menu:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  background: var(--bg-card-hover);
+  color: var(--accent-primary);
 }
 
 .course-menu {
@@ -154,10 +174,10 @@
   bottom: 100%;
   right: 0;
   margin-bottom: 8px;
-  background: #333;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-hover);
   overflow: hidden;
   z-index: 10;
   min-width: 140px;
@@ -173,12 +193,12 @@
   cursor: pointer;
   font-size: 14px;
   transition: background 0.2s;
-  color: #ccc;
+  color: var(--text-secondary);
 }
 
 .course-menu button:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
 }
 
 .course-menu .delete-btn {
@@ -200,22 +220,24 @@
 }
 
 .delete-confirm-modal {
-  background: white;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 30px;
   max-width: 400px;
   width: 90%;
+  box-shadow: var(--shadow-hover);
 }
 
 .delete-confirm-modal h3 {
   font-size: 22px;
   margin-bottom: 12px;
-  color: #000;
+  color: var(--text-primary);
 }
 
 .delete-confirm-modal p {
   font-size: 16px;
-  color: #854F6C;
+  color: var(--text-secondary);
   margin-bottom: 24px;
   line-height: 1.5;
 }
@@ -237,19 +259,22 @@
 }
 
 .btn-cancel {
-  background: #f3f2f2;
-  color: #110d27;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
 }
 
 .btn-cancel:hover {
-  background: #DFB6B2;
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
 }
 
 .btn-delete {
-  background: #2B124C;
+  background: #ff4d4d;
   color: white;
 }
 
 .btn-delete:hover {
-  background: #190019;
+  background: #cc0000;
+  transform: translateY(-2px);
 }
