@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getCourses, getLessons } from '../services/api'
+import { getCourses, getLessons, recordDailyActivity } from '../services/api'
 import type { Course, Lesson } from '../types'
 import './FlashcardsModal.css'
 
@@ -160,6 +160,9 @@ Make the flashcards educational, clear, and focused on key concepts from the con
 
         setFlashcards(generatedCards)
         setViewMode('study')
+
+        // Record flashcard activity for streak
+        await recordDailyActivity(userId, 'flashcard')
       } catch (parseError) {
         console.error('Parse error:', parseError)
         console.error('AI Response:', aiResponse)

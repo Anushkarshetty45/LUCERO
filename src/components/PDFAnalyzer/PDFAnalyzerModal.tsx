@@ -5,12 +5,9 @@ import { uploadPDFToStorage, createPDFAnalysis } from '../../services/pdfAnalysi
 import { generateAnalysisPrompt } from '../../services/aiPrompts'
 import AnalysisTab from './AnalysisTab'
 import HistoryTab from './HistoryTab'
-import ChatTab from './ChatTab'
 import FlashcardsTab from './FlashcardsTab'
 import QuizTab from './QuizTab'
-import StudyPlanTab from './StudyPlanTab'
 import MindMapTab from './MindMapTab'
-import ExportTab from './ExportTab'
 import './PDFAnalyzerModal.css'
 
 // Set up PDF.js worker
@@ -20,7 +17,7 @@ interface PDFAnalyzerModalProps {
   onClose: () => void
 }
 
-type TabType = 'upload' | 'analysis' | 'history' | 'chat' | 'flashcards' | 'quiz' | 'studyplan' | 'mindmap' | 'export'
+type TabType = 'upload' | 'analysis' | 'history' | 'flashcards' | 'quiz' | 'mindmap'
 
 export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
   const { user } = useAuth()
@@ -91,7 +88,7 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
         },
         body: JSON.stringify({
           prompt,
-          maxTokens: 4096
+          maxTokens: 2048  // Reduced for faster responses
         })
       }
     )
@@ -261,17 +258,8 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
       case 'history':
         return user ? <HistoryTab userId={user.id} onLoadAnalysis={handleLoadAnalysis} /> : null
 
-      case 'chat':
-        return analysisId && pdfContent ? (
-          <ChatTab analysisId={analysisId} pdfContent={pdfContent} userId={user!.id} />
-        ) : (
-          <div className="tab-empty-state">
-            <p>📄 Please analyze a PDF first to start chatting!</p>
-          </div>
-        )
-
       case 'flashcards':
-        return analysisId && pdfContent ? (
+        return analysisId ? (
           <FlashcardsTab analysisId={analysisId} pdfContent={pdfContent} />
         ) : (
           <div className="tab-empty-state">
@@ -280,7 +268,7 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
         )
 
       case 'quiz':
-        return analysisId && pdfContent ? (
+        return analysisId ? (
           <QuizTab analysisId={analysisId} pdfContent={pdfContent} userId={user!.id} />
         ) : (
           <div className="tab-empty-state">
@@ -288,35 +276,12 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
           </div>
         )
 
-      case 'studyplan':
-        return analysisId && pdfContent ? (
-          <StudyPlanTab analysisId={analysisId} pdfContent={pdfContent} title={title} userId={user!.id} />
-        ) : (
-          <div className="tab-empty-state">
-            <p>📄 Please analyze a PDF first to create a study plan!</p>
-          </div>
-        )
-
       case 'mindmap':
-        return analysisId && pdfContent ? (
+        return analysisId ? (
           <MindMapTab analysisId={analysisId} pdfContent={pdfContent} />
         ) : (
           <div className="tab-empty-state">
             <p>📄 Please analyze a PDF first to generate a mind map!</p>
-          </div>
-        )
-
-      case 'export':
-        return analysisId ? (
-          <ExportTab
-            analysisId={analysisId}
-            title={title}
-            summary={summary}
-            explanation={explanation}
-          />
-        ) : (
-          <div className="tab-empty-state">
-            <p>📄 Please analyze a PDF first to export!</p>
           </div>
         )
 
@@ -354,13 +319,6 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
             📚 History
           </button>
           <button
-            className={`tab-btn ${activeTab === 'chat' ? 'active' : ''}`}
-            onClick={() => setActiveTab('chat')}
-            disabled={!analysisId}
-          >
-            💬 Chat
-          </button>
-          <button
             className={`tab-btn ${activeTab === 'flashcards' ? 'active' : ''}`}
             onClick={() => setActiveTab('flashcards')}
             disabled={!analysisId}
@@ -375,25 +333,11 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
             ✅ Quiz
           </button>
           <button
-            className={`tab-btn ${activeTab === 'studyplan' ? 'active' : ''}`}
-            onClick={() => setActiveTab('studyplan')}
-            disabled={!analysisId}
-          >
-            📅 Study Plan
-          </button>
-          <button
             className={`tab-btn ${activeTab === 'mindmap' ? 'active' : ''}`}
             onClick={() => setActiveTab('mindmap')}
             disabled={!analysisId}
           >
             🧠 Mind Map
-          </button>
-          <button
-            className={`tab-btn ${activeTab === 'export' ? 'active' : ''}`}
-            onClick={() => setActiveTab('export')}
-            disabled={!analysisId}
-          >
-            💾 Export
           </button>
         </div>
 
