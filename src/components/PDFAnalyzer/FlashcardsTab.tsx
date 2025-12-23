@@ -14,6 +14,7 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
   const [isFlipped, setIsFlipped] = useState(false)
   const [generating, setGenerating] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     loadFlashcards()
@@ -33,28 +34,31 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
 
   const generateFlashcards = async () => {
     setGenerating(true)
+    setError('')
     try {
       const prompt = generateFlashcardsPrompt(pdfContent.substring(0, 15000))
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.REACT_APP_GEMINI_API_KEY}`,
+        'http://localhost:3002/api/claude',
         {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: {
-              temperature: 0.7,
-              maxOutputTokens: 3000
-            }
+            prompt,
+            maxTokens: 3000
           })
         }
       )
 
       const data = await response.json()
-      const aiResponse = data.candidates[0].content.parts[0].text
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate flashcards')
+      }
+
+      const aiResponse = data.text
 
       // Parse JSON response
       const jsonMatch = aiResponse.match(/\{[\s\S]*\}/)
@@ -64,10 +68,13 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
         // Save to database
         const savedCards = await createFlashcards(analysisId, parsed.flashcards)
         setFlashcards(savedCards)
+        setError('')
+      } else {
+        throw new Error('Failed to parse flashcards from AI response')
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Generate flashcards error:', err)
-      alert('Failed to generate flashcards. Please try again.')
+      setError(err.message || 'Failed to generate flashcards. Please try again.')
     } finally {
       setGenerating(false)
     }
@@ -101,6 +108,11 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
           >
             {generating ? '⏳ Generating...' : '✨ Generate Flashcards'}
           </button>
+          {error && (
+            <div className="error-message" style={{ marginTop: '1rem', padding: '1rem', background: '#fee', color: '#c33', borderRadius: '8px' }}>
+              ⚠️ {error}
+            </div>
+          )}
         </div>
       ) : (
         <>
