@@ -75,12 +75,6 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
   }
 
   const analyzeWithAI = async (text: string) => {
-    const apiKey = process.env.REACT_APP_GEMINI_API_KEY
-
-    if (!apiKey) {
-      throw new Error('Gemini API key not found')
-    }
-
     const maxLength = 30000
     const truncatedText = text.length > maxLength ? text.substring(0, maxLength) + '...' : text
 
@@ -89,24 +83,15 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
     setProgress(60)
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      'http://localhost:3002/api/claude',
       {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: prompt
-            }]
-          }],
-          generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 4096,
-          }
+          prompt,
+          maxTokens: 4096
         })
       }
     )
@@ -115,11 +100,11 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
 
     if (!response.ok) {
       const error = await response.json()
-      throw new Error(error.error?.message || 'Failed to analyze PDF')
+      throw new Error(error.error || 'Failed to analyze PDF')
     }
 
     const data = await response.json()
-    const aiResponse = data.candidates[0].content.parts[0].text
+    const aiResponse = data.text
 
     setProgress(100)
 
