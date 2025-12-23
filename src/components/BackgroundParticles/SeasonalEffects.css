@@ -1,0 +1,85 @@
+.seasonal-effects {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+/* Summer Fireflies */
+.firefly {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffeb3b;
+  box-shadow: 0 0 10px #ffeb3b, 0 0 20px #ffeb3b;
+  animation: firefly-glow 3s ease-in-out infinite;
+}
+
+@keyframes firefly-glow {
+  0%, 100% {
+    opacity: 0.2;
+    transform: translateY(0) scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-20px) scale(1.2);
+  }
+}
+
+/* Fall Leaves */
+.leaf {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  border-radius: 50% 0 50% 0;
+  animation: leaf-fall 12s linear infinite, leaf-swing 3s ease-in-out infinite;
+}
+
+@keyframes leaf-fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  100% {
+    transform: translateY(120vh) rotate(720deg);
+  }
+}
+
+@keyframes leaf-swing {
+  0%, 100% {
+    transform: translateX(-30px);
+  }
+  50% {
+    transform: translateX(30px);
+  }
+}
+
+/* Winter Snowflakes */
+.snowflake {
+  position: absolute;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  animation: snow-fall 10s linear infinite, snow-drift 4s ease-in-out infinite;
+}
+
+@keyframes snow-fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  100% {
+    transform: translateY(120vh) rotate(360deg);
+  }
+}
+
+@keyframes snow-drift {
+  0%, 100% {
+    transform: translateX(-15px);
+  }
+  50% {
+    transform: translateX(15px);
+  }
+}
