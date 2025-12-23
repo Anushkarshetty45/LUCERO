@@ -1,0 +1,154 @@
+/*  Theme System CSS Variables
+ *  These variables are dynamically updated by ThemeContext.tsx
+ *  All 10 themes share this same variable structure for smooth transitions
+ */
+
+:root {
+  /* Transition settings for smooth theme changes */
+  --theme-transition-speed: 0.4s;
+  --theme-transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+  --theme-transition: all var(--theme-transition-speed) var(--theme-transition-timing);
+
+  /* Background colors (dynamically set by theme) */
+  --bg-primary: #030510;
+  --bg-secondary: #010205;
+  --bg-card: rgba(10, 15, 30, 0.7);
+  --bg-card-hover: rgba(15, 20, 40, 0.85);
+
+  /* Maintain backwards compatibility with existing variables */
+  --space-dark: var(--bg-primary);
+  --space-deeper: var(--bg-secondary);
+  --space-card: var(--bg-card);
+  --space-card-hover: var(--bg-card-hover);
+  --bg-dark: var(--bg-primary);
+
+  /* Text colors (dynamically set by theme) */
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+
+  /* Maintain backwards compatibility */
+  --text-light: var(--text-primary);
+  --text-medium: var(--text-secondary);
+  --text-gray: var(--text-tertiary);
+
+  /* Accent colors (dynamically set by theme) */
+  --accent-primary: #a78bfa;
+  --accent-secondary: #60a5fa;
+
+  /* Maintain backwards compatibility */
+  --accent-purple: var(--accent-primary);
+  --accent-blue: var(--accent-secondary);
+  --primary-color: var(--accent-primary);
+
+  /* Border colors (dynamically set by theme) */
+  --border-color: rgba(148, 163, 184, 0.1);
+  --border-glow: rgba(167, 139, 250, 0.2);
+
+  /* Shadow effects (dynamically set by theme) */
+  --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.3);
+  --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 12px 32px rgba(167, 139, 250, 0.3);
+  --shadow-glow: 0 0 30px rgba(167, 139, 250, 0.15);
+
+  /* Maintain backwards compatibility */
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --glow-color: rgba(167, 139, 250, 0.2);
+
+  /* Semantic colors (dynamically set by theme) */
+  --color-success: #4caf50;
+  --color-error: #f44336;
+  --color-warning: #ff9800;
+  --color-info: #667eea;
+}
+
+/* Apply smooth transitions to major layout elements */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color var(--theme-transition-speed) var(--theme-transition-timing),
+              color var(--theme-transition-speed) var(--theme-transition-timing);
+}
+
+/* Apply transitions to common containers */
+.dashboard-container,
+.settings-container,
+.home-page,
+.course-page,
+.profile-container {
+  transition: var(--theme-transition);
+}
+
+/* Modal transitions */
+.modal-overlay,
+.modal-content,
+.chatbot-modal,
+.pdf-analyzer-modal,
+.theme-modal,
+.flashcards-modal {
+  transition: background-color var(--theme-transition-speed) var(--theme-transition-timing),
+              border-color var(--theme-transition-speed) var(--theme-transition-timing),
+              box-shadow var(--theme-transition-speed) var(--theme-transition-timing);
+}
+
+/* Card transitions */
+.stat-card,
+.course-card,
+.settings-card,
+.feature-item,
+.card-3d {
+  transition: background-color var(--theme-transition-speed) var(--theme-transition-timing),
+              border-color var(--theme-transition-speed) var(--theme-transition-timing),
+              box-shadow var(--theme-transition-speed) var(--theme-transition-timing),
+              transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Button transitions */
+button,
+.btn-primary,
+.btn-secondary,
+.btn-save,
+.tab-btn {
+  transition: background-color 0.2s ease,
+              color 0.2s ease,
+              border-color 0.2s ease,
+              transform 0.1s ease;
+}
+
+/* Input and form element transitions */
+input,
+textarea,
+select {
+  transition: background-color var(--theme-transition-speed) var(--theme-transition-timing),
+              color var(--theme-transition-speed) var(--theme-transition-timing),
+              border-color var(--theme-transition-speed) var(--theme-transition-timing);
+}
+
+/* Sidebar transitions */
+.dashboard-sidebar,
+.sidebar,
+.nav-menu {
+  transition: background-color var(--theme-transition-speed) var(--theme-transition-timing),
+              border-color var(--theme-transition-speed) var(--theme-transition-timing);
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Disable theme transitions for reduced motion */
+  body,
+  .dashboard-container,
+  .settings-container,
+  .modal-overlay,
+  .stat-card,
+  button {
+    transition: none !important;
+  }
+}
