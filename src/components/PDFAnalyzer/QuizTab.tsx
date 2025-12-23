@@ -41,24 +41,21 @@ export default function QuizTab({ analysisId, pdfContent, userId }: QuizTabProps
       const prompt = generateQuizPrompt(pdfContent.substring(0, 15000))
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.REACT_APP_GEMINI_API_KEY}`,
+        'http://localhost:3002/api/claude',
         {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: {
-              temperature: 0.7,
-              maxOutputTokens: 3000
-            }
+            prompt,
+            maxTokens: 3000
           })
         }
       )
 
       const data = await response.json()
-      const aiResponse = data.candidates[0].content.parts[0].text
+      const aiResponse = data.text
 
       const jsonMatch = aiResponse.match(/\{[\s\S]*\}/)
       if (jsonMatch) {
