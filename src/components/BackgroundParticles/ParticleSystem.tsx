@@ -5,6 +5,11 @@ import CosmosParticles from './CosmosParticles'
 import OceanWaves from './OceanWaves'
 import FloatingPetals from './FloatingPetals'
 import SeasonalEffects from './SeasonalEffects'
+import ForestLeaves from './ForestLeaves'
+import FlowerPetals from './FlowerPetals'
+import LavenderBlossoms from './LavenderBlossoms'
+import SunsetGlow from './SunsetGlow'
+import FloatingBubbles from './FloatingBubbles'
 
 /**
  * ParticleSystem component
@@ -32,22 +37,22 @@ export default function ParticleSystem() {
       return <OceanWaves />
 
     case 'soft-pastels':
-      return <FloatingPetals color="pink" count={20} />
+      return <FlowerPetals />
 
     case 'coral-sunset':
-      return <FloatingPetals color="coral" count={20} />
+      return <SunsetGlow />
 
     case 'lavender-dream':
-      return <FloatingPetals color="lavender" count={20} />
+      return <LavenderBlossoms />
 
     case 'mint-fresh':
-      return <FloatingPetals color="mint" count={20} />
+      return <ForestLeaves />
 
     case 'midnight-latte':
       return <FloatingPetals color="coffee" count={15} />
 
     case 'pure-white':
-      return <FloatingPetals color="gray" count={15} opacity={0.2} />
+      return <FloatingBubbles />
 
     case 'seasonal':
       return <SeasonalEffects season={currentSeason} />
