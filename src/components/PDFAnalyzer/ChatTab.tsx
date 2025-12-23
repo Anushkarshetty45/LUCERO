@@ -89,24 +89,21 @@ export default function ChatTab({ analysisId, pdfContent, userId }: ChatTabProps
       const prompt = generateChatPrompt(pdfContent, conversationHistory, userMessage)
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.REACT_APP_GEMINI_API_KEY}`,
+        'http://localhost:3002/api/claude',
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify({
-            contents: [{
-              parts: [{ text: prompt }]
-            }],
-            generationConfig: {
-              temperature: 0.8,
-              maxOutputTokens: 2048
-            }
+            prompt,
+            maxTokens: 2048
           })
         }
       )
 
       const data = await response.json()
-      const aiResponse = data.candidates[0].content.parts[0].text
+      const aiResponse = data.text
 
       // Save AI response
       const assistantMsg = await createChatMessage(currentSession, 'assistant', aiResponse)
