@@ -147,19 +147,19 @@ export default function LiveStudySession() {
         }
 
         .live-study-container {
-          background: #030510;
+          background: var(--bg-card);
           border-radius: 20px;
           width: 800px;
           max-width: 95vw;
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          border: 1px solid var(--border-color);
           overflow: hidden;
           box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
         .live-header {
           padding: 20px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-          background: linear-gradient(135deg, #212660 0%, #020000 100%);
+          border-bottom: 1px solid var(--border-color);
+          background: var(--bg-card);
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -173,7 +173,7 @@ export default function LiveStudySession() {
         .live-title {
           font-size: 1.2rem;
           font-weight: 600;
-          color: white;
+          color: var(--text-primary);
           display: flex;
           align-items: center;
           gap: 10px;
@@ -187,7 +187,7 @@ export default function LiveStudySession() {
         .minimize-btn, .close-btn {
           background: none;
           border: none;
-          color: #999;
+          color: var(--text-tertiary);
           font-size: 24px;
           cursor: pointer;
           padding: 4px 8px;
@@ -198,7 +198,7 @@ export default function LiveStudySession() {
 
         .minimize-btn:hover, .close-btn:hover {
           background: rgba(255, 255, 255, 0.1);
-          color: #fff;
+          color: var(--text-primary);
         }
 
         .minimize-btn {
@@ -216,7 +216,7 @@ export default function LiveStudySession() {
         .video-wrapper {
           width: 100%;
           height: 240px;
-          background: #000;
+          background: var(--bg-secondary);
           border-radius: 12px;
           display: flex;
           align-items: center;
@@ -226,7 +226,7 @@ export default function LiveStudySession() {
 
         .start-prompt {
           text-align: center;
-          color: #888;
+          color: var(--text-tertiary);
         }
 
         .camera-icon {
@@ -262,7 +262,7 @@ export default function LiveStudySession() {
           padding: 10px;
           background: transparent;
           color: #ffffff;
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          border: 1px solid var(--border-color);
           border-radius: 8px;
           cursor: pointer;
           transition: all 0.2s;
@@ -270,14 +270,14 @@ export default function LiveStudySession() {
 
         .control-btn:hover {
           background: rgba(255, 255, 255, 0.05);
-          border-color: #fff;
+          border-color: var(--text-primary);
         }
 
         .stop-btn {
           flex: 1;
           padding: 10px;
           background: #e74c3c;
-          color: white;
+          color: var(--text-primary);
           border: none;
           border-radius: 8px;
           cursor: pointer;
@@ -316,7 +316,7 @@ export default function LiveStudySession() {
         }
 
         .stat-value {
-          color: white;
+          color: var(--text-primary);
           font-size: 2rem;
           font-weight: 700;
           font-family: monospace;
@@ -340,7 +340,7 @@ export default function LiveStudySession() {
           display: flex;
           align-items: center;
           justify-content: center;
-          color: white;
+          color: var(--text-primary);
           font-weight: 700;
           font-size: 1.2rem;
         }
@@ -351,7 +351,7 @@ export default function LiveStudySession() {
           left: 0;
           right: 0;
           background: #e74c3c;
-          color: white;
+          color: var(--text-primary);
           text-align: center;
           padding: 15px;
           font-weight: 600;
