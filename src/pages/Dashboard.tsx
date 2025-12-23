@@ -11,6 +11,8 @@ import AllNotesModal from '../components/AllNotesModal'
 import StudyTimerModal from '../components/StudyTimerModal'
 import ChatbotModal from '../components/ChatbotModal'
 import PDFAnalyzerModal from '../components/PDFAnalyzer/PDFAnalyzerModal'
+import FlashcardsModal from '../components/FlashcardsModal'
+import QuickThemeSwitcher from '../components/QuickThemeSwitcher'
 import { useTimerContext } from '../contexts/TimerContext'
 import { useLiveStudy } from '../contexts/LiveStudyContext'
 import { IoBookSharp, IoFlame, IoTimer } from 'react-icons/io5'
@@ -27,6 +29,7 @@ export default function Dashboard() {
   const [showAllNotes, setShowAllNotes] = useState(false)
   const [showChatbot, setShowChatbot] = useState(false)
   const [showPDFAnalyzer, setShowPDFAnalyzer] = useState(false)
+  const [showFlashcards, setShowFlashcards] = useState(false)
   const [streak, setStreak] = useState(0)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
 
@@ -220,6 +223,7 @@ export default function Dashboard() {
             <h1 className="nav-logo">LUCERO</h1>
           </div>
           <div className="nav-right">
+            <QuickThemeSwitcher />
             <button className="nav-icon-btn" title="Notifications">
               🔔
               <span className="notification-badge">3</span>
@@ -357,10 +361,9 @@ export default function Dashboard() {
                 <span className="tool-icon">📝</span>
                 <span className="tool-name">Notes</span>
               </button>
-              <button className="tool-card">
+              <button className="tool-card" onClick={() => setShowFlashcards(true)}>
                 <span className="tool-icon">🃏</span>
                 <span className="tool-name">Flashcards</span>
-                <span className="tool-badge">Coming Soon</span>
               </button>
               <button className="tool-card" onClick={() => setShowTimerModal(true)}>
                 <span className="tool-icon">⏱️</span>
@@ -407,6 +410,13 @@ export default function Dashboard() {
       {showPDFAnalyzer && (
         <PDFAnalyzerModal
           onClose={() => setShowPDFAnalyzer(false)}
+        />
+      )}
+
+      {showFlashcards && user && (
+        <FlashcardsModal
+          userId={user.id}
+          onClose={() => setShowFlashcards(false)}
         />
       )}
     </div>
