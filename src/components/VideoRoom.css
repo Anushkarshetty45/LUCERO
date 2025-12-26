@@ -131,6 +131,164 @@
   font-weight: 600;
 }
 
+/* Participant Badge */
+.participants-badge {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.participants-badge:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  transform: translateY(-1px);
+}
+
+/* Participants List Dropdown */
+.participants-list {
+  position: absolute;
+  top: 70px;
+  left: 32px;
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+  min-width: 250px;
+  max-width: 300px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.participants-list h4 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  color: var(--text-primary);
+  font-weight: 700;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 8px;
+}
+
+.participants-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.participant-item {
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--bg-secondary);
+  transition: all 0.2s;
+}
+
+.participant-item:hover {
+  background: var(--bg-card-hover);
+}
+
+.participant-item.you {
+  background: linear-gradient(135deg, rgba(123, 97, 255, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+  border: 1px solid var(--accent-primary);
+}
+
+.participant-name {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 14px;
+  flex: 1;
+}
+
+.you-badge,
+.host-badge {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.you-badge {
+  background: var(--accent-primary);
+  color: white;
+}
+
+.host-badge {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  margin-left: 4px;
+}
+
+/* Participant Notifications */
+.participant-notification {
+  position: fixed;
+  top: 100px;
+  right: 32px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+  z-index: 10001;
+  animation: slideInRight 0.3s ease-out, fadeOut 0.3s ease-out 2.7s;
+  border: 2px solid rgba(16, 185, 129, 0.5);
+}
+
+.participant-notification.left {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .video-room-header {
@@ -150,6 +308,24 @@
   .meeting-code-badge {
     font-size: 12px;
     padding: 4px 12px;
+  }
+
+  .participants-badge {
+    font-size: 12px;
+    padding: 4px 12px;
+  }
+
+  .participants-list {
+    left: 16px;
+    right: 16px;
+    top: 60px;
+  }
+
+  .participant-notification {
+    right: 16px;
+    top: 80px;
+    font-size: 12px;
+    padding: 10px 16px;
   }
 
   .header-actions {
