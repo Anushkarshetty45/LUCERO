@@ -230,12 +230,34 @@
 }
 
 .error-message {
-  background: #fee;
-  color: #c00;
-  padding: 12px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  padding: 12px 16px;
   border-radius: 8px;
   margin-bottom: 16px;
   font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideIn 0.3s ease-out;
+}
+
+.error-message::before {
+  content: '⚠️';
+  font-size: 16px;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .forgot-password {
@@ -254,4 +276,67 @@
 .forgot-password a:hover {
   color: var(--text-primary);
   text-decoration: underline;
+}
+
+/* OTP Verification Styles */
+.otp-verification {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.otp-message {
+  font-size: 16px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.otp-message strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.otp-submessage {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 30px;
+}
+
+.otp-input {
+  text-align: center;
+  font-size: 24px;
+  letter-spacing: 8px;
+  font-weight: 600;
+  padding: 16px !important;
+}
+
+.otp-resend {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.otp-resend p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: opacity 0.2s;
+}
+
+.btn-link:hover {
+  opacity: 0.8;
+}
+
+.btn-link:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
