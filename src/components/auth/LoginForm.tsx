@@ -12,6 +12,24 @@ export default function LoginForm({ onToggle }: { onToggle: () => void }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Client-side validation
+    if (!email.trim()) {
+      setError('⚠️ Please enter your email address.')
+      return
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      setError('⚠️ Please enter a valid email address.')
+      return
+    }
+
+    if (!password) {
+      setError('⚠️ Please enter your password.')
+      return
+    }
+
     setLoading(true)
     setError('')
 
@@ -25,7 +43,25 @@ export default function LoginForm({ onToggle }: { onToggle: () => void }) {
 
       if (error) {
         console.error('❌ Login error:', error)
-        setError(error.message)
+
+        // Handle specific error cases with user-friendly messages
+        let errorMessage = error.message
+
+        if (error.message.toLowerCase().includes('invalid login credentials') ||
+            error.message.toLowerCase().includes('invalid email or password')) {
+          errorMessage = '⚠️ Invalid email or password. Please check your credentials and try again.'
+        } else if (error.message.toLowerCase().includes('email not confirmed')) {
+          errorMessage = '⚠️ Please verify your email before logging in. Check your inbox for the verification link.'
+        } else if (error.message.toLowerCase().includes('user not found')) {
+          errorMessage = '⚠️ No account found with this email. Please sign up first.'
+        } else if (error.message.toLowerCase().includes('too many requests')) {
+          errorMessage = '⚠️ Too many login attempts. Please wait a moment and try again.'
+        } else if (error.message.toLowerCase().includes('network') ||
+                   error.message.toLowerCase().includes('fetch')) {
+          errorMessage = '⚠️ Network error. Please check your connection and try again.'
+        }
+
+        setError(errorMessage)
         setLoading(false)
       } else {
         console.log('✅ Login successful!')
