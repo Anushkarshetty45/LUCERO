@@ -69,16 +69,20 @@ export default function Dashboard() {
       // Parallelize all independent API calls for faster loading
       const [profileResult, coursesData, studyTime, streakData] = await Promise.all([
         // Load profile with fallback
-        getProfile(user!.id).catch(() => ({
-          id: user!.id,
-          email: user!.email || '',
-          first_name: user!.user_metadata?.first_name || 'there',
-          last_name: user!.user_metadata?.last_name || '',
-          full_name: user!.user_metadata?.full_name || 'User',
-          avatar_url: user!.user_metadata?.avatar_url || '',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        })),
+        getProfile(user!.id).catch((error) => {
+          console.error('⚠️ Profile load error:', error)
+          // Use data from auth user as fallback
+          return {
+            id: user!.id,
+            email: user!.email || '',
+            first_name: user!.user_metadata?.first_name || user!.email?.split('@')[0] || 'there',
+            last_name: user!.user_metadata?.last_name || '',
+            full_name: user!.user_metadata?.full_name || user!.email?.split('@')[0] || 'User',
+            avatar_url: user!.user_metadata?.avatar_url || '',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }
+        }),
         // Load courses
         getCourses(user!.id),
         // Load today's study time
@@ -86,6 +90,8 @@ export default function Dashboard() {
         // Get user streak (updated by recordDailyActivity above)
         getUserStreak(user!.id)
       ])
+
+      console.log('📋 Profile loaded:', profileResult)
 
       setProfile(profileResult)
       setTodayStudyTime(studyTime)
