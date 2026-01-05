@@ -13,9 +13,7 @@ export default function RegisterForm({ onToggle }: { onToggle: () => void }) {
   const [subscribe, setSubscribe] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [showOtpInput, setShowOtpInput] = useState(false)
-  const [otp, setOtp] = useState('')
-  const [otpLoading, setOtpLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -56,7 +54,7 @@ export default function RegisterForm({ onToggle }: { onToggle: () => void }) {
     try {
       console.log('📧 Signing up with email:', email)
 
-      // Step 1: Create user account
+      // Create user account - Supabase will send confirmation email automatically
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -65,7 +63,8 @@ export default function RegisterForm({ onToggle }: { onToggle: () => void }) {
             first_name: firstName,
             last_name: lastName,
             full_name: `${firstName} ${lastName}`
-          }
+          },
+          emailRedirectTo: `${window.location.origin}/dashboard`
         }
       })
 
@@ -100,44 +99,18 @@ export default function RegisterForm({ onToggle }: { onToggle: () => void }) {
       console.log('✅ Signup successful!')
       console.log('👤 User:', data.user?.email)
 
-      // Step 2: Send OTP to email
-      console.log('📧 Sending OTP to email...')
-      const { error: otpError } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          shouldCreateUser: false
-        }
-      })
-
-      if (otpError) {
-        console.error('❌ OTP send error:', otpError)
-
-        // Handle rate limiting specifically
-        if (otpError.message.toLowerCase().includes('only request this after')) {
-          // Extract wait time from error message
-          const match = otpError.message.match(/after (\d+) seconds?/)
-          const waitTime = match ? match[1] : '60'
-
-          setError(`⏱️ Too many requests. Please wait ${waitTime} seconds before requesting a new OTP, or try logging in directly.`)
-        } else {
-          setError('✅ Account created! However, we couldn\'t send the OTP. You can try logging in - your email may already be verified, or request a password reset.')
-        }
-
-        setLoading(false)
-
-        // Auto-switch to login after 3 seconds
+      // Check if email confirmation is disabled (auto-confirmed)
+      if (data.user && data.user.confirmed_at) {
+        console.log('✅ Email auto-confirmed, redirecting to dashboard...')
         setTimeout(() => {
-          if (window.confirm('Your account was created successfully!\n\nWould you like to go to the login page now?')) {
-            onToggle()
-          }
-        }, 2000)
-
-        return
+          window.location.href = '/dashboard'
+        }, 1000)
+      } else {
+        console.log('📧 Confirmation email sent')
+        setSuccess(true)
       }
 
-      console.log('✅ OTP sent successfully!')
       setLoading(false)
-      setShowOtpInput(true)
 
     } catch (err: any) {
       console.error('💥 Unexpected error:', err)
@@ -146,84 +119,6 @@ export default function RegisterForm({ onToggle }: { onToggle: () => void }) {
     }
   }
 
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!otp || otp.length !== 6) {
-      setError('Please enter a valid 6-digit OTP')
-      return
-    }
-
-    setOtpLoading(true)
-    setError('')
-
-    try {
-      console.log('🔐 Verifying OTP...')
-
-      const { data, error } = await supabase.auth.verifyOtp({
-        email,
-        token: otp,
-        type: 'email'
-      })
-
-      if (error) {
-        console.error('❌ OTP verification error:', error)
-
-        // Handle specific OTP error cases
-        let errorMessage = error.message
-
-        if (error.message.toLowerCase().includes('invalid') ||
-            error.message.toLowerCase().includes('expired') ||
-            error.message.toLowerCase().includes('token')) {
-          errorMessage = '⚠️ Invalid or expired OTP code. Please check the code or request a new one.'
-        } else if (error.message.toLowerCase().includes('too many')) {
-          errorMessage = '⚠️ Too many attempts. Please wait a moment and try again.'
-        }
-
-        setError(errorMessage)
-        setOtpLoading(false)
-        return
-      }
-
-      console.log('✅ OTP verified successfully!')
-
-      // Sign out the user so they can log in properly
-      await supabase.auth.signOut()
-
-      setOtpLoading(false)
-      alert(`✅ Email verified successfully!\n\nYou can now log in with your credentials.`)
-      onToggle() // Switch to login form
-
-    } catch (err: any) {
-      console.error('💥 OTP verification error:', err)
-      setError(err?.message || 'Failed to verify OTP. Please try again.')
-      setOtpLoading(false)
-    }
-  }
-
-  const handleResendOtp = async () => {
-    setError('')
-    setLoading(true)
-
-    try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          shouldCreateUser: false
-        }
-      })
-
-      if (error) {
-        setError('Failed to resend OTP. Please try again.')
-      } else {
-        alert('✅ New OTP sent to your email!')
-      }
-    } catch (err: any) {
-      setError('Failed to resend OTP. Please try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleGoogleSignUp = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -237,49 +132,44 @@ export default function RegisterForm({ onToggle }: { onToggle: () => void }) {
 
   return (
     <div className="auth-form">
-      <h2>{showOtpInput ? 'Verify Your Email' : 'Create Account'}</h2>
+      <h2>{success ? 'Check Your Email' : 'Create Account'}</h2>
 
       {error && <div className="error-message">{error}</div>}
 
-      {showOtpInput ? (
-        // OTP Verification Form
-        <div className="otp-verification">
-          <p className="otp-message">
-            We've sent a 6-digit code to <strong>{email}</strong>
+      {success ? (
+        // Success - Check Email
+        <div className="success-container" style={{ textAlign: 'center', padding: '20px 0' }}>
+          <div style={{ fontSize: '64px', marginBottom: '20px' }}>📧</div>
+          <h3 style={{ marginBottom: '16px', color: 'var(--text-primary)' }}>Account Created!</h3>
+          <p style={{ marginBottom: '24px', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
+            We've sent a confirmation link to<br />
+            <strong style={{ color: 'var(--accent-primary)' }}>{email}</strong>
           </p>
-          <p className="otp-submessage">Please check your email and enter the code below</p>
-
-          <form onSubmit={handleVerifyOtp}>
-            <div className="form-group">
-              <label>Enter OTP Code</label>
-              <input
-                type="text"
-                placeholder="000000"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                maxLength={6}
-                required
-                className="otp-input"
-                autoFocus
-              />
-            </div>
-
-            <button type="submit" className="btn-primary" disabled={otpLoading}>
-              {otpLoading ? 'Verifying...' : 'Verify Email'}
-            </button>
-          </form>
-
-          <div className="otp-resend">
-            <p>Didn't receive the code?</p>
-            <button
-              type="button"
-              onClick={handleResendOtp}
-              className="btn-link"
-              disabled={loading}
-            >
-              Resend OTP
-            </button>
+          <div style={{
+            padding: '20px',
+            background: 'rgba(139, 92, 246, 0.1)',
+            borderRadius: '12px',
+            border: '1px solid rgba(139, 92, 246, 0.3)',
+            marginBottom: '24px',
+            textAlign: 'left'
+          }}>
+            <p style={{ margin: 0, color: 'var(--text-primary)', fontSize: '14px', lineHeight: '1.8' }}>
+              <strong>Next steps:</strong><br />
+              1. Check your inbox for the confirmation email<br />
+              2. Click the confirmation link<br />
+              3. You'll be automatically logged in to your dashboard
+            </p>
           </div>
+          <button
+            className="btn-primary"
+            onClick={onToggle}
+            style={{ width: '100%', marginBottom: '12px' }}
+          >
+            Back to Login
+          </button>
+          <p style={{ fontSize: '13px', color: 'var(--text-tertiary)' }}>
+            Didn't receive the email? Check your spam folder.
+          </p>
         </div>
       ) : (
         <>
