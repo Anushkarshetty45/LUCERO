@@ -45,8 +45,14 @@ export default function GroupStudyModal({ onClose }: GroupStudyModalProps) {
   }
 
   const handleJoinMeeting = async () => {
-    if (!user || !meetingCode.trim()) {
-      setError('Please enter a meeting code')
+    if (!user) {
+      setError('Please log in to join a meeting')
+      return
+    }
+
+    const trimmedCode = meetingCode.trim()
+    if (!trimmedCode || trimmedCode.length < 6) {
+      setError('Please enter a valid 6-character meeting code')
       return
     }
 
@@ -54,7 +60,7 @@ export default function GroupStudyModal({ onClose }: GroupStudyModalProps) {
     setError('')
 
     try {
-      const session = await getStudySessionByCode(meetingCode.trim())
+      const session = await getStudySessionByCode(trimmedCode)
 
       if (!session) {
         setError('Meeting not found. Please check the code and try again.')
@@ -148,13 +154,16 @@ export default function GroupStudyModal({ onClose }: GroupStudyModalProps) {
                     className="meeting-code-input"
                     placeholder="Enter 6-character code"
                     value={meetingCode}
-                    onChange={(e) => setMeetingCode(e.target.value.toUpperCase())}
+                    onChange={(e) => {
+                      setMeetingCode(e.target.value.toUpperCase())
+                      setError('') // Clear error when user types
+                    }}
                     maxLength={6}
                   />
                   <button
                     className="btn-secondary"
                     onClick={handleJoinMeeting}
-                    disabled={loading || !meetingCode.trim()}
+                    disabled={loading || meetingCode.trim().length < 6}
                   >
                     {loading ? '⏳ Joining...' : '🚪 Join Meeting'}
                   </button>

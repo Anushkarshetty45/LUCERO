@@ -332,13 +332,24 @@ export const getTodayStudyTime = async (userId: string): Promise<number> => {
 
   const { data, error } = await supabase
     .from('study_sessions')
-    .select('duration')
+    .select('started_at, ended_at')
     .eq('user_id', userId)
     .gte('started_at', today.toISOString())
+    .not('ended_at', 'is', null)
 
   if (error) throw error
 
-  const totalSeconds = data?.reduce((sum, session) => sum + (session.duration || 0), 0) || 0
+  // Calculate duration from timestamps
+  const totalSeconds = data?.reduce((sum, session) => {
+    if (session.started_at && session.ended_at) {
+      const start = new Date(session.started_at).getTime()
+      const end = new Date(session.ended_at).getTime()
+      const duration = Math.floor((end - start) / 1000) // Convert to seconds
+      return sum + duration
+    }
+    return sum
+  }, 0) || 0
+
   return totalSeconds
 }
 
@@ -348,22 +359,34 @@ export const getWeeklyStudyTime = async (userId: string): Promise<number> => {
 
   const { data, error } = await supabase
     .from('study_sessions')
-    .select('duration')
+    .select('started_at, ended_at')
     .eq('user_id', userId)
     .gte('started_at', weekAgo.toISOString())
+    .not('ended_at', 'is', null)
 
   if (error) throw error
 
-  const totalSeconds = data?.reduce((sum, session) => sum + (session.duration || 0), 0) || 0
+  // Calculate duration from timestamps
+  const totalSeconds = data?.reduce((sum, session) => {
+    if (session.started_at && session.ended_at) {
+      const start = new Date(session.started_at).getTime()
+      const end = new Date(session.ended_at).getTime()
+      const duration = Math.floor((end - start) / 1000) // Convert to seconds
+      return sum + duration
+    }
+    return sum
+  }, 0) || 0
+
   return totalSeconds
 }
 
 export const calculateUserStreak = async (userId: string): Promise<number> => {
-  // Get all study sessions with duration
+  // Get all study sessions with timestamps
   const { data, error } = await supabase
     .from('study_sessions')
-    .select('started_at, duration')
+    .select('started_at, ended_at')
     .eq('user_id', userId)
+    .not('ended_at', 'is', null)
     .order('started_at', { ascending: false })
 
   console.log('🔍 Study sessions data:', data)
@@ -378,14 +401,20 @@ export const calculateUserStreak = async (userId: string): Promise<number> => {
   const dailyStudyTime: { [date: string]: number } = {}
 
   data.forEach(session => {
-    const date = new Date(session.started_at)
-    const dateStr = date.toISOString().split('T')[0] // YYYY-MM-DD
-    const duration = session.duration || 0
+    if (session.started_at && session.ended_at) {
+      const date = new Date(session.started_at)
+      const dateStr = date.toISOString().split('T')[0] // YYYY-MM-DD
 
-    if (!dailyStudyTime[dateStr]) {
-      dailyStudyTime[dateStr] = 0
+      // Calculate duration from timestamps
+      const start = new Date(session.started_at).getTime()
+      const end = new Date(session.ended_at).getTime()
+      const duration = Math.floor((end - start) / 1000) // Convert to seconds
+
+      if (!dailyStudyTime[dateStr]) {
+        dailyStudyTime[dateStr] = 0
+      }
+      dailyStudyTime[dateStr] += duration
     }
-    dailyStudyTime[dateStr] += duration
   })
 
   // Filter days with at least 30 minutes (1800 seconds) of study time
@@ -448,7 +477,7 @@ export const recordDailyActivity = async (userId: string, activityType: string):
       .from('daily_activities')
       .select('*')
       .eq('user_id', userId)
-      .eq('activity_date', today)
+      .eq('date', today)
       .single()
 
     if (existingActivity) {
@@ -470,7 +499,7 @@ export const recordDailyActivity = async (userId: string, activityType: string):
         .from('daily_activities')
         .insert({
           user_id: userId,
-          activity_date: today,
+          date: today,
           activity_types: [activityType],
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
@@ -492,9 +521,9 @@ export const updateUserStreak = async (userId: string): Promise<number> => {
     // Get all daily activities
     const { data: activities, error } = await supabase
       .from('daily_activities')
-      .select('activity_date')
+      .select('date')
       .eq('user_id', userId)
-      .order('activity_date', { ascending: false })
+      .order('date', { ascending: false })
 
     if (error) throw error
 
@@ -519,7 +548,7 @@ export const updateUserStreak = async (userId: string): Promise<number> => {
     yesterday.setDate(yesterday.getDate() - 1)
     const yesterdayStr = yesterday.toISOString().split('T')[0]
 
-    const mostRecentDate = activities[0].activity_date
+    const mostRecentDate = activities[0].date
 
     // If most recent activity is not today or yesterday, streak is broken
     if (mostRecentDate !== todayStr && mostRecentDate !== yesterdayStr) {
@@ -542,7 +571,7 @@ export const updateUserStreak = async (userId: string): Promise<number> => {
       expectedDate.setDate(expectedDate.getDate() - 1)
       const expectedDateStr = expectedDate.toISOString().split('T')[0]
 
-      if (activities[i].activity_date === expectedDateStr) {
+      if (activities[i].date === expectedDateStr) {
         streak++
         currentDate = expectedDate
       } else {
@@ -1084,7 +1113,7 @@ export const createStudySession = async (
 
     // Create session
     const { data: session, error: sessionError } = await supabase
-      .from('study_sessions')
+      .from('group_study_sessions')
       .insert({
         host_user_id: userId,
         meeting_code: meetingCode,
@@ -1114,7 +1143,7 @@ export const joinStudySession = async (
 ): Promise<StudySessionParticipant> => {
   try {
     const { data, error } = await supabase
-      .from('study_session_participants')
+      .from('group_study_participants')
       .insert({
         session_id: sessionId,
         user_id: userId,
@@ -1127,7 +1156,7 @@ export const joinStudySession = async (
       // If already joined, just update the status
       if (error.code === '23505') {
         const { data: updated, error: updateError } = await supabase
-          .from('study_session_participants')
+          .from('group_study_participants')
           .update({
             is_currently_in_session: true,
             joined_at: new Date().toISOString(),
@@ -1156,7 +1185,7 @@ export const getStudySessionByCode = async (
 ): Promise<StudySession | null> => {
   try {
     const { data, error } = await supabase
-      .from('study_sessions')
+      .from('group_study_sessions')
       .select('*')
       .eq('meeting_code', meetingCode.toUpperCase())
       .eq('is_active', true)
@@ -1179,7 +1208,7 @@ export const getActiveStudySessions = async (
 ): Promise<StudySession[]> => {
   try {
     const { data, error } = await supabase
-      .from('study_sessions')
+      .from('group_study_sessions')
       .select('*')
       .eq('host_user_id', userId)
       .eq('is_active', true)
@@ -1198,7 +1227,7 @@ export const getSessionParticipants = async (
 ): Promise<StudySessionParticipant[]> => {
   try {
     const { data, error } = await supabase
-      .from('study_session_participants')
+      .from('group_study_participants')
       .select('*')
       .eq('session_id', sessionId)
       .eq('is_currently_in_session', true)
@@ -1218,7 +1247,7 @@ export const leaveStudySession = async (
 ): Promise<void> => {
   try {
     const { error } = await supabase
-      .from('study_session_participants')
+      .from('group_study_participants')
       .update({
         is_currently_in_session: false,
         left_at: new Date().toISOString()
@@ -1240,7 +1269,7 @@ export const endStudySessionByHost = async (
   try {
     // Verify user is the host
     const { data: session, error: sessionError } = await supabase
-      .from('study_sessions')
+      .from('group_study_sessions')
       .select('host_user_id')
       .eq('id', sessionId)
       .single()
@@ -1252,7 +1281,7 @@ export const endStudySessionByHost = async (
 
     // End the session
     const { error } = await supabase
-      .from('study_sessions')
+      .from('group_study_sessions')
       .update({
         is_active: false,
         ended_at: new Date().toISOString()
@@ -1263,7 +1292,7 @@ export const endStudySessionByHost = async (
 
     // Mark all participants as left
     await supabase
-      .from('study_session_participants')
+      .from('group_study_participants')
       .update({
         is_currently_in_session: false,
         left_at: new Date().toISOString()

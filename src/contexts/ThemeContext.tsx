@@ -76,7 +76,15 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       try {
         setIsLoading(true)
 
-        // Try localStorage first for immediate load (prevents flash)
+        // If user is NOT logged in, always use midnight-cosmos (for Home, Auth pages)
+        if (!user) {
+          setCurrentTheme('midnight-cosmos')
+          applyTheme('midnight-cosmos')
+          setIsLoading(false)
+          return
+        }
+
+        // User is authenticated - load their preferred theme
         const localTheme = localStorage.getItem('lucero-theme') as ThemeName | null
         const localParticles = localStorage.getItem('lucero-particles')
 
@@ -89,43 +97,41 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
           setParticlesEnabledState(localParticles === 'true')
         }
 
-        // If user is authenticated, load from database
-        if (user) {
-          const { data, error } = await supabase
-            .from('user_settings')
-            .select('theme, particles_enabled')
-            .eq('user_id', user.id)
-            .single()
+        // Load from database
+        const { data, error } = await supabase
+          .from('user_settings')
+          .select('theme, particles_enabled')
+          .eq('user_id', user.id)
+          .single()
 
-          if (error && error.code !== 'PGRST116') {
-            // PGRST116 = not found, which is ok (first time user)
-            console.error('Error loading theme from database:', error)
+        if (error && error.code !== 'PGRST116') {
+          // PGRST116 = not found, which is ok (first time user)
+          console.error('Error loading theme from database:', error)
+        }
+
+        if (data) {
+          const dbTheme = data.theme as ThemeName
+          const dbParticles = data.particles_enabled ?? true
+
+          // Database takes precedence over localStorage
+          if (dbTheme && isValidTheme(dbTheme)) {
+            setCurrentTheme(dbTheme)
+            applyTheme(dbTheme)
+            localStorage.setItem('lucero-theme', dbTheme)
           }
 
-          if (data) {
-            const dbTheme = data.theme as ThemeName
-            const dbParticles = data.particles_enabled ?? true
-
-            // Database takes precedence over localStorage
-            if (dbTheme && isValidTheme(dbTheme)) {
-              setCurrentTheme(dbTheme)
-              applyTheme(dbTheme)
-              localStorage.setItem('lucero-theme', dbTheme)
-            }
-
-            setParticlesEnabledState(dbParticles)
-            localStorage.setItem('lucero-particles', String(dbParticles))
-          } else {
-            // No database record - create one with current settings
-            await supabase.from('user_settings').upsert(
-              {
-                user_id: user.id,
-                theme: localTheme || 'midnight-cosmos',
-                particles_enabled: localParticles === 'true',
-              },
-              { onConflict: 'user_id' }
-            )
-          }
+          setParticlesEnabledState(dbParticles)
+          localStorage.setItem('lucero-particles', String(dbParticles))
+        } else {
+          // No database record - create one with current settings
+          await supabase.from('user_settings').upsert(
+            {
+              user_id: user.id,
+              theme: localTheme || 'midnight-cosmos',
+              particles_enabled: localParticles === 'true',
+            },
+            { onConflict: 'user_id' }
+          )
         }
       } catch (error) {
         console.error('Error loading theme:', error)
@@ -151,6 +157,12 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       return
     }
 
+    // Prevent theme changes if user is not logged in
+    if (!user) {
+      console.warn('Theme changes are only available for logged-in users')
+      return
+    }
+
     try {
       // Update state
       setCurrentTheme(themeName)
@@ -161,22 +173,20 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       // Save to localStorage for instant load next time
       localStorage.setItem('lucero-theme', themeName)
 
-      // Sync to database if authenticated
-      if (user) {
-        const { error } = await supabase
-          .from('user_settings')
-          .upsert(
-            {
-              user_id: user.id,
-              theme: themeName,
-              updated_at: new Date().toISOString(),
-            },
-            { onConflict: 'user_id' }
-          )
+      // Sync to database
+      const { error } = await supabase
+        .from('user_settings')
+        .upsert(
+          {
+            user_id: user.id,
+            theme: themeName,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'user_id' }
+        )
 
-        if (error) {
-          console.error('Error saving theme to database:', error)
-        }
+      if (error) {
+        console.error('Error saving theme to database:', error)
       }
     } catch (error) {
       console.error('Error setting theme:', error)
@@ -185,6 +195,12 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
   // Set particles enabled with database sync
   const setParticlesEnabled = async (enabled: boolean) => {
+    // Prevent particle changes if user is not logged in
+    if (!user) {
+      console.warn('Particle settings are only available for logged-in users')
+      return
+    }
+
     try {
       // Update state
       setParticlesEnabledState(enabled)
@@ -192,22 +208,20 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       // Save to localStorage
       localStorage.setItem('lucero-particles', String(enabled))
 
-      // Sync to database if authenticated
-      if (user) {
-        const { error } = await supabase
-          .from('user_settings')
-          .upsert(
-            {
-              user_id: user.id,
-              particles_enabled: enabled,
-              updated_at: new Date().toISOString(),
-            },
-            { onConflict: 'user_id' }
-          )
+      // Sync to database
+      const { error } = await supabase
+        .from('user_settings')
+        .upsert(
+          {
+            user_id: user.id,
+            particles_enabled: enabled,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'user_id' }
+        )
 
-        if (error) {
-          console.error('Error saving particles preference to database:', error)
-        }
+      if (error) {
+        console.error('Error saving particles preference to database:', error)
       }
     } catch (error) {
       console.error('Error setting particles:', error)
