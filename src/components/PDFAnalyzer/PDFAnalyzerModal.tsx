@@ -22,6 +22,7 @@ type TabType = 'upload' | 'analysis' | 'history' | 'flashcards' | 'quiz' | 'mind
 export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
   const { user } = useAuth()
   const [activeTab, setActiveTab] = useState<TabType>('upload')
+  const [isMaximized, setIsMaximized] = useState(false)
 
   // File upload state
   const [file, setFile] = useState<File | null>(null)
@@ -72,6 +73,12 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
   }
 
   const analyzeWithAI = async (text: string) => {
+    const apiKey = process.env.REACT_APP_GEMINI_API_KEY
+
+    if (!apiKey) {
+      throw new Error('Gemini API key not found. Please add REACT_APP_GEMINI_API_KEY to your .env file')
+    }
+
     const maxLength = 30000
     const truncatedText = text.length > maxLength ? text.substring(0, maxLength) + '...' : text
 
@@ -80,15 +87,24 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
     setProgress(60)
 
     const response = await fetch(
-      'http://localhost:3002/api/claude',
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          prompt,
-          maxTokens: 2048  // Reduced for faster responses
+          contents: [{
+            parts: [{
+              text: prompt
+            }]
+          }],
+          generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 8192
+          }
         })
       }
     )
@@ -97,11 +113,11 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
 
     if (!response.ok) {
       const error = await response.json()
-      throw new Error(error.error || 'Failed to analyze PDF')
+      throw new Error(error.error?.message || 'Failed to analyze PDF')
     }
 
     const data = await response.json()
-    const aiResponse = data.text
+    const aiResponse = data.candidates[0].content.parts[0].text
 
     setProgress(100)
 
@@ -161,6 +177,8 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
       })
 
       setAnalysisId(analysis.id)
+
+      // Auto-navigate to Analysis tab after successful analysis
       setActiveTab('analysis')
 
     } catch (err: any) {
@@ -195,7 +213,15 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
                 onChange={handleFileSelect}
                 style={{ display: 'none' }}
               />
-              <div className="upload-icon">📄</div>
+              <div className="upload-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                  <polyline points="10 9 9 9 8 9"/>
+                </svg>
+              </div>
               <h3>Upload a PDF Document</h3>
               <p>Upload any PDF file and I'll analyze, summarize, and create study materials!</p>
 
@@ -204,7 +230,7 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
                 onClick={() => fileInputRef.current?.click()}
                 disabled={extracting || analyzing}
               >
-                {file ? '📎 ' + file.name : 'Choose PDF File'}
+                {file ? file.name : 'Choose PDF File'}
               </button>
 
               {file && (
@@ -223,7 +249,7 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
             {file && !extracting && !analyzing && (
               <div className="file-actions">
                 <button className="btn-analyze" onClick={handleAnalyze}>
-                  ✨ Analyze PDF
+                  Analyze PDF
                 </button>
                 <button className="btn-remove" onClick={() => setFile(null)}>
                   Remove
@@ -237,8 +263,8 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
                   <div className="progress-fill" style={{ width: `${progress}%` }}></div>
                 </div>
                 <p>
-                  {extracting && '📖 Extracting text from PDF...'}
-                  {analyzing && '🤖 Analyzing with AI...'}
+                  {extracting && 'Extracting text from PDF...'}
+                  {analyzing && 'Analyzing with AI...'}
                 </p>
                 <span className="progress-text">{progress}%</span>
               </div>
@@ -246,7 +272,7 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
 
             {error && (
               <div className="error-message">
-                ⚠️ {error}
+                {error}
               </div>
             )}
           </div>
@@ -263,7 +289,7 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
           <FlashcardsTab analysisId={analysisId} pdfContent={pdfContent} />
         ) : (
           <div className="tab-empty-state">
-            <p>📄 Please analyze a PDF first to generate flashcards!</p>
+            <p>Please analyze a PDF first to generate flashcards!</p>
           </div>
         )
 
@@ -272,7 +298,7 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
           <QuizTab analysisId={analysisId} pdfContent={pdfContent} userId={user!.id} />
         ) : (
           <div className="tab-empty-state">
-            <p>📄 Please analyze a PDF first to generate a quiz!</p>
+            <p>Please analyze a PDF first to generate a quiz!</p>
           </div>
         )
 
@@ -281,7 +307,7 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
           <MindMapTab analysisId={analysisId} pdfContent={pdfContent} />
         ) : (
           <div className="tab-empty-state">
-            <p>📄 Please analyze a PDF first to generate a mind map!</p>
+            <p>Please analyze a PDF first to generate a mind map!</p>
           </div>
         )
 
@@ -292,10 +318,27 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="pdf-analyzer-modal enhanced" onClick={(e) => e.stopPropagation()}>
+      <div className={`pdf-analyzer-modal enhanced ${isMaximized ? 'maximized' : ''}`} onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>📄 PDF Analyzer</h2>
-          <button className="close-btn" onClick={onClose}>✕</button>
+          <h2>PDF Analyzer</h2>
+          <div className="modal-header-actions">
+            <button
+              className="window-btn"
+              onClick={() => setIsMaximized(!isMaximized)}
+              title={isMaximized ? 'Restore' : 'Maximize'}
+            >
+              {isMaximized ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>
+                </svg>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                </svg>
+              )}
+            </button>
+            <button className="close-btn" onClick={onClose}>✕</button>
+          </div>
         </div>
 
         <div className="modal-tabs">
@@ -303,41 +346,41 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
             className={`tab-btn ${activeTab === 'upload' ? 'active' : ''}`}
             onClick={() => setActiveTab('upload')}
           >
-            📤 Upload
+            Upload
           </button>
           <button
             className={`tab-btn ${activeTab === 'analysis' ? 'active' : ''}`}
             onClick={() => setActiveTab('analysis')}
             disabled={!summary}
           >
-            📊 Analysis
+            Analysis
           </button>
           <button
             className={`tab-btn ${activeTab === 'history' ? 'active' : ''}`}
             onClick={() => setActiveTab('history')}
           >
-            📚 History
+            History
           </button>
           <button
             className={`tab-btn ${activeTab === 'flashcards' ? 'active' : ''}`}
             onClick={() => setActiveTab('flashcards')}
             disabled={!analysisId}
           >
-            🎴 Flashcards
+            Flashcards
           </button>
           <button
             className={`tab-btn ${activeTab === 'quiz' ? 'active' : ''}`}
             onClick={() => setActiveTab('quiz')}
             disabled={!analysisId}
           >
-            ✅ Quiz
+            Quiz
           </button>
           <button
             className={`tab-btn ${activeTab === 'mindmap' ? 'active' : ''}`}
             onClick={() => setActiveTab('mindmap')}
             disabled={!analysisId}
           >
-            🧠 Mind Map
+            Mind Map
           </button>
         </div>
 
