@@ -11,16 +11,100 @@ interface ChatbotModalProps {
     onClose: () => void
 }
 
+// System prompt with LUCERO app knowledge
+const LUCERO_SYSTEM_PROMPT = `You are LUCERO AI, a friendly and helpful study assistant built into the LUCERO learning platform. You're enthusiastic, supportive, and always ready to help students succeed!
+
+**Your Personality:**
+- Warm, encouraging, and approachable
+- Use friendly emojis occasionally to make conversations fun
+- Celebrate student achievements and progress
+- Provide clear, concise, and SPECIFIC answers
+- Be proactive - give direct information instead of generic guidance
+- Ask follow-up questions to understand student needs better
+
+**What you know about LUCERO:**
+
+**Core Features:**
+1. **Courses & Lessons** - Students can create custom courses, add lessons with content, and track their progress
+2. **Study Timer** - Pomodoro-style timer to track study sessions and build focus
+3. **Notes** - Take and organize notes for each course with topics
+4. **Flashcards** - Create and study flashcards for any course to improve memorization
+5. **PDF Analyzer** - Upload PDFs to analyze, generate summaries, flashcards, quizzes, and mind maps
+6. **Group Study** - Video call feature to study together with friends using meeting codes
+7. **Live Study** - Stream your study sessions with webcam and screenshare
+8. **AI Tutor** - Get instant help with course-specific questions
+9. **Progress Tracking** - Monitor daily study time, streaks, and course completion
+10. **Themes** - Customize with beautiful themes like Midnight Cosmos, Coral Sunset, Lavender Dream, and more
+11. **Seasonal Theme** - Auto-changing theme based on the current season
+
+**Study Features:**
+- Track daily study time and maintain streaks
+- Set study goals and monitor progress
+- Organize materials by course and topic
+- Create custom study schedules
+- Access all notes and flashcards in one place
+
+**Contact & Support Information:**
+When students ask about support, help, or contact information, provide these SPECIFIC details:
+
+📧 **Email Support:** support@lucero.app
+📧 **Technical Issues:** tech@lucero.app
+📧 **General Inquiries:** hello@lucero.app
+📧 **Bug Reports:** bugs@lucero.app
+💬 **Live Chat:** Available in the app (bottom right corner - that's me!)
+🐛 **Report Issues:** Use the "Report Issue" button in Settings
+📱 **Response Time:** Usually within 24 hours on weekdays
+
+**For specific issues:**
+- Account problems → support@lucero.app
+- Feature requests → hello@lucero.app
+- Technical bugs → bugs@lucero.app or tech@lucero.app
+- Billing questions → support@lucero.app
+- Partnership inquiries → hello@lucero.app
+
+**How to help students:**
+- Answer questions about how to use LUCERO features with SPECIFIC step-by-step instructions
+- Provide study tips and learning strategies tailored to their needs
+- Help with academic topics and concepts
+- Motivate and encourage consistent studying
+- Suggest which LUCERO features to use for different study needs
+- Provide actual contact information and direct solutions
+- Be smart and proactive - anticipate what they need
+
+**Important Guidelines:**
+- ALWAYS provide specific, actionable information
+- If they ask for contact info, give them the actual emails
+- If they ask how to do something, give step-by-step instructions
+- Don't say "check the website" or "look in settings" - tell them EXACTLY where and how
+- Be direct and helpful, not vague
+- Think about what they REALLY need and provide that
+
+Always be helpful, positive, and make learning fun! 🌟`
+
+// Helper function to format AI responses
+const formatResponse = (text: string): string => {
+    return text
+        // Remove ** markdown bold
+        .replace(/\*\*(.+?)\*\*/g, '$1')
+        // Remove * markdown italic
+        .replace(/\*(.+?)\*/g, '$1')
+        // Remove extra whitespace
+        .replace(/\n{3,}/g, '\n\n')
+        .trim()
+}
+
 export default function ChatbotModal({ onClose }: ChatbotModalProps) {
     const [messages, setMessages] = useState<Message[]>([
         {
             role: 'assistant',
-            content: 'Hi! I\'m LUCERO AI, your study assistant. Ask me anything about your courses, study tips, or any topic you\'re learning!',
+            content: 'Hey there! 👋 I\'m LUCERO AI, your friendly study companion! I\'m here to help you with your studies, answer questions about LUCERO features, or just chat about learning. What can I help you with today? 😊',
             timestamp: new Date()
         }
     ])
     const [input, setInput] = useState('')
     const [loading, setLoading] = useState(false)
+    const [isMinimized, setIsMinimized] = useState(false)
+    const [isMaximized, setIsMaximized] = useState(false)
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null)
 
@@ -58,19 +142,44 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
 
             console.log('🔑 API Key found, making request...')
 
+            // Build conversation history for context
+            const conversationHistory = [
+                // System prompt first
+                {
+                    role: 'user',
+                    parts: [{ text: LUCERO_SYSTEM_PROMPT }]
+                },
+                {
+                    role: 'model',
+                    parts: [{ text: 'I understand! I\'m LUCERO AI, ready to help with studies and answer questions about LUCERO features!' }]
+                },
+                // Then add all previous messages
+                ...messages.slice(1).map(msg => ({
+                    role: msg.role === 'user' ? 'user' : 'model',
+                    parts: [{ text: msg.content }]
+                })),
+                // Finally the current user message
+                {
+                    role: 'user',
+                    parts: [{ text: input }]
+                }
+            ]
+
             const response = await fetch(
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
                 {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        contents: [{
-                            parts: [{
-                                text: `You are LUCERO AI, a helpful study assistant. Answer the following question concisely and helpfully: ${input}`
-                            }]
-                        }]
+                        contents: conversationHistory,
+                        generationConfig: {
+                            temperature: 0.8,
+                            topK: 40,
+                            topP: 0.95,
+                            maxOutputTokens: 2048
+                        }
                     })
                 }
             )
@@ -91,11 +200,14 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
 
             const data = await response.json()
             console.log('✅ API Response received:', data)
-            const aiResponse = data.candidates[0]?.content?.parts[0]?.text || 'Sorry, I couldn\'t generate a response.'
+            const rawResponse = data.candidates[0]?.content?.parts[0]?.text || 'Sorry, I couldn\'t generate a response.'
+
+            // Format the response to remove markdown and organize it
+            const formattedResponse = formatResponse(rawResponse)
 
             const assistantMessage: Message = {
                 role: 'assistant',
-                content: aiResponse,
+                content: formattedResponse,
                 timestamp: new Date()
             }
 
@@ -128,9 +240,19 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
         }
     }
 
+    // Don't render if minimized
+    if (isMinimized) {
+        return (
+            <div className="chatbot-minimized" onClick={() => setIsMinimized(false)}>
+                <div className="chatbot-icon">🤖</div>
+                <span>LUCERO AI</span>
+            </div>
+        )
+    }
+
     return (
         <div className="chatbot-modal-overlay" onClick={onClose}>
-            <div className="chatbot-modal" onClick={(e) => e.stopPropagation()}>
+            <div className={`chatbot-modal ${isMaximized ? 'maximized' : ''}`} onClick={(e) => e.stopPropagation()}>
                 <div className="chatbot-header">
                     <div className="chatbot-header-content">
                         <div className="chatbot-icon">🤖</div>
@@ -139,7 +261,23 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
                             <p>Your Study Assistant</p>
                         </div>
                     </div>
-                    <button className="chatbot-close" onClick={onClose}>✕</button>
+                    <div className="chatbot-header-actions">
+                        <button
+                            className="chatbot-action-btn"
+                            onClick={() => setIsMinimized(true)}
+                            title="Minimize"
+                        >
+                            −
+                        </button>
+                        <button
+                            className="chatbot-action-btn"
+                            onClick={() => setIsMaximized(!isMaximized)}
+                            title={isMaximized ? 'Restore' : 'Maximize'}
+                        >
+                            {isMaximized ? '❐' : '□'}
+                        </button>
+                        <button className="chatbot-close" onClick={onClose}>✕</button>
+                    </div>
                 </div>
 
                 <div className="chatbot-messages">
@@ -149,7 +287,9 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
                                 {message.role === 'user' ? '👤' : '🤖'}
                             </div>
                             <div className="message-content">
-                                <div className="message-text">{message.content}</div>
+                                <div className="message-text" style={{ whiteSpace: 'pre-wrap' }}>
+                                    {message.content}
+                                </div>
                                 <div className="message-time">
                                     {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </div>
