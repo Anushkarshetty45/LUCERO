@@ -40,46 +40,54 @@ export default function MindMapTab({ analysisId, pdfContent }: MindMapTabProps) 
     const newNodes: Node[] = []
     const newEdges: Edge[] = []
 
+    // Calculate canvas center
+    const centerX = 500
+    const centerY = 400
+
     // Central node
     newNodes.push({
       id: '0',
       data: { label: mapData.central_topic },
-      position: { x: 400, y: 300 },
+      position: { x: centerX - 100, y: centerY - 40 },
       style: {
-        background: '#667eea',
-        color: 'white',
+        background: 'var(--accent-primary)',
+        color: 'var(--bg-primary)',
         padding: 20,
-        borderRadius: 10,
-        fontSize: 18,
+        borderRadius: 12,
+        fontSize: 16,
         fontWeight: 'bold',
         width: 200,
-        textAlign: 'center'
+        textAlign: 'center',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
       }
     })
 
-    // Branch nodes
-    const angleStep = (2 * Math.PI) / mapData.branches.length
+    // Branch nodes with better spacing
+    const branchCount = mapData.branches.length
+    const branchRadius = 350 // Increased from 300
+    const angleStep = (2 * Math.PI) / branchCount
+
     mapData.branches.forEach((branch: any, bIdx: number) => {
       const branchId = `branch-${bIdx}`
-      const angle = bIdx * angleStep
-      const radius = 300
+      const angle = bIdx * angleStep - Math.PI / 2 // Start from top
+
+      const branchX = centerX + branchRadius * Math.cos(angle) - 75
+      const branchY = centerY + branchRadius * Math.sin(angle) - 30
 
       newNodes.push({
         id: branchId,
         data: { label: branch.topic },
-        position: {
-          x: 400 + radius * Math.cos(angle),
-          y: 300 + radius * Math.sin(angle)
-        },
+        position: { x: branchX, y: branchY },
         style: {
-          background: '#764ba2',
-          color: 'white',
-          padding: 15,
+          background: 'var(--accent-secondary)',
+          color: 'var(--bg-primary)',
+          padding: 12,
           borderRadius: 8,
-          fontSize: 14,
+          fontSize: 13,
           fontWeight: '600',
           width: 150,
-          textAlign: 'center'
+          textAlign: 'center',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
         }
       })
 
@@ -87,31 +95,38 @@ export default function MindMapTab({ analysisId, pdfContent }: MindMapTabProps) 
         id: `e0-${branchId}`,
         source: '0',
         target: branchId,
-        animated: true,
-        style: { stroke: '#667eea', strokeWidth: 2 }
+        animated: false,
+        style: { stroke: 'var(--accent-primary)', strokeWidth: 2 }
       })
 
-      // Subtopic nodes
+      // Subtopic nodes with improved layout
+      const subtopicCount = branch.subtopics.length
+      const subtopicRadius = 220 // Increased spacing
+
       branch.subtopics.forEach((subtopic: string, sIdx: number) => {
         const subtopicId = `${branchId}-sub-${sIdx}`
-        const subAngle = angle + ((sIdx - (branch.subtopics.length - 1) / 2) * 0.3)
-        const subRadius = 200
+
+        // Spread subtopics in an arc around the branch
+        const arcSpan = Math.PI / 2.5 // Smaller arc for better organization
+        const subtopicAngle = angle + ((sIdx - (subtopicCount - 1) / 2) * (arcSpan / Math.max(subtopicCount - 1, 1)))
+
+        const subtopicX = centerX + (branchRadius + subtopicRadius) * Math.cos(subtopicAngle) - 65
+        const subtopicY = centerY + (branchRadius + subtopicRadius) * Math.sin(subtopicAngle) - 20
 
         newNodes.push({
           id: subtopicId,
           data: { label: subtopic },
-          position: {
-            x: 400 + radius * Math.cos(angle) + subRadius * Math.cos(subAngle),
-            y: 300 + radius * Math.sin(angle) + subRadius * Math.sin(subAngle)
-          },
+          position: { x: subtopicX, y: subtopicY },
           style: {
-            background: '#ebeae8',
-            color: '#000',
-            padding: 10,
+            background: 'var(--bg-card)',
+            color: 'var(--text-primary)',
+            padding: 8,
             borderRadius: 6,
-            fontSize: 12,
+            fontSize: 11,
             width: 130,
-            textAlign: 'center'
+            textAlign: 'center',
+            border: '2px solid var(--border-color)',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.08)'
           }
         })
 
@@ -119,7 +134,7 @@ export default function MindMapTab({ analysisId, pdfContent }: MindMapTabProps) 
           id: `e${branchId}-${subtopicId}`,
           source: branchId,
           target: subtopicId,
-          style: { stroke: '#999', strokeWidth: 1.5 }
+          style: { stroke: 'var(--border-color)', strokeWidth: 1.5 }
         })
       })
     })
@@ -131,6 +146,14 @@ export default function MindMapTab({ analysisId, pdfContent }: MindMapTabProps) 
   const generateMindMapData = async () => {
     setGenerating(true)
 
+    const apiKey = process.env.REACT_APP_GEMINI_API_KEY
+
+    if (!apiKey) {
+      alert('Gemini API key not found. Please add REACT_APP_GEMINI_API_KEY to your .env file')
+      setGenerating(false)
+      return
+    }
+
     if (!pdfContent || pdfContent.trim().length === 0) {
       alert('PDF content not available. Please re-upload and analyze the PDF.')
       setGenerating(false)
@@ -141,21 +164,35 @@ export default function MindMapTab({ analysisId, pdfContent }: MindMapTabProps) 
       const prompt = generateMindMapPrompt(pdfContent.substring(0, 10000))
 
       const response = await fetch(
-        'http://localhost:3002/api/claude',
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            prompt,
-            maxTokens: 2000
+            contents: [{
+              parts: [{
+                text: prompt
+              }]
+            }],
+            generationConfig: {
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 8192
+            }
           })
         }
       )
 
       const data = await response.json()
-      const aiResponse = data.text
+
+      if (!response.ok) {
+        throw new Error(data.error?.message || 'Failed to generate mind map')
+      }
+
+      const aiResponse = data.candidates[0].content.parts[0].text
 
       const jsonMatch = aiResponse.match(/\{[\s\S]*\}/)
       if (jsonMatch) {
@@ -179,7 +216,19 @@ export default function MindMapTab({ analysisId, pdfContent }: MindMapTabProps) 
   if (!mindMap) {
     return (
       <div className="mindmap-generate">
-        <div className="generate-icon">🧠</div>
+        <div className="generate-icon">
+          <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="3"/>
+            <circle cx="5" cy="7" r="2"/>
+            <circle cx="19" cy="7" r="2"/>
+            <circle cx="5" cy="17" r="2"/>
+            <circle cx="19" cy="17" r="2"/>
+            <line x1="9.5" y1="11.5" x2="6.5" y2="8.5"/>
+            <line x1="14.5" y1="11.5" x2="17.5" y2="8.5"/>
+            <line x1="9.5" y1="12.5" x2="6.5" y2="15.5"/>
+            <line x1="14.5" y1="12.5" x2="17.5" y2="15.5"/>
+          </svg>
+        </div>
         <h3>Generate Mind Map</h3>
         <p>Create a visual mind map showing the relationships between concepts in this PDF.</p>
         <button
@@ -187,7 +236,7 @@ export default function MindMapTab({ analysisId, pdfContent }: MindMapTabProps) 
           onClick={generateMindMapData}
           disabled={generating}
         >
-          {generating ? '⏳ Generating...' : '✨ Generate Mind Map'}
+          {generating ? 'Generating...' : 'Generate Mind Map'}
         </button>
       </div>
     )
@@ -196,7 +245,7 @@ export default function MindMapTab({ analysisId, pdfContent }: MindMapTabProps) 
   return (
     <div className="mindmap-tab">
       <div className="mindmap-header">
-        <h3>🧠 Mind Map</h3>
+        <h3>Mind Map</h3>
         <p>Explore the interconnected concepts from this PDF</p>
       </div>
 

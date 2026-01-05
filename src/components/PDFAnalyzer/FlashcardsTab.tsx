@@ -36,6 +36,14 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
     setGenerating(true)
     setError('')
 
+    const apiKey = process.env.REACT_APP_GEMINI_API_KEY
+
+    if (!apiKey) {
+      setError('Gemini API key not found. Please add REACT_APP_GEMINI_API_KEY to your .env file')
+      setGenerating(false)
+      return
+    }
+
     if (!pdfContent || pdfContent.trim().length === 0) {
       setError('PDF content not available. Please re-upload and analyze the PDF.')
       setGenerating(false)
@@ -46,15 +54,24 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
       const prompt = generateFlashcardsPrompt(pdfContent.substring(0, 15000))
 
       const response = await fetch(
-        'http://localhost:3002/api/claude',
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            prompt,
-            maxTokens: 3000
+            contents: [{
+              parts: [{
+                text: prompt
+              }]
+            }],
+            generationConfig: {
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 8192
+            }
           })
         }
       )
@@ -62,10 +79,10 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate flashcards')
+        throw new Error(data.error?.message || 'Failed to generate flashcards')
       }
 
-      const aiResponse = data.text
+      const aiResponse = data.candidates[0].content.parts[0].text
 
       // Parse JSON response
       const jsonMatch = aiResponse.match(/\{[\s\S]*\}/)
@@ -105,7 +122,13 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
     <div className="flashcards-tab">
       {flashcards.length === 0 ? (
         <div className="flashcards-generate">
-          <div className="generate-icon">🎴</div>
+          <div className="generate-icon">
+            <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="5" width="18" height="14" rx="2"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+              <line x1="12" y1="5" x2="12" y2="19"/>
+            </svg>
+          </div>
           <h3>Generate Flashcards</h3>
           <p>Create interactive flashcards from this PDF to help you study and memorize key concepts.</p>
           <button
@@ -113,18 +136,18 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
             onClick={generateFlashcards}
             disabled={generating}
           >
-            {generating ? '⏳ Generating...' : '✨ Generate Flashcards'}
+            {generating ? 'Generating...' : 'Generate Flashcards'}
           </button>
           {error && (
             <div className="error-message" style={{ marginTop: '1rem', padding: '1rem', background: '#fee', color: '#c33', borderRadius: '8px' }}>
-              ⚠️ {error}
+              {error}
             </div>
           )}
         </div>
       ) : (
         <>
           <div className="flashcards-header">
-            <h3>🎴 Flashcards</h3>
+            <h3>Flashcards</h3>
             <span className="flashcard-count">
               {currentIndex + 1} / {flashcards.length}
             </span>
@@ -132,8 +155,12 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
 
           <div className="flashcard-viewer">
             <div
+              key={currentIndex}
               className={`flashcard ${isFlipped ? 'flipped' : ''}`}
-              onClick={() => setIsFlipped(!isFlipped)}
+              onClick={(e) => {
+                e.stopPropagation()
+                setIsFlipped(!isFlipped)
+              }}
             >
               <div className="flashcard-inner">
                 <div className="flashcard-front">
@@ -166,7 +193,7 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
               className="btn-flashcard-shuffle"
               onClick={() => setCurrentIndex(Math.floor(Math.random() * flashcards.length))}
             >
-              🔀 Random
+              Random
             </button>
             <button
               className="btn-flashcard-nav"

@@ -21,12 +21,12 @@ export default function AnalysisTab({ summary, explanation, title }: AnalysisTab
       {summary || explanation ? (
         <div className="results-section">
           <div className="results-header">
-            <h3>📄 {title}</h3>
+            <h3>{title}</h3>
           </div>
 
           {summary && (
             <div className="result-section">
-              <h4>📝 Summary</h4>
+              <h4>Summary</h4>
               <div
                 className="result-content summary"
                 dangerouslySetInnerHTML={{ __html: formatText(summary) }}
@@ -36,7 +36,7 @@ export default function AnalysisTab({ summary, explanation, title }: AnalysisTab
 
           {explanation && (
             <div className="result-section">
-              <h4>💡 Detailed Explanation</h4>
+              <h4>Detailed Explanation</h4>
               <div
                 className="result-content explanation"
                 dangerouslySetInnerHTML={{ __html: formatText(explanation) }}

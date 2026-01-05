@@ -61,7 +61,7 @@ export default function HistoryTab({ userId, onLoadAnalysis }: HistoryTabProps) 
   if (error) {
     return (
       <div className="tab-error">
-        <p>⚠️ {error}</p>
+        <p>{error}</p>
         <button onClick={loadHistory}>Retry</button>
       </div>
     )
@@ -70,13 +70,18 @@ export default function HistoryTab({ userId, onLoadAnalysis }: HistoryTabProps) 
   return (
     <div className="history-tab">
       <div className="history-header">
-        <h3>📚 Your PDF Analyses</h3>
+        <h3>Your PDF Analyses</h3>
         <span className="history-count">{analyses.length} total</span>
       </div>
 
       {analyses.length === 0 ? (
         <div className="tab-empty-state">
-          <div className="empty-icon">📄</div>
+          <div className="empty-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+          </div>
           <p>No PDF analyses yet</p>
           <p className="empty-subtitle">Upload and analyze your first PDF to get started!</p>
         </div>
@@ -86,7 +91,6 @@ export default function HistoryTab({ userId, onLoadAnalysis }: HistoryTabProps) 
             <div key={analysis.id} className="history-item">
               <div className="history-item-header">
                 <div className="history-item-title">
-                  <span className="history-icon">📄</span>
                   <h4>{analysis.title}</h4>
                 </div>
                 <div className="history-item-actions">
@@ -95,28 +99,28 @@ export default function HistoryTab({ userId, onLoadAnalysis }: HistoryTabProps) 
                     onClick={() => onLoadAnalysis(analysis.id, analysis)}
                     title="Load this analysis"
                   >
-                    📖 View
+                    View
                   </button>
                   <button
                     className="btn-delete-small"
                     onClick={() => handleDelete(analysis.id)}
                     title="Delete"
                   >
-                    🗑️
+                    Delete
                   </button>
                 </div>
               </div>
 
               <div className="history-item-meta">
                 <span className="meta-item">
-                  📅 {formatDate(analysis.created_at)}
+                  {formatDate(analysis.created_at)}
                 </span>
                 <span className="meta-item">
-                  📄 {analysis.page_count} pages
+                  {analysis.page_count} pages
                 </span>
                 {analysis.course && (
                   <span className="meta-item" style={{ color: analysis.course.color }}>
-                    📚 {analysis.course.title}
+                    {analysis.course.title}
                   </span>
                 )}
               </div>
