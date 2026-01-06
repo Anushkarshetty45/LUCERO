@@ -1003,6 +1003,7 @@
   height: 100%;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1014,16 +1015,22 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   box-sizing: border-box;
+  transition: opacity 0.1s;
 }
 
 .flashcard-front {
   z-index: 2;
+  transform: rotateY(0deg);
 }
 
 .flashcard-back {
   transform: rotateY(180deg);
+  z-index: 1;
   background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
   border-color: var(--accent-secondary);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
 }
 
 .flashcard-category {
