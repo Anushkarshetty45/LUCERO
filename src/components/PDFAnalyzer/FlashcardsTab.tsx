@@ -15,6 +15,7 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
   const [generating, setGenerating] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [isFlipping, setIsFlipping] = useState(false)
 
   useEffect(() => {
     loadFlashcards()
@@ -106,11 +107,13 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
 
   const handleNext = () => {
     setIsFlipped(false)
+    setIsFlipping(false)
     setCurrentIndex((prev) => (prev + 1) % flashcards.length)
   }
 
   const handlePrevious = () => {
     setIsFlipped(false)
+    setIsFlipping(false)
     setCurrentIndex((prev) => (prev - 1 + flashcards.length) % flashcards.length)
   }
 
@@ -155,11 +158,13 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
 
           <div className="flashcard-viewer">
             <div
-              key={currentIndex}
               className={`flashcard ${isFlipped ? 'flipped' : ''}`}
               onClick={(e) => {
                 e.stopPropagation()
+                if (isFlipping) return
+                setIsFlipping(true)
                 setIsFlipped(!isFlipped)
+                setTimeout(() => setIsFlipping(false), 600)
               }}
             >
               <div className="flashcard-inner">
@@ -175,7 +180,7 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
                   <div className="flashcard-content">
                     {flashcards[currentIndex].back}
                   </div>
-                  <div className="flashcard-hint">Click to flip back</div>
+                  <div className="flashcard-hint">Click to see question again</div>
                 </div>
               </div>
             </div>
@@ -191,7 +196,11 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
             </button>
             <button
               className="btn-flashcard-shuffle"
-              onClick={() => setCurrentIndex(Math.floor(Math.random() * flashcards.length))}
+              onClick={() => {
+                setIsFlipped(false)
+                setIsFlipping(false)
+                setCurrentIndex(Math.floor(Math.random() * flashcards.length))
+              }}
             >
               Random
             </button>
@@ -210,7 +219,11 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
                 <div
                   key={idx}
                   className={`progress-dot ${idx === currentIndex ? 'active' : ''}`}
-                  onClick={() => { setCurrentIndex(idx); setIsFlipped(false); }}
+                  onClick={() => {
+                    setIsFlipped(false)
+                    setIsFlipping(false)
+                    setCurrentIndex(idx)
+                  }}
                 />
               ))}
             </div>
