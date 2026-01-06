@@ -10,7 +10,7 @@ import QuizTab from './QuizTab'
 import MindMapTab from './MindMapTab'
 import './PDFAnalyzerModal.css'
 
-// Set up PDF.js worker
+// Set up PDF.js worker - using local file
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs'
 
 interface PDFAnalyzerModalProps {
