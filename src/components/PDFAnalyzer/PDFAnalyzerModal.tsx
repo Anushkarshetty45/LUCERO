@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { useAuth } from '../../hooks/useAuth'
 import * as pdfjsLib from 'pdfjs-dist'
 import { uploadPDFToStorage, createPDFAnalysis } from '../../services/pdfAnalysisApi'
+import { recordDailyActivity } from '../../services/api'
 import { generateAnalysisPrompt } from '../../services/aiPrompts'
 import AnalysisTab from './AnalysisTab'
 import HistoryTab from './HistoryTab'
@@ -177,6 +178,9 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
       })
 
       setAnalysisId(analysis.id)
+
+      // Record PDF analysis activity for streak
+      await recordDailyActivity(user.id, 'pdf_analysis')
 
       // Auto-navigate to Analysis tab after successful analysis
       setActiveTab('analysis')
