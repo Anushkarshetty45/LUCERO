@@ -76,9 +76,9 @@ export default function QuizTab({ analysisId, pdfContent, userId }: QuizTabProps
     setTimerActive(false)
   }
 
-  const handleQuestionCountSelect = () => {
+  const handleQuestionCountSelect = async () => {
+    await generateQuizQuestions(questionCount)
     setShowQuestionSelector(false)
-    generateQuizQuestions(questionCount)
   }
 
   const generateQuizQuestions = async (count: number) => {
@@ -322,14 +322,18 @@ IMPORTANT: Generate EXACTLY ${count} questions. No more, no less.`
         </div>
 
         <div className="quiz-options">
-          {quiz[currentQuestion].options.map((option: string) => {
-            const optionLetter = option.charAt(0)
+          {quiz[currentQuestion].options.map((option: string, idx: number) => {
+            // Extract option letter - handle both "A) Text" format and plain "Text" format
+            const optionLetter = String.fromCharCode(65 + idx) // A, B, C, D
+            const optionText = option.startsWith(optionLetter + ')')
+              ? option.substring(3).trim()
+              : option
             const isCorrect = optionLetter === quiz[currentQuestion].correct_answer
             const isSelected = optionLetter === selectedAnswer
 
             return (
               <button
-                key={option}
+                key={idx}
                 className={`quiz-option ${
                   showExplanation && isCorrect ? 'correct' :
                   showExplanation && isSelected && !isCorrect ? 'incorrect' :
@@ -338,7 +342,7 @@ IMPORTANT: Generate EXACTLY ${count} questions. No more, no less.`
                 onClick={() => !showExplanation && handleAnswerSelect(optionLetter)}
                 disabled={showExplanation}
               >
-                {option}
+                {optionLetter}) {optionText}
                 {showExplanation && isCorrect && <span className="check-mark">✓</span>}
                 {showExplanation && isSelected && !isCorrect && <span className="x-mark">✗</span>}
               </button>
