@@ -87,7 +87,7 @@ export const createPDFAnalysis = async (data: CreatePDFAnalysisRequest): Promise
 export const getPDFAnalysis = async (analysisId: string): Promise<PDFAnalysis> => {
   const { data, error } = await supabase
     .from('pdf_analyses')
-    .select('*, courses(title, color)')
+    .select('*')
     .eq('id', analysisId)
     .single()
 
@@ -102,7 +102,7 @@ export const getPDFAnalysis = async (analysisId: string): Promise<PDFAnalysis> =
 export const getUserPDFAnalyses = async (userId: string): Promise<PDFAnalysis[]> => {
   const { data, error } = await supabase
     .from('pdf_analyses')
-    .select('*, courses(title, color)')
+    .select('*')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
 
