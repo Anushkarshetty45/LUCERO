@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { getFlashcards, createFlashcards } from '../../services/pdfAnalysisApi'
+import { recordDailyActivity } from '../../services/api'
 import { generateFlashcardsPrompt } from '../../services/aiPrompts'
+import { useAuth } from '../../hooks/useAuth'
 import type { PDFFlashcard, GenerateFlashcardsResponse } from '../../types/pdfAnalysis'
 
 interface FlashcardsTabProps {
@@ -9,6 +11,7 @@ interface FlashcardsTabProps {
 }
 
 export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabProps) {
+  const { user } = useAuth()
   const [flashcards, setFlashcards] = useState<PDFFlashcard[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isFlipped, setIsFlipped] = useState(false)
@@ -94,6 +97,11 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
         const savedCards = await createFlashcards(analysisId, parsed.flashcards)
         setFlashcards(savedCards)
         setError('')
+
+        // Record flashcard activity for streak
+        if (user) {
+          await recordDailyActivity(user.id, 'flashcard')
+        }
       } else {
         throw new Error('Failed to parse flashcards from AI response')
       }
