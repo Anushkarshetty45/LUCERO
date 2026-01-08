@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { createLesson } from '../services/api'
 import { Lesson } from '../types'
 import './AddTopicModal.css'
@@ -20,6 +21,7 @@ export default function AddTopicModal({
   onClose,
   onSuccess
 }: AddTopicModalProps) {
+  const { t } = useTranslation()
   const [topicName, setTopicName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -29,7 +31,7 @@ export default function AddTopicModal({
     const apiKey = process.env.REACT_APP_GEMINI_API_KEY
 
     if (!apiKey) {
-      throw new Error('Gemini API key not found. Please add REACT_APP_GEMINI_API_KEY to your .env file')
+      throw new Error(t('addTopic.errorNoApiKey'))
     }
 
     const prompt = `You are a world-class educator and subject matter expert. Create EXTREMELY DETAILED, COMPREHENSIVE study notes about "${topic}" for a "${courseSubject}" course titled "${courseTitle}".
@@ -195,7 +197,7 @@ Write in a clear, engaging, conversational but professional tone. Explain comple
       return htmlContent
     } catch (error: any) {
       console.error('AI Generation Error:', error)
-      throw new Error('Failed to generate notes with AI: ' + error.message)
+      throw new Error(t('addTopic.errorGenerate') + ': ' + error.message)
     }
   }
 
@@ -203,7 +205,7 @@ Write in a clear, engaging, conversational but professional tone. Explain comple
     e.preventDefault()
 
     if (!topicName.trim()) {
-      setError('Please enter a topic name')
+      setError(t('addTopic.errorTopicName'))
       return
     }
 
@@ -230,7 +232,7 @@ Write in a clear, engaging, conversational but professional tone. Explain comple
       onSuccess(newLesson)
     } catch (err: any) {
       console.error('❌ Error:', err)
-      setError(err.message || 'Failed to create topic')
+      setError(err.message || t('addTopic.errorFailed'))
       setLoading(false)
     }
   }
@@ -239,36 +241,36 @@ Write in a clear, engaging, conversational but professional tone. Explain comple
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Add New Topic</h2>
+          <h2>{t('addTopic.title')}</h2>
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="modal-body">
             <p className="course-info">
-              Course: <strong>{courseTitle}</strong> ({courseSubject})
+              {t('addTopic.course')} <strong>{courseTitle}</strong> ({courseSubject})
             </p>
 
             {error && <div className="error-message">{error}</div>}
 
             <div className="form-group">
-              <label htmlFor="topicName">Topic Name</label>
+              <label htmlFor="topicName">{t('addTopic.topicName')}</label>
               <input
                 id="topicName"
                 type="text"
-                placeholder="e.g., Introduction to Atomic Structure"
+                placeholder={t('addTopic.topicPlaceholder')}
                 value={topicName}
                 onChange={(e) => setTopicName(e.target.value)}
                 disabled={loading}
                 required
               />
-              <span className="hint">What topic would you like to learn about?</span>
+              <span className="hint">{t('addTopic.hint')}</span>
             </div>
 
             {generatingNotes && (
               <div className="generating-status">
                 <div className="spinner-small"></div>
-                <p>🤖 Generating detailed notes with AI...</p>
+                <p>{t('addTopic.generatingStatus')}</p>
               </div>
             )}
           </div>
@@ -280,14 +282,14 @@ Write in a clear, engaging, conversational but professional tone. Explain comple
               onClick={onClose}
               disabled={loading}
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
               className="btn-primary"
               disabled={loading}
             >
-              {loading ? 'Generating...' : '✨ Generate Notes'}
+              {loading ? t('addTopic.generating') : t('addTopic.generateButton')}
             </button>
           </div>
         </form>
