@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
-import { createStudySession, getStudySessionByCode, joinStudySession } from '../services/api'
+import { createStudySession, getStudySessionByCode, joinStudySession, recordDailyActivity } from '../services/api'
 import type { StudySession } from '../services/api'
 import VideoRoom from './VideoRoom'
 import './GroupStudyModal.css'
@@ -70,6 +70,10 @@ export default function GroupStudyModal({ onClose }: GroupStudyModalProps) {
 
       await joinStudySession(session.id, user.id)
       setCurrentSession(session)
+
+      // Record group study activity for streak
+      await recordDailyActivity(user.id, 'group_study')
+
       setViewMode('video')
     } catch (err: any) {
       console.error('Join meeting error:', err)
@@ -79,7 +83,11 @@ export default function GroupStudyModal({ onClose }: GroupStudyModalProps) {
     }
   }
 
-  const handleStartVideo = () => {
+  const handleStartVideo = async () => {
+    if (user) {
+      // Record group study activity for streak
+      await recordDailyActivity(user.id, 'group_study')
+    }
     setViewMode('video')
   }
 
