@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import './ChatbotModal.css'
 
 interface Message {
@@ -94,10 +95,11 @@ const formatResponse = (text: string): string => {
 }
 
 export default function ChatbotModal({ onClose }: ChatbotModalProps) {
+    const { t } = useTranslation()
     const [messages, setMessages] = useState<Message[]>([
         {
             role: 'assistant',
-            content: 'Hey there! 👋 I\'m LUCERO AI, your friendly study companion! I\'m here to help you with your studies, answer questions about LUCERO features, or just chat about learning. What can I help you with today? 😊',
+            content: t('chat.welcomeMessage'),
             timestamp: new Date()
         }
     ])
@@ -245,7 +247,7 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
         return (
             <div className="chatbot-minimized" onClick={() => setIsMinimized(false)}>
                 <div className="chatbot-icon">🤖</div>
-                <span>LUCERO AI</span>
+                <span>{t('chat.luceroAI')}</span>
             </div>
         )
     }
@@ -257,22 +259,22 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
                     <div className="chatbot-header-content">
                         <div className="chatbot-icon">🤖</div>
                         <div>
-                            <h3>LUCERO AI</h3>
-                            <p>Your Study Assistant</p>
+                            <h3>{t('chat.luceroAI')}</h3>
+                            <p>{t('chat.studyAssistant')}</p>
                         </div>
                     </div>
                     <div className="chatbot-header-actions">
                         <button
                             className="chatbot-action-btn"
                             onClick={() => setIsMinimized(true)}
-                            title="Minimize"
+                            title={t('chat.minimize')}
                         >
                             −
                         </button>
                         <button
                             className="chatbot-action-btn"
                             onClick={() => setIsMaximized(!isMaximized)}
-                            title={isMaximized ? 'Restore' : 'Maximize'}
+                            title={isMaximized ? t('chat.restore') : t('chat.maximize')}
                         >
                             {isMaximized ? '❐' : '□'}
                         </button>
@@ -316,7 +318,7 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
                         ref={inputRef}
                         type="text"
                         className="chatbot-input"
-                        placeholder="Ask me anything..."
+                        placeholder={t('chat.inputPlaceholder')}
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyPress={handleKeyPress}
