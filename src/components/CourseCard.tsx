@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { CourseWithProgress } from '../types'
 import { deleteCourse } from '../services/api'
 import './CourseCard.css'
@@ -11,6 +12,7 @@ interface CourseCardProps {
 
 export default function CourseCard({ course, onUpdate }: CourseCardProps) {
   const navigate = useNavigate()
+  const { t, i18n } = useTranslation()
   const [showMenu, setShowMenu] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
@@ -20,7 +22,7 @@ export default function CourseCard({ course, onUpdate }: CourseCardProps) {
       onUpdate()
     } catch (error) {
       console.error('Error deleting course:', error)
-      alert('Failed to delete course')
+      alert(t('course.errorDelete'))
     }
   }
 
@@ -42,36 +44,36 @@ export default function CourseCard({ course, onUpdate }: CourseCardProps) {
 
       <div className="course-card-body">
         <p className="course-description">
-          {course.description || 'No description'}
+          {course.description || t('course.noDescription')}
         </p>
 
         <div className="course-stats">
           <div className="stat">
-            <span className="stat-label">Topics</span>
+            <span className="stat-label">{t('course.topics')}</span>
             <span className="stat-value">{course.total_lessons}</span>
           </div>
           <div className="stat">
-            <span className="stat-label">Last Studied</span>
+            <span className="stat-label">{t('course.lastStudied')}</span>
             <span className="stat-value stat-small">
-              {course.last_accessed 
-                ? new Date(course.last_accessed).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-                : 'Not yet'}
+              {course.last_accessed
+                ? new Date(course.last_accessed).toLocaleDateString(i18n.language, { month: 'short', day: 'numeric' })
+                : t('course.notYet')}
             </span>
           </div>
         </div>
 
         <div className="course-footer-info">
           <span className="created-date">
-            📅 Created {new Date(course.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            📅 {t('course.created')} {new Date(course.created_at).toLocaleDateString(i18n.language, { month: 'short', day: 'numeric', year: 'numeric' })}
           </span>
         </div>
 
         <div className="course-card-actions">
-          <button 
+          <button
             className="btn-open"
             onClick={() => navigate(`/course/${course.id}`)}
           >
-            Open Course
+            {t('course.openCourse')}
           </button>
           <button 
             className="btn-menu"
@@ -86,16 +88,16 @@ export default function CourseCard({ course, onUpdate }: CourseCardProps) {
                 navigate(`/course/${course.id}/edit`)
                 setShowMenu(false)
               }}>
-                Edit
+                {t('common.edit')}
               </button>
-              <button 
+              <button
                 className="delete-btn"
                 onClick={() => {
                   setShowDeleteConfirm(true)
                   setShowMenu(false)
                 }}
               >
-                Delete
+                {t('common.delete')}
               </button>
             </div>
           )}
@@ -105,20 +107,20 @@ export default function CourseCard({ course, onUpdate }: CourseCardProps) {
       {showDeleteConfirm && (
         <div className="delete-confirm-overlay">
           <div className="delete-confirm-modal">
-            <h3>Delete Course?</h3>
-            <p>Are you sure you want to delete "{course.title}"? This action cannot be undone.</p>
+            <h3>{t('course.deleteCourse')}</h3>
+            <p>{t('course.deleteConfirmation', { title: course.title })}</p>
             <div className="confirm-actions">
-              <button 
+              <button
                 className="btn-cancel"
                 onClick={() => setShowDeleteConfirm(false)}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
-              <button 
+              <button
                 className="btn-delete"
                 onClick={handleDelete}
               >
-                Delete
+                {t('common.delete')}
               </button>
             </div>
           </div>
