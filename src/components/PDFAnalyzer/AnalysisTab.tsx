@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 interface AnalysisTabProps {
   summary: string
   explanation: string
@@ -5,6 +7,7 @@ interface AnalysisTabProps {
 }
 
 export default function AnalysisTab({ summary, explanation, title }: AnalysisTabProps) {
+  const { t } = useTranslation()
   const formatText = (text: string) => {
     return text
       .replace(/### (.*?)(\n|$)/g, '<h4 class="section-heading">$1</h4>')
@@ -26,7 +29,7 @@ export default function AnalysisTab({ summary, explanation, title }: AnalysisTab
 
           {summary && (
             <div className="result-section">
-              <h4>Summary</h4>
+              <h4>{t('pdfAnalyzer.analysis.summary')}</h4>
               <div
                 className="result-content summary"
                 dangerouslySetInnerHTML={{ __html: formatText(summary) }}
@@ -36,7 +39,7 @@ export default function AnalysisTab({ summary, explanation, title }: AnalysisTab
 
           {explanation && (
             <div className="result-section">
-              <h4>Detailed Explanation</h4>
+              <h4>{t('pdfAnalyzer.analysis.detailedExplanation')}</h4>
               <div
                 className="result-content explanation"
                 dangerouslySetInnerHTML={{ __html: formatText(explanation) }}
@@ -46,7 +49,7 @@ export default function AnalysisTab({ summary, explanation, title }: AnalysisTab
         </div>
       ) : (
         <div className="tab-empty-state">
-          <p>No analysis available. Please upload and analyze a PDF first.</p>
+          <p>{t('pdfAnalyzer.analysis.noAnalysis')}</p>
         </div>
       )}
     </div>
