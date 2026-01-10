@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../services/supabase'
 import { Course } from '../types'
 import './CreateNoteModal.css'
@@ -10,6 +11,7 @@ interface CreateNoteModalProps {
 }
 
 export default function CreateNoteModal({ userId, onClose, onNoteCreated }: CreateNoteModalProps) {
+  const { t } = useTranslation()
   const [courses, setCourses] = useState<Course[]>([])
   const [selectedCourseId, setSelectedCourseId] = useState('')
   const [topic, setTopic] = useState('')
@@ -42,7 +44,7 @@ export default function CreateNoteModal({ userId, onClose, onNoteCreated }: Crea
     setError('')
 
     if (!selectedCourseId || !topic.trim() || !content.trim()) {
-      setError('Please fill in all fields')
+      setError(t('createNote.errorAllFields'))
       return
     }
 
@@ -63,7 +65,7 @@ export default function CreateNoteModal({ userId, onClose, onNoteCreated }: Crea
       onClose()
     } catch (err) {
       console.error('Error creating note:', err)
-      setError('Failed to create note. Please try again.')
+      setError(t('createNote.errorFailed'))
     } finally {
       setLoading(false)
     }
@@ -73,7 +75,7 @@ export default function CreateNoteModal({ userId, onClose, onNoteCreated }: Crea
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content create-note-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>✏️ Create New Note</h2>
+          <h2>{t('createNote.title')}</h2>
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
 
@@ -82,7 +84,7 @@ export default function CreateNoteModal({ userId, onClose, onNoteCreated }: Crea
             {error && <div className="error-message">{error}</div>}
 
             <div className="form-group">
-              <label htmlFor="course">Course</label>
+              <label htmlFor="course">{t('createNote.course')}</label>
               <select
                 id="course"
                 value={selectedCourseId}
@@ -90,7 +92,7 @@ export default function CreateNoteModal({ userId, onClose, onNoteCreated }: Crea
                 disabled={loading}
                 required
               >
-                <option value="">Select a course...</option>
+                <option value="">{t('createNote.selectCourse')}</option>
                 {courses.map((course) => (
                   <option key={course.id} value={course.id}>
                     {course.title}
@@ -98,16 +100,16 @@ export default function CreateNoteModal({ userId, onClose, onNoteCreated }: Crea
                 ))}
               </select>
               {courses.length === 0 && (
-                <span className="hint">Create a course first to add notes</span>
+                <span className="hint">{t('createNote.hint')}</span>
               )}
             </div>
 
             <div className="form-group">
-              <label htmlFor="topic">Topic</label>
+              <label htmlFor="topic">{t('createNote.topic')}</label>
               <input
                 id="topic"
                 type="text"
-                placeholder="e.g., Newton's Laws of Motion"
+                placeholder={t('createNote.topicPlaceholder')}
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
                 disabled={loading}
@@ -116,10 +118,10 @@ export default function CreateNoteModal({ userId, onClose, onNoteCreated }: Crea
             </div>
 
             <div className="form-group">
-              <label htmlFor="content">Content</label>
+              <label htmlFor="content">{t('createNote.content')}</label>
               <textarea
                 id="content"
-                placeholder="Write your notes here..."
+                placeholder={t('createNote.contentPlaceholder')}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 disabled={loading}
@@ -136,14 +138,14 @@ export default function CreateNoteModal({ userId, onClose, onNoteCreated }: Crea
               onClick={onClose}
               disabled={loading}
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
               className="btn-primary"
               disabled={loading || courses.length === 0}
             >
-              {loading ? 'Creating...' : 'Create Note'}
+              {loading ? t('createNote.creating') : t('createNote.createButton')}
             </button>
           </div>
         </form>
