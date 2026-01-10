@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../services/supabase'
 import { UserNote } from '../types'
 import CreateNoteModal from './CreateNoteModal'
@@ -11,6 +12,7 @@ interface AllNotesModalProps {
 }
 
 export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesModalProps) {
+  const { t } = useTranslation()
   const [notes, setNotes] = useState<(UserNote & { course_title?: string })[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -54,7 +56,7 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
 
         const notesWithCourses = notesData.map(note => ({
           ...note,
-          course_title: courseTitles?.[note.course_id] || 'Unknown Course'
+          course_title: courseTitles?.[note.course_id] || t('notes.unknownCourse')
         }))
 
         setNotes(notesWithCourses)
@@ -69,7 +71,7 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
   }
 
   const handleDelete = async (noteId: string) => {
-    if (!window.confirm('Are you sure you want to delete this note?')) return
+    if (!window.confirm(t('notes.deleteConfirm'))) return
 
     try {
       const { error } = await supabase
@@ -82,7 +84,7 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
       setNotes(notes.filter(n => n.id !== noteId))
     } catch (error) {
       console.error('Error deleting note:', error)
-      alert('Failed to delete note')
+      alert(t('notes.errorDelete'))
     }
   }
 
@@ -118,7 +120,7 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
       setNoteContent('')
     } catch (error) {
       console.error('Error saving note:', error)
-      alert('Failed to save note')
+      alert(t('notes.errorSave'))
     } finally {
       setIsSaving(false)
     }
@@ -140,10 +142,10 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
       <div className="modal-overlay" onClick={onClose}>
         <div className="modal-content all-notes-modal" onClick={(e) => e.stopPropagation()}>
           <div className="modal-header">
-            <h2>📝 All My Notes</h2>
+            <h2>{t('notes.allNotes')}</h2>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
               <button className="btn-create-note" onClick={() => setShowCreateModal(true)}>
-                <span>+</span> New Note
+                <span>+</span> {t('notes.newNote')}
               </button>
               <button className="close-btn" onClick={onClose}>×</button>
             </div>
@@ -163,11 +165,11 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
                 className="note-editor-textarea"
                 value={noteContent}
                 onChange={(e) => setNoteContent(e.target.value)}
-                placeholder="Write your notes here..."
+                placeholder={t('notes.notesPlaceholder')}
               />
               <div className="note-editor-footer">
                 <span className="last-saved">
-                  Last saved: {new Date(selectedNote.updated_at).toLocaleString()}
+                  {t('notes.lastSaved')}: {new Date(selectedNote.updated_at).toLocaleString()}
                 </span>
                 <div className="note-editor-actions">
                   <button
@@ -175,14 +177,14 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
                     onClick={handleBackToList}
                     disabled={isSaving}
                   >
-                    ← Back
+                    {t('notes.back')}
                   </button>
                   <button
                     className="btn-primary"
                     onClick={handleSaveNote}
                     disabled={isSaving}
                   >
-                    {isSaving ? 'Saving...' : '💾 Save Changes'}
+                    {isSaving ? t('notes.saving') : t('notes.saveChanges')}
                   </button>
                 </div>
               </div>
@@ -193,7 +195,7 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
               <div className="search-box">
                 <input
                   type="text"
-                  placeholder="Search notes..."
+                  placeholder={t('notes.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -202,13 +204,13 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
               {loading ? (
                 <div className="loading-state">
                   <div className="spinner-small"></div>
-                  <p>Loading notes...</p>
+                  <p>{t('notes.loadingNotes')}</p>
                 </div>
               ) : filteredNotes.length === 0 ? (
                 <div className="empty-notes">
-                  <p>📚 No notes found</p>
-                  {searchQuery && <p className="hint">Try a different search term</p>}
-                  {!searchQuery && <p className="hint">Create notes from your courses</p>}
+                  <p>{t('notes.noNotesFound')}</p>
+                  {searchQuery && <p className="hint">{t('notes.tryDifferentSearch')}</p>}
+                  {!searchQuery && <p className="hint">{t('notes.createNotesHint')}</p>}
                 </div>
               ) : (
                 <div className="notes-grid">
@@ -234,7 +236,7 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
                             className="btn-view"
                             onClick={() => handleOpenNote(note)}
                           >
-                            Open
+                            {t('notes.open')}
                           </button>
                           <button
                             className="btn-delete-note"
@@ -254,7 +256,7 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
 
         <div className="modal-footer">
           <p className="notes-count">
-            {filteredNotes.length} {filteredNotes.length === 1 ? 'note' : 'notes'} found
+            {t('notes.notesCount', { count: filteredNotes.length })}
           </p>
         </div>
       </div>
