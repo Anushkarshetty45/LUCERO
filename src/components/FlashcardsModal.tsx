@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { getCourses, getLessons, recordDailyActivity } from '../services/api'
 import type { Course, Lesson } from '../types'
 import './FlashcardsModal.css'
@@ -26,6 +27,7 @@ interface QuizQuestion {
 type ViewMode = 'select-course' | 'select-topics' | 'generating' | 'study' | 'generating-quiz' | 'quiz'
 
 export default function FlashcardsModal({ onClose, userId }: FlashcardsModalProps) {
+  const { t } = useTranslation()
   const [viewMode, setViewMode] = useState<ViewMode>('select-course')
   const [courses, setCourses] = useState<Course[]>([])
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
@@ -53,7 +55,7 @@ export default function FlashcardsModal({ onClose, userId }: FlashcardsModalProp
       setCourses(data)
     } catch (err) {
       console.error('Error loading courses:', err)
-      setError('Failed to load courses')
+      setError(t('flashcardsModal.errorLoadCourses'))
     } finally {
       setLoading(false)
     }
@@ -71,7 +73,7 @@ export default function FlashcardsModal({ onClose, userId }: FlashcardsModalProp
       setViewMode('select-topics')
     } catch (err) {
       console.error('Error loading topics:', err)
-      setError('Failed to load topics for this course')
+      setError(t('flashcardsModal.errorLoadTopics'))
     } finally {
       setLoading(false)
     }
@@ -89,7 +91,7 @@ export default function FlashcardsModal({ onClose, userId }: FlashcardsModalProp
 
   const generateFlashcards = async () => {
     if (selectedTopics.size === 0) {
-      setError('Please select at least one topic')
+      setError(t('flashcardsModal.errorSelectTopic'))
       return
     }
 
@@ -131,7 +133,7 @@ Return ONLY this JSON (no code blocks, no extra text):
       const apiKey = process.env.REACT_APP_GEMINI_API_KEY
 
       if (!apiKey) {
-        throw new Error('Gemini API key not found. Please add REACT_APP_GEMINI_API_KEY to your .env file')
+        throw new Error(t('flashcardsModal.errorNoApiKey'))
       }
 
       const response = await fetch(
@@ -160,7 +162,7 @@ Return ONLY this JSON (no code blocks, no extra text):
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error?.message || 'Failed to generate flashcards')
+        throw new Error(data.error?.message || t('flashcardsModal.errorGenerateFlashcards'))
       }
 
       const aiResponse = data.candidates[0].content.parts[0].text
@@ -230,7 +232,7 @@ Return ONLY this JSON (no code blocks, no extra text):
         const flashcardsArray = parsed.flashcards || parsed
 
         if (!Array.isArray(flashcardsArray)) {
-          throw new Error('Invalid flashcards format')
+          throw new Error(t('flashcardsModal.errorInvalidFormat'))
         }
 
         // Filter out incomplete cards
@@ -239,7 +241,7 @@ Return ONLY this JSON (no code blocks, no extra text):
         )
 
         if (validCards.length === 0) {
-          throw new Error('No valid flashcards found in response')
+          throw new Error(t('flashcardsModal.errorNoValidCards'))
         }
 
         const generatedCards = validCards.map((card: any, idx: number) => ({
@@ -256,11 +258,11 @@ Return ONLY this JSON (no code blocks, no extra text):
         await recordDailyActivity(userId, 'flashcard')
       } catch (parseError: any) {
         console.error('Error processing flashcards:', parseError)
-        throw new Error(parseError.message || 'Failed to process flashcards')
+        throw new Error(parseError.message || t('flashcardsModal.errorProcessFlashcards'))
       }
     } catch (err: any) {
       console.error('Error generating flashcards:', err)
-      setError(err.message || 'Failed to generate flashcards. Please try again.')
+      setError(err.message || t('flashcardsModal.errorGenerateRetry'))
       setViewMode('select-topics')
     }
   }
@@ -313,7 +315,7 @@ Note: correctAnswer is the index (0-3) of the correct option.`
       const apiKey = process.env.REACT_APP_GEMINI_API_KEY
 
       if (!apiKey) {
-        throw new Error('Gemini API key not found')
+        throw new Error(t('flashcardsModal.errorNoApiKey'))
       }
 
       const response = await fetch(
@@ -342,7 +344,7 @@ Note: correctAnswer is the index (0-3) of the correct option.`
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error?.message || 'Failed to generate quiz')
+        throw new Error(data.error?.message || t('flashcardsModal.errorGenerateQuiz'))
       }
 
       const aiResponse = data.candidates[0].content.parts[0].text
@@ -365,7 +367,7 @@ Note: correctAnswer is the index (0-3) of the correct option.`
         const questionsArray = parsed.questions || parsed
 
         if (!Array.isArray(questionsArray)) {
-          throw new Error('Invalid quiz format')
+          throw new Error(t('flashcardsModal.errorInvalidQuizFormat'))
         }
 
         const validQuestions = questionsArray.filter((q: any) =>
@@ -373,7 +375,7 @@ Note: correctAnswer is the index (0-3) of the correct option.`
         )
 
         if (validQuestions.length === 0) {
-          throw new Error('No valid questions found')
+          throw new Error(t('flashcardsModal.errorNoValidQuestions'))
         }
 
         const generatedQuiz = validQuestions.map((q: any, idx: number) => ({
@@ -391,11 +393,11 @@ Note: correctAnswer is the index (0-3) of the correct option.`
         setViewMode('quiz')
       } catch (parseError) {
         console.error('Error parsing quiz:', parseError)
-        throw new Error('Failed to parse quiz from AI response')
+        throw new Error(t('flashcardsModal.errorParseQuiz'))
       }
     } catch (err: any) {
       console.error('Error generating quiz:', err)
-      setError(err.message || 'Failed to generate quiz. Please try again.')
+      setError(err.message || t('flashcardsModal.errorGenerateQuizRetry'))
       setViewMode('study')
     }
   }
@@ -449,7 +451,7 @@ Note: correctAnswer is the index (0-3) of the correct option.`
     <div className="modal-overlay" onClick={onClose}>
       <div className="flashcards-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>🃏 Flashcards</h2>
+          <h2>{t('flashcardsModal.title')}</h2>
           <button className="close-btn" onClick={onClose}>✕</button>
         </div>
 
@@ -457,17 +459,17 @@ Note: correctAnswer is the index (0-3) of the correct option.`
           {/* Course Selection View */}
           {viewMode === 'select-course' && (
             <div className="selection-view">
-              <h3>Select a Course</h3>
-              <p>Choose the course you want to generate flashcards for:</p>
+              <h3>{t('flashcardsModal.selectCourse')}</h3>
+              <p>{t('flashcardsModal.chooseCourse')}</p>
 
               {loading ? (
                 <div className="loading-state">
                   <div className="spinner"></div>
-                  <p>Loading courses...</p>
+                  <p>{t('flashcardsModal.loadingCourses')}</p>
                 </div>
               ) : courses.length === 0 ? (
                 <div className="empty-state">
-                  <p>📚 No courses found. Create a course first!</p>
+                  <p>{t('flashcardsModal.noCourses')}</p>
                 </div>
               ) : (
                 <div className="courses-list">
@@ -494,20 +496,20 @@ Note: correctAnswer is the index (0-3) of the correct option.`
           {viewMode === 'select-topics' && (
             <div className="selection-view">
               <div className="breadcrumb">
-                <button onClick={() => setViewMode('select-course')}>← Back to Courses</button>
+                <button onClick={() => setViewMode('select-course')}>{t('flashcardsModal.backToCourses')}</button>
               </div>
 
               <h3>{selectedCourse?.title}</h3>
-              <p>Select the topics you want to study (you can select multiple):</p>
+              <p>{t('flashcardsModal.selectTopics')}</p>
 
               {loading ? (
                 <div className="loading-state">
                   <div className="spinner"></div>
-                  <p>Loading topics...</p>
+                  <p>{t('flashcardsModal.loadingTopics')}</p>
                 </div>
               ) : topics.length === 0 ? (
                 <div className="empty-state">
-                  <p>📝 No topics found in this course. Add some topics first!</p>
+                  <p>{t('flashcardsModal.noTopics')}</p>
                 </div>
               ) : (
                 <>
@@ -536,14 +538,14 @@ Note: correctAnswer is the index (0-3) of the correct option.`
 
                   <div className="action-bar">
                     <div className="selection-count">
-                      {selectedTopics.size} topic{selectedTopics.size !== 1 ? 's' : ''} selected
+                      {t('flashcardsModal.topicsSelected', { count: selectedTopics.size })}
                     </div>
                     <button
                       className="btn-generate-cards"
                       onClick={generateFlashcards}
                       disabled={selectedTopics.size === 0}
                     >
-                      ✨ Generate Flashcards
+                      {t('flashcardsModal.generateFlashcards')}
                     </button>
                   </div>
                 </>
@@ -561,8 +563,8 @@ Note: correctAnswer is the index (0-3) of the correct option.`
           {viewMode === 'generating' && (
             <div className="generating-view">
               <div className="spinner-large"></div>
-              <h3>Generating Flashcards...</h3>
-              <p>Creating personalized flashcards from your selected topics</p>
+              <h3>{t('flashcardsModal.generatingFlashcards')}</h3>
+              <p>{t('flashcardsModal.generatingDescription')}</p>
             </div>
           )}
 
@@ -571,7 +573,7 @@ Note: correctAnswer is the index (0-3) of the correct option.`
             <div className="study-view">
               <div className="study-header">
                 <button className="btn-back" onClick={handleReset}>
-                  ← New Set
+                  {t('flashcardsModal.newSet')}
                 </button>
                 <div className="flashcard-count">
                   {currentIndex + 1} / {flashcards.length}
@@ -596,7 +598,7 @@ Note: correctAnswer is the index (0-3) of the correct option.`
                       <div className="flashcard-content">
                         <p>{flashcards[currentIndex].question}</p>
                       </div>
-                      <div className="flashcard-hint">Click to see answer</div>
+                      <div className="flashcard-hint">{t('flashcardsModal.clickToSeeAnswer')}</div>
                     </div>
                     <div className="flashcard-back">
                       <div className="flashcard-category">
@@ -605,7 +607,7 @@ Note: correctAnswer is the index (0-3) of the correct option.`
                       <div className="flashcard-content">
                         <p>{flashcards[currentIndex].answer}</p>
                       </div>
-                      <div className="flashcard-hint">Click to see question</div>
+                      <div className="flashcard-hint">{t('flashcardsModal.clickToSeeQuestion')}</div>
                     </div>
                   </div>
                 </div>
@@ -617,7 +619,7 @@ Note: correctAnswer is the index (0-3) of the correct option.`
                   onClick={handlePrevious}
                   disabled={flashcards.length <= 1}
                 >
-                  ← Previous
+                  {t('flashcardsModal.previous')}
                 </button>
                 <button
                   className="btn-shuffle"
@@ -627,14 +629,14 @@ Note: correctAnswer is the index (0-3) of the correct option.`
                     setIsFlipping(false)
                   }}
                 >
-                  🔀 Shuffle
+                  {t('flashcardsModal.shuffle')}
                 </button>
                 <button
                   className="btn-nav"
                   onClick={handleNext}
                   disabled={flashcards.length <= 1}
                 >
-                  Next →
+                  {t('flashcardsModal.next')}
                 </button>
               </div>
 
@@ -655,7 +657,7 @@ Note: correctAnswer is the index (0-3) of the correct option.`
               {/* Generate Quiz Button */}
               <div style={{ marginTop: '2rem', textAlign: 'center' }}>
                 <button className="btn-generate-cards" onClick={generateQuiz}>
-                  📝 Take Quiz
+                  {t('flashcardsModal.takeQuiz')}
                 </button>
               </div>
             </div>
@@ -665,8 +667,8 @@ Note: correctAnswer is the index (0-3) of the correct option.`
           {viewMode === 'generating-quiz' && (
             <div className="generating-view">
               <div className="spinner-large"></div>
-              <h3>Generating Quiz...</h3>
-              <p>Creating personalized quiz questions from your topics and flashcards</p>
+              <h3>{t('flashcardsModal.generatingQuiz')}</h3>
+              <p>{t('flashcardsModal.generatingQuizDescription')}</p>
             </div>
           )}
 
@@ -675,10 +677,10 @@ Note: correctAnswer is the index (0-3) of the correct option.`
             <div className="study-view">
               <div className="study-header">
                 <button className="btn-back" onClick={() => setViewMode('study')}>
-                  ← Back to Flashcards
+                  {t('flashcardsModal.backToFlashcards')}
                 </button>
                 <div className="flashcard-count">
-                  Question {currentQuizIndex + 1} / {quizQuestions.length}
+                  {t('flashcardsModal.questionProgress', { current: currentQuizIndex + 1, total: quizQuestions.length })}
                 </div>
               </div>
 
@@ -719,7 +721,7 @@ Note: correctAnswer is the index (0-3) of the correct option.`
                       onClick={handlePreviousQuestion}
                       disabled={currentQuizIndex === 0}
                     >
-                      ← Previous
+                      {t('flashcardsModal.previous')}
                     </button>
                     {currentQuizIndex === quizQuestions.length - 1 ? (
                       <button
@@ -727,7 +729,7 @@ Note: correctAnswer is the index (0-3) of the correct option.`
                         onClick={handleQuizSubmit}
                         disabled={Object.keys(selectedAnswers).length !== quizQuestions.length}
                       >
-                        Submit Quiz
+                        {t('flashcardsModal.submitQuiz')}
                       </button>
                     ) : (
                       <button
@@ -735,7 +737,7 @@ Note: correctAnswer is the index (0-3) of the correct option.`
                         onClick={handleNextQuestion}
                         disabled={currentQuizIndex === quizQuestions.length - 1}
                       >
-                        Next →
+                        {t('flashcardsModal.next')}
                       </button>
                     )}
                   </div>
@@ -757,7 +759,7 @@ Note: correctAnswer is the index (0-3) of the correct option.`
                 /* Quiz Results */
                 <div className="quiz-results">
                   <div className="results-header">
-                    <h2>Quiz Complete!</h2>
+                    <h2>{t('flashcardsModal.quizComplete')}</h2>
                     <div className="score-display">
                       <div className="score-circle">
                         {Math.round((Object.values(selectedAnswers).filter((ans, idx) =>
@@ -765,9 +767,12 @@ Note: correctAnswer is the index (0-3) of the correct option.`
                         ).length / quizQuestions.length) * 100)}%
                       </div>
                       <p>
-                        {Object.values(selectedAnswers).filter((ans, idx) =>
-                          ans === quizQuestions[idx].correctAnswer
-                        ).length} / {quizQuestions.length} correct
+                        {t('flashcardsModal.correctAnswers', {
+                          correct: Object.values(selectedAnswers).filter((ans, idx) =>
+                            ans === quizQuestions[idx].correctAnswer
+                          ).length,
+                          total: quizQuestions.length
+                        })}
                       </p>
                     </div>
                   </div>
@@ -782,16 +787,16 @@ Note: correctAnswer is the index (0-3) of the correct option.`
                         <div key={q.id} className={`result-item ${isCorrect ? 'correct' : 'incorrect'}`}>
                           <div className="result-header">
                             <span className="result-icon">{isCorrect ? '✓' : '✗'}</span>
-                            <span className="result-question">Question {idx + 1}</span>
+                            <span className="result-question">{t('flashcardsModal.questionNumber', { number: idx + 1 })}</span>
                           </div>
                           <p className="result-question-text">{q.question}</p>
                           <div className="result-answers">
                             <p className="user-answer">
-                              Your answer: <strong>{q.options[userAnswer]}</strong>
+                              {t('flashcardsModal.yourAnswer')}: <strong>{q.options[userAnswer]}</strong>
                             </p>
                             {!isCorrect && (
                               <p className="correct-answer">
-                                Correct answer: <strong>{q.options[q.correctAnswer]}</strong>
+                                {t('flashcardsModal.correctAnswer')}: <strong>{q.options[q.correctAnswer]}</strong>
                               </p>
                             )}
                           </div>
@@ -807,13 +812,13 @@ Note: correctAnswer is the index (0-3) of the correct option.`
                       setSelectedAnswers({})
                       setCurrentQuizIndex(0)
                     }}>
-                      Retry Quiz
+                      {t('flashcardsModal.retryQuiz')}
                     </button>
                     <button className="btn-generate-cards" onClick={generateQuiz}>
-                      New Quiz
+                      {t('flashcardsModal.newQuiz')}
                     </button>
                     <button className="btn-nav" onClick={() => setViewMode('study')}>
-                      Back to Flashcards
+                      {t('flashcardsModal.backToFlashcards')}
                     </button>
                   </div>
                 </div>
