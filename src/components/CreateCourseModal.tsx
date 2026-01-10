@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../hooks/useAuth'
 import { createCourse } from '../services/api'
 import './CreateCourseModal.css'
@@ -9,6 +10,7 @@ interface CreateCourseModalProps {
 }
 
 export default function CreateCourseModal({ onClose, onSuccess }: CreateCourseModalProps) {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -21,7 +23,7 @@ export default function CreateCourseModal({ onClose, onSuccess }: CreateCourseMo
     e.preventDefault()
 
     if (!title.trim()) {
-      setError('Course title is required')
+      setError(t('createCourse.errorTitleRequired'))
       return
     }
 
@@ -39,7 +41,7 @@ export default function CreateCourseModal({ onClose, onSuccess }: CreateCourseMo
 
       onSuccess()
     } catch (err: any) {
-      setError(err.message || 'Failed to create course')
+      setError(err.message || t('createCourse.errorFailed'))
       setLoading(false)
     }
   }
@@ -48,7 +50,7 @@ export default function CreateCourseModal({ onClose, onSuccess }: CreateCourseMo
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Create New Course</h2>
+          <h2>{t('createCourse.title')}</h2>
           <button className="modal-close" onClick={onClose}>×</button>
         </div>
 
@@ -56,10 +58,10 @@ export default function CreateCourseModal({ onClose, onSuccess }: CreateCourseMo
           {error && <div className="error-message">{error}</div>}
 
           <div className="form-group">
-            <label>Course Title *</label>
+            <label>{t('createCourse.courseTitle')}</label>
             <input
               type="text"
-              placeholder="e.g., Introduction to Chemistry"
+              placeholder={t('createCourse.titlePlaceholder')}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
@@ -68,19 +70,19 @@ export default function CreateCourseModal({ onClose, onSuccess }: CreateCourseMo
           </div>
 
           <div className="form-group">
-            <label>Subject</label>
+            <label>{t('createCourse.subject')}</label>
             <input
               type="text"
-              placeholder="e.g., Chemistry, Math, Physics"
+              placeholder={t('createCourse.subjectPlaceholder')}
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
             />
           </div>
 
           <div className="form-group">
-            <label>Description</label>
+            <label>{t('createCourse.description')}</label>
             <textarea
-              placeholder="What will students learn in this course?"
+              placeholder={t('createCourse.descriptionPlaceholder')}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
@@ -94,14 +96,14 @@ export default function CreateCourseModal({ onClose, onSuccess }: CreateCourseMo
               onClick={onClose}
               disabled={loading}
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
               className="btn-create"
               disabled={loading}
             >
-              {loading ? 'Creating...' : 'Create Course'}
+              {loading ? t('createCourse.creating') : t('createCourse.createButton')}
             </button>
           </div>
         </form>
