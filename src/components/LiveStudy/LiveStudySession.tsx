@@ -1,9 +1,11 @@
+import { useTranslation } from 'react-i18next'
 import { useLiveStudy } from '../../contexts/LiveStudyContext'
 import VideoPreview from './VideoPreview'
 import FocusMetricsOverlay from '../FocusMetricsOverlay'
 import SessionReportModal from '../SessionReportModal'
 
 export default function LiveStudySession() {
+    const { t } = useTranslation()
     const {
         isActive,
         sessionTime,
@@ -47,7 +49,7 @@ export default function LiveStudySession() {
                 <div className="live-header">
                     <div className="live-title">
                         <span className="live-indicator">●</span>
-                        Live Study Session
+                        {t('liveStudy.title')}
                     </div>
                     <div className="header-controls">
                         <button className="minimize-btn" onClick={handleMinimize}>_</button>
@@ -63,9 +65,9 @@ export default function LiveStudySession() {
                             {!isActive ? (
                                 <div className="start-prompt">
                                     <div className="camera-icon">📷</div>
-                                    <p>Enable camera to start live monitoring</p>
+                                    <p>{t('liveStudy.enableCamera')}</p>
                                     <button className="start-btn" onClick={startSession}>
-                                        Start Session
+                                        {t('liveStudy.startSession')}
                                     </button>
                                 </div>
                             ) : (
@@ -85,10 +87,10 @@ export default function LiveStudySession() {
                                     className="control-btn"
                                     onClick={handleMinimize}
                                 >
-                                    Minimize
+                                    {t('liveStudy.minimize')}
                                 </button>
                                 <button className="stop-btn" onClick={stopSession}>
-                                    End Session
+                                    {t('liveStudy.endSession')}
                                 </button>
                             </div>
                         )}
@@ -97,12 +99,12 @@ export default function LiveStudySession() {
                     {/* Right: Session Info */}
                     <div className="live-stats-section">
                         <div className="stat-card timer-card">
-                            <span className="stat-label">Session Time</span>
+                            <span className="stat-label">{t('liveStudy.sessionTime')}</span>
                             <span className="stat-value">{isActive ? formatTime(sessionTime) : '00:00'}</span>
                         </div>
 
                         <div style={{ fontSize: '14px', color: '#94a3b8', marginTop: '10px', textAlign: 'center' }}>
-                            {isActive ? 'Focus metrics displayed on the right →' : 'Start session to track your focus'}
+                            {isActive ? t('liveStudy.focusMetricsRight') : t('liveStudy.startToTrack')}
                         </div>
                     </div>
                 </div>
