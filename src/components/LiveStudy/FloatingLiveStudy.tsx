@@ -1,7 +1,9 @@
+import { useTranslation } from 'react-i18next'
 import { useLiveStudy } from '../../contexts/LiveStudyContext'
 import VideoPreview from './VideoPreview'
 
 export default function FloatingLiveStudy() {
+    const { t } = useTranslation()
     const {
         isActive,
         isMinimized,
