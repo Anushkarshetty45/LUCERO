@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../hooks/useAuth'
 import { createStudySession, getStudySessionByCode, joinStudySession, recordDailyActivity } from '../services/api'
 import type { StudySession } from '../services/api'
@@ -12,6 +13,7 @@ interface GroupStudyModalProps {
 type ViewMode = 'menu' | 'create' | 'join' | 'video'
 
 export default function GroupStudyModal({ onClose }: GroupStudyModalProps) {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const [viewMode, setViewMode] = useState<ViewMode>('menu')
   const [currentSession, setCurrentSession] = useState<StudySession | null>(null)
@@ -30,7 +32,7 @@ export default function GroupStudyModal({ onClose }: GroupStudyModalProps) {
     try {
       const { session, meetingCode } = await createStudySession(
         user.id,
-        sessionTitle || 'Group Study Session'
+        sessionTitle || t('groupStudy.defaultSessionTitle')
       )
 
       setCurrentSession(session)
@@ -38,7 +40,7 @@ export default function GroupStudyModal({ onClose }: GroupStudyModalProps) {
       setViewMode('create')
     } catch (err: any) {
       console.error('Create meeting error:', err)
-      setError(err.message || 'Failed to create meeting. Please try again.')
+      setError(err.message || t('groupStudy.errorCreateMeeting'))
     } finally {
       setLoading(false)
     }
@@ -46,13 +48,13 @@ export default function GroupStudyModal({ onClose }: GroupStudyModalProps) {
 
   const handleJoinMeeting = async () => {
     if (!user) {
-      setError('Please log in to join a meeting')
+      setError(t('groupStudy.errorPleaseLogin'))
       return
     }
 
     const trimmedCode = meetingCode.trim()
     if (!trimmedCode || trimmedCode.length < 6) {
-      setError('Please enter a valid 6-character meeting code')
+      setError(t('groupStudy.errorValidCode'))
       return
     }
 
@@ -63,7 +65,7 @@ export default function GroupStudyModal({ onClose }: GroupStudyModalProps) {
       const session = await getStudySessionByCode(trimmedCode)
 
       if (!session) {
-        setError('Meeting not found. Please check the code and try again.')
+        setError(t('groupStudy.errorMeetingNotFound'))
         setLoading(false)
         return
       }
@@ -77,7 +79,7 @@ export default function GroupStudyModal({ onClose }: GroupStudyModalProps) {
       setViewMode('video')
     } catch (err: any) {
       console.error('Join meeting error:', err)
-      setError(err.message || 'Failed to join meeting. Please try again.')
+      setError(err.message || t('groupStudy.errorJoinMeeting'))
     } finally {
       setLoading(false)
     }
@@ -115,7 +117,7 @@ export default function GroupStudyModal({ onClose }: GroupStudyModalProps) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="group-study-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>🎥 Group Study</h2>
+          <h2>{t('groupStudy.title')}</h2>
           <button className="close-btn" onClick={onClose}>✕</button>
         </div>
 
@@ -123,19 +125,19 @@ export default function GroupStudyModal({ onClose }: GroupStudyModalProps) {
           {viewMode === 'menu' && (
             <div className="study-menu">
               <div className="menu-header">
-                <h3>Study Together with Friends</h3>
-                <p>Create a study session or join someone else's session using a meeting code</p>
+                <h3>{t('groupStudy.studyWithFriends')}</h3>
+                <p>{t('groupStudy.description')}</p>
               </div>
 
               <div className="menu-options">
                 <div className="menu-option-card">
                   <div className="option-icon">✨</div>
-                  <h4>Create Meeting</h4>
-                  <p>Start a new study session and invite friends</p>
+                  <h4>{t('groupStudy.createMeeting')}</h4>
+                  <p>{t('groupStudy.createDescription')}</p>
                   <input
                     type="text"
                     className="session-title-input"
-                    placeholder="Session title (optional)"
+                    placeholder={t('groupStudy.sessionTitlePlaceholder')}
                     value={sessionTitle}
                     onChange={(e) => setSessionTitle(e.target.value)}
                     maxLength={50}
@@ -145,22 +147,22 @@ export default function GroupStudyModal({ onClose }: GroupStudyModalProps) {
                     onClick={handleCreateMeeting}
                     disabled={loading}
                   >
-                    {loading ? '⏳ Creating...' : '➕ Create Meeting'}
+                    {loading ? t('groupStudy.creating') : t('groupStudy.createButton')}
                   </button>
                 </div>
 
                 <div className="menu-divider">
-                  <span>OR</span>
+                  <span>{t('groupStudy.or')}</span>
                 </div>
 
                 <div className="menu-option-card">
                   <div className="option-icon">🔗</div>
-                  <h4>Join Meeting</h4>
-                  <p>Enter a meeting code to join a friend's session</p>
+                  <h4>{t('groupStudy.joinMeeting')}</h4>
+                  <p>{t('groupStudy.joinDescription')}</p>
                   <input
                     type="text"
                     className="meeting-code-input"
-                    placeholder="Enter 6-character code"
+                    placeholder={t('groupStudy.codePlaceholder')}
                     value={meetingCode}
                     onChange={(e) => {
                       setMeetingCode(e.target.value.toUpperCase())
@@ -173,7 +175,7 @@ export default function GroupStudyModal({ onClose }: GroupStudyModalProps) {
                     onClick={handleJoinMeeting}
                     disabled={loading || meetingCode.trim().length < 6}
                   >
-                    {loading ? '⏳ Joining...' : '🚪 Join Meeting'}
+                    {loading ? t('groupStudy.joining') : t('groupStudy.joinButton')}
                   </button>
                 </div>
               </div>
@@ -189,34 +191,34 @@ export default function GroupStudyModal({ onClose }: GroupStudyModalProps) {
           {viewMode === 'create' && currentSession && (
             <div className="meeting-created">
               <div className="success-icon">✅</div>
-              <h3>Meeting Created!</h3>
-              <p>Share this code with your friends to invite them</p>
+              <h3>{t('groupStudy.meetingCreated')}</h3>
+              <p>{t('groupStudy.shareCode')}</p>
 
               <div className="meeting-code-display">
-                <div className="code-label">Meeting Code</div>
+                <div className="code-label">{t('groupStudy.meetingCode')}</div>
                 <div className="code-value">{generatedCode}</div>
                 <button
                   className="btn-copy"
                   onClick={() => {
                     navigator.clipboard.writeText(generatedCode)
-                    alert('Meeting code copied to clipboard!')
+                    alert(t('groupStudy.codeCopied'))
                   }}
                 >
-                  📋 Copy Code
+                  {t('groupStudy.copyCode')}
                 </button>
               </div>
 
               <div className="meeting-info">
-                <p><strong>Session:</strong> {currentSession.title}</p>
-                <p><strong>Host:</strong> You</p>
+                <p><strong>{t('groupStudy.session')}:</strong> {currentSession.title}</p>
+                <p><strong>{t('groupStudy.host')}:</strong> {t('groupStudy.you')}</p>
               </div>
 
               <div className="meeting-actions">
                 <button className="btn-start-video" onClick={handleStartVideo}>
-                  🎥 Start Video Call
+                  {t('groupStudy.startVideo')}
                 </button>
                 <button className="btn-cancel" onClick={handleLeaveSession}>
-                  Cancel
+                  {t('common.cancel')}
                 </button>
               </div>
             </div>
