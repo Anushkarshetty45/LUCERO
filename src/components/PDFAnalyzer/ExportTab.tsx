@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf'
 import html2pdf from 'html2pdf.js'
 import { saveAs } from 'file-saver'
+import { useTranslation } from 'react-i18next'
 import { getFlashcards } from '../../services/pdfAnalysisApi'
 import { useState } from 'react'
 
@@ -12,6 +13,7 @@ interface ExportTabProps {
 }
 
 export default function ExportTab({ analysisId, title, summary, explanation }: ExportTabProps) {
+  const { t } = useTranslation()
   const [exporting, setExporting] = useState(false)
 
   const exportAsPDF = async () => {
@@ -47,7 +49,7 @@ export default function ExportTab({ analysisId, title, summary, explanation }: E
         .save()
     } catch (err) {
       console.error('PDF export error:', err)
-      alert('Failed to export as PDF')
+      alert(t('pdfAnalyzer.export.errorPDF'))
     } finally {
       setExporting(false)
     }
@@ -77,7 +79,7 @@ export default function ExportTab({ analysisId, title, summary, explanation }: E
       saveAs(blob, `${title}_analysis.doc`)
     } catch (err) {
       console.error('Word export error:', err)
-      alert('Failed to export as Word')
+      alert(t('pdfAnalyzer.export.errorWord'))
     } finally {
       setExporting(false)
     }
@@ -85,7 +87,7 @@ export default function ExportTab({ analysisId, title, summary, explanation }: E
 
   const exportAsText = () => {
     setExporting(true)
-    try {
+    try{
       const text = `
 ${title}
 ${'='.repeat(title.length)}
@@ -106,7 +108,7 @@ Generated with LUCERO PDF Analyzer
       saveAs(blob, `${title}_analysis.txt`)
     } catch (err) {
       console.error('Text export error:', err)
-      alert('Failed to export as text')
+      alert(t('pdfAnalyzer.export.errorText'))
     } finally {
       setExporting(false)
     }
@@ -118,7 +120,7 @@ Generated with LUCERO PDF Analyzer
       const flashcards = await getFlashcards(analysisId)
 
       if (flashcards.length === 0) {
-        alert('No flashcards found. Generate flashcards first!')
+        alert(t('pdfAnalyzer.export.noFlashcards'))
         return
       }
 
@@ -135,7 +137,7 @@ Generated with LUCERO PDF Analyzer
       saveAs(blob, `${title}_flashcards.csv`)
     } catch (err) {
       console.error('Flashcard export error:', err)
-      alert('Failed to export flashcards')
+      alert(t('pdfAnalyzer.export.errorFlashcards'))
     } finally {
       setExporting(false)
     }
@@ -147,7 +149,7 @@ Generated with LUCERO PDF Analyzer
       const flashcards = await getFlashcards(analysisId)
 
       if (flashcards.length === 0) {
-        alert('No flashcards found. Generate flashcards first!')
+        alert(t('pdfAnalyzer.export.noFlashcards'))
         return
       }
 
@@ -160,7 +162,7 @@ Generated with LUCERO PDF Analyzer
       saveAs(blob, `${title}_anki.txt`)
     } catch (err) {
       console.error('Anki export error:', err)
-      alert('Failed to export for Anki')
+      alert(t('pdfAnalyzer.export.errorAnki'))
     } finally {
       setExporting(false)
     }
@@ -169,68 +171,68 @@ Generated with LUCERO PDF Analyzer
   return (
     <div className="export-tab">
       <div className="export-header">
-        <h3>💾 Export Analysis</h3>
-        <p>Download your analysis in various formats</p>
+        <h3>{t('pdfAnalyzer.export.title')}</h3>
+        <p>{t('pdfAnalyzer.export.description')}</p>
       </div>
 
       <div className="export-sections">
         <div className="export-section">
-          <h4>📄 Analysis Document</h4>
-          <p>Export the complete analysis with summary and explanation</p>
+          <h4>{t('pdfAnalyzer.export.analysisDocument')}</h4>
+          <p>{t('pdfAnalyzer.export.analysisDocumentDesc')}</p>
           <div className="export-buttons">
             <button
               className="export-btn"
               onClick={exportAsPDF}
               disabled={exporting}
             >
-              📕 Export as PDF
+              {t('pdfAnalyzer.export.exportPDF')}
             </button>
             <button
               className="export-btn"
               onClick={exportAsWord}
               disabled={exporting}
             >
-              📘 Export as Word
+              {t('pdfAnalyzer.export.exportWord')}
             </button>
             <button
               className="export-btn"
               onClick={exportAsText}
               disabled={exporting}
             >
-              📄 Export as Text
+              {t('pdfAnalyzer.export.exportText')}
             </button>
           </div>
         </div>
 
         <div className="export-section">
-          <h4>🎴 Flashcards</h4>
-          <p>Export flashcards for use in other study tools</p>
+          <h4>{t('pdfAnalyzer.export.flashcardsSection')}</h4>
+          <p>{t('pdfAnalyzer.export.flashcardsSectionDesc')}</p>
           <div className="export-buttons">
             <button
               className="export-btn"
               onClick={exportFlashcardsAsCSV}
               disabled={exporting}
             >
-              📊 Export as CSV
+              {t('pdfAnalyzer.export.exportCSV')}
             </button>
             <button
               className="export-btn"
               onClick={exportForAnki}
               disabled={exporting}
             >
-              🎴 Export for Anki
+              {t('pdfAnalyzer.export.exportAnki')}
             </button>
           </div>
         </div>
 
         <div className="export-info">
-          <h4>ℹ️ Export Information</h4>
+          <h4>{t('pdfAnalyzer.export.infoTitle')}</h4>
           <ul>
-            <li><strong>PDF</strong>: Best for printing and sharing</li>
-            <li><strong>Word</strong>: Best for editing and customization</li>
-            <li><strong>Text</strong>: Simple, lightweight format</li>
-            <li><strong>CSV</strong>: Compatible with Excel, Google Sheets, and Quizlet</li>
-            <li><strong>Anki</strong>: Import directly into Anki for spaced repetition</li>
+            <li dangerouslySetInnerHTML={{ __html: t('pdfAnalyzer.export.infoPDF') }} />
+            <li dangerouslySetInnerHTML={{ __html: t('pdfAnalyzer.export.infoWord') }} />
+            <li dangerouslySetInnerHTML={{ __html: t('pdfAnalyzer.export.infoText') }} />
+            <li dangerouslySetInnerHTML={{ __html: t('pdfAnalyzer.export.infoCSV') }} />
+            <li dangerouslySetInnerHTML={{ __html: t('pdfAnalyzer.export.infoAnki') }} />
           </ul>
         </div>
       </div>
@@ -238,7 +240,7 @@ Generated with LUCERO PDF Analyzer
       {exporting && (
         <div className="export-progress">
           <div className="spinner"></div>
-          <p>Exporting...</p>
+          <p>{t('pdfAnalyzer.export.exporting')}</p>
         </div>
       )}
     </div>
