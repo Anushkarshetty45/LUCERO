@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   getChatSessions,
   createChatSession,
@@ -15,6 +16,7 @@ interface ChatTabProps {
 }
 
 export default function ChatTab({ analysisId, pdfContent, userId }: ChatTabProps) {
+  const { t } = useTranslation()
   const [sessions, setSessions] = useState<PDFChatSession[]>([])
   const [currentSession, setCurrentSession] = useState<string | null>(null)
   const [messages, setMessages] = useState<PDFChatMessage[]>([])
@@ -59,7 +61,7 @@ export default function ChatTab({ analysisId, pdfContent, userId }: ChatTabProps
 
   const handleNewSession = async () => {
     try {
-      const session = await createChatSession(analysisId, userId, 'New Chat')
+      const session = await createChatSession(analysisId, userId, t('pdfAnalyzer.chat.newChat'))
       setSessions(prev => [session, ...prev])
       setCurrentSession(session.id)
       setMessages([])
@@ -117,15 +119,15 @@ export default function ChatTab({ analysisId, pdfContent, userId }: ChatTabProps
   }
 
   if (loading) {
-    return <div className="tab-loading"><div className="spinner"></div><p>Loading chat...</p></div>
+    return <div className="tab-loading"><div className="spinner"></div><p>{t('pdfAnalyzer.chat.loading')}</p></div>
   }
 
   return (
     <div className="chat-tab">
       <div className="chat-header">
-        <h3>💬 Chat with PDF</h3>
+        <h3>{t('pdfAnalyzer.chat.title')}</h3>
         <button className="btn-new-chat" onClick={handleNewSession}>
-          + New Chat
+          {t('pdfAnalyzer.chat.newChatButton')}
         </button>
       </div>
 
@@ -148,8 +150,8 @@ export default function ChatTab({ analysisId, pdfContent, userId }: ChatTabProps
       <div className="chat-messages">
         {messages.length === 0 && !currentSession && (
           <div className="chat-empty">
-            <p>👋 Start a chat to ask questions about this PDF!</p>
-            <button onClick={handleNewSession}>Start Chatting</button>
+            <p>{t('pdfAnalyzer.chat.emptyMessage')}</p>
+            <button onClick={handleNewSession}>{t('pdfAnalyzer.chat.startChatting')}</button>
           </div>
         )}
 
@@ -181,7 +183,7 @@ export default function ChatTab({ analysisId, pdfContent, userId }: ChatTabProps
           <input
             type="text"
             className="chat-input"
-            placeholder="Ask a question about this PDF..."
+            placeholder={t('pdfAnalyzer.chat.inputPlaceholder')}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
