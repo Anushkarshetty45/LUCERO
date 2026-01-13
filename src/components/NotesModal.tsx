@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { getAllUserNotes, createUserNote, updateUserNote, deleteUserNote } from '../services/api'
 import { UserNote } from '../types'
 import './NotesModal.css'
@@ -13,6 +14,7 @@ interface NotesModalProps {
 type View = 'menu' | 'list' | 'create' | 'edit'
 
 export default function NotesModal({ userId, courseId, courseTitle, onClose }: NotesModalProps) {
+  const { t } = useTranslation()
   const [view, setView] = useState<View>('menu')
   const [notes, setNotes] = useState<UserNote[]>([])
   const [currentNote, setCurrentNote] = useState<UserNote | null>(null)
@@ -42,20 +44,20 @@ export default function NotesModal({ userId, courseId, courseTitle, onClose }: N
 
   const handleCreateNote = async () => {
     if (!newTopic.trim() || !content.trim()) {
-      alert('Please enter both topic and content')
+      alert(t('notesModal.errorBothFields'))
       return
     }
 
     setSaving(true)
     try {
       await createUserNote(userId, courseId, newTopic, content)
-      alert('Note created successfully!')
+      alert(t('notesModal.successCreate'))
       setView('menu')
       setNewTopic('')
       setContent('')
     } catch (error) {
       console.error('Error creating note:', error)
-      alert('Failed to create note')
+      alert(t('notesModal.errorCreate'))
     } finally {
       setSaving(false)
     }
@@ -63,20 +65,20 @@ export default function NotesModal({ userId, courseId, courseTitle, onClose }: N
 
   const handleUpdateNote = async () => {
     if (!currentNote || !content.trim()) {
-      alert('Please enter content')
+      alert(t('notesModal.errorContent'))
       return
     }
 
     setSaving(true)
     try {
       await updateUserNote(currentNote.id, content)
-      alert('Note updated successfully!')
+      alert(t('notesModal.successUpdate'))
       setView('list')
       setCurrentNote(null)
       setContent('')
     } catch (error) {
       console.error('Error updating note:', error)
-      alert('Failed to update note')
+      alert(t('notesModal.errorUpdate'))
     } finally {
       setSaving(false)
     }
@@ -89,14 +91,14 @@ export default function NotesModal({ userId, courseId, courseTitle, onClose }: N
   }
 
   const handleDeleteNote = async (noteId: string) => {
-    if (!window.confirm('Delete this note?')) return
+    if (!window.confirm(t('notesModal.confirmDelete'))) return
 
     try {
       await deleteUserNote(noteId)
       loadNotes()
     } catch (error) {
       console.error('Error deleting note:', error)
-      alert('Failed to delete note')
+      alert(t('notesModal.errorDelete'))
     }
   }
 
@@ -109,30 +111,30 @@ export default function NotesModal({ userId, courseId, courseTitle, onClose }: N
           <>
             <div className="notes-header">
               <div>
-                <h2>📝 My Notes</h2>
+                <h2>{t('notesModal.title')}</h2>
                 <p className="course-name">{courseTitle}</p>
               </div>
               <button className="close-btn" onClick={onClose}>×</button>
             </div>
             <div className="notes-menu">
-              <button 
+              <button
                 className="menu-option"
                 onClick={() => setView('create')}
               >
                 <span className="menu-icon">✏️</span>
                 <div>
-                  <h3>Create New Note</h3>
-                  <p>Start writing a new note on a specific topic</p>
+                  <h3>{t('notesModal.createNewNote')}</h3>
+                  <p>{t('notesModal.createDescription')}</p>
                 </div>
               </button>
-              <button 
+              <button
                 className="menu-option"
                 onClick={() => setView('list')}
               >
                 <span className="menu-icon">📚</span>
                 <div>
-                  <h3>View Existing Notes</h3>
-                  <p>Browse and edit your previously created notes</p>
+                  <h3>{t('notesModal.viewExisting')}</h3>
+                  <p>{t('notesModal.viewDescription')}</p>
                 </div>
               </button>
             </div>
@@ -144,19 +146,19 @@ export default function NotesModal({ userId, courseId, courseTitle, onClose }: N
           <>
             <div className="notes-header">
               <div>
-                <h2>📚 My Notes</h2>
+                <h2>{t('notesModal.listTitle')}</h2>
                 <p className="course-name">{courseTitle}</p>
               </div>
               <button className="close-btn" onClick={onClose}>×</button>
             </div>
             <div className="notes-body">
               {loading ? (
-                <p>Loading notes...</p>
+                <p>{t('notesModal.loading')}</p>
               ) : notes.length === 0 ? (
                 <div className="empty-notes">
-                  <p>No notes yet</p>
+                  <p>{t('notesModal.noNotes')}</p>
                   <button className="btn-primary" onClick={() => setView('create')}>
-                    Create Your First Note
+                    {t('notesModal.createFirst')}
                   </button>
                 </div>
               ) : (
@@ -166,12 +168,12 @@ export default function NotesModal({ userId, courseId, courseTitle, onClose }: N
                       <div className="note-item-header">
                         <h3>{note.topic}</h3>
                         <div className="note-actions">
-                          <button onClick={() => handleEditNote(note)}>✏️ Edit</button>
-                          <button onClick={() => handleDeleteNote(note.id)}>🗑️ Delete</button>
+                          <button onClick={() => handleEditNote(note)}>{t('notesModal.edit')}</button>
+                          <button onClick={() => handleDeleteNote(note.id)}>{t('notesModal.delete')}</button>
                         </div>
                       </div>
                       <p className="note-preview">{note.content.substring(0, 100)}...</p>
-                      <p className="note-date">Last updated: {new Date(note.updated_at).toLocaleDateString()}</p>
+                      <p className="note-date">{t('notesModal.lastUpdated')} {new Date(note.updated_at).toLocaleDateString()}</p>
                     </div>
                   ))}
                 </div>
@@ -179,7 +181,7 @@ export default function NotesModal({ userId, courseId, courseTitle, onClose }: N
             </div>
             <div className="notes-footer">
               <button className="btn-secondary" onClick={() => setView('menu')}>
-                ← Back
+                {t('notesModal.back')}
               </button>
             </div>
           </>
@@ -190,41 +192,41 @@ export default function NotesModal({ userId, courseId, courseTitle, onClose }: N
           <>
             <div className="notes-header">
               <div>
-                <h2>✏️ Create New Note</h2>
+                <h2>{t('notesModal.createNewNote')}</h2>
                 <p className="course-name">{courseTitle}</p>
               </div>
               <button className="close-btn" onClick={onClose}>×</button>
             </div>
             <div className="notes-body">
               <div className="form-group">
-                <label>Topic Name</label>
+                <label>{t('notesModal.topicName')}</label>
                 <input
                   type="text"
-                  placeholder="e.g., Organic Chemistry Basics"
+                  placeholder={t('notesModal.topicPlaceholder')}
                   value={newTopic}
                   onChange={(e) => setNewTopic(e.target.value)}
                 />
               </div>
               <div className="form-group">
-                <label>Your Notes</label>
+                <label>{t('notesModal.yourNotes')}</label>
                 <textarea
                   className="notes-textarea"
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  placeholder="Write your notes here..."
+                  placeholder={t('notesModal.notesPlaceholder')}
                 />
               </div>
             </div>
             <div className="notes-footer">
               <button className="btn-secondary" onClick={() => setView('menu')}>
-                ← Back
+                {t('notesModal.back')}
               </button>
-              <button 
-                className="btn-primary" 
+              <button
+                className="btn-primary"
                 onClick={handleCreateNote}
                 disabled={saving}
               >
-                {saving ? 'Creating...' : '💾 Create Note'}
+                {saving ? t('notesModal.creating') : t('notesModal.createButton')}
               </button>
             </div>
           </>
@@ -235,7 +237,7 @@ export default function NotesModal({ userId, courseId, courseTitle, onClose }: N
           <>
             <div className="notes-header">
               <div>
-                <h2>✏️ Edit Note</h2>
+                <h2>{t('notesModal.editNote')}</h2>
                 <p className="course-name">{currentNote.topic}</p>
               </div>
               <button className="close-btn" onClick={onClose}>×</button>
@@ -245,23 +247,23 @@ export default function NotesModal({ userId, courseId, courseTitle, onClose }: N
                 className="notes-textarea"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                placeholder="Write your notes here..."
+                placeholder={t('notesModal.notesPlaceholder')}
               />
             </div>
             <div className="notes-footer">
               <div className="last-saved">
-                Last saved: {new Date(currentNote.updated_at).toLocaleString()}
+                {t('notesModal.lastSaved')} {new Date(currentNote.updated_at).toLocaleString()}
               </div>
               <div className="notes-actions">
                 <button className="btn-secondary" onClick={() => setView('list')}>
-                  ← Back
+                  {t('notesModal.back')}
                 </button>
-                <button 
-                  className="btn-primary" 
+                <button
+                  className="btn-primary"
                   onClick={handleUpdateNote}
                   disabled={saving}
                 >
-                  {saving ? 'Saving...' : '💾 Save Changes'}
+                  {saving ? t('notesModal.saving') : t('notesModal.saveButton')}
                 </button>
               </div>
             </div>
