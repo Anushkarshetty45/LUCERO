@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { getFlashcards, createFlashcards } from '../../services/pdfAnalysisApi'
 import { recordDailyActivity } from '../../services/api'
 import { generateFlashcardsPrompt } from '../../services/aiPrompts'
@@ -11,6 +12,7 @@ interface FlashcardsTabProps {
 }
 
 export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabProps) {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const [flashcards, setFlashcards] = useState<PDFFlashcard[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -43,13 +45,13 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
     const apiKey = process.env.REACT_APP_GEMINI_API_KEY
 
     if (!apiKey) {
-      setError('Gemini API key not found. Please add REACT_APP_GEMINI_API_KEY to your .env file')
+      setError(t('pdfAnalyzer.common.errorNoApiKey'))
       setGenerating(false)
       return
     }
 
     if (!pdfContent || pdfContent.trim().length === 0) {
-      setError('PDF content not available. Please re-upload and analyze the PDF.')
+      setError(t('pdfAnalyzer.common.errorNoPDFContent'))
       setGenerating(false)
       return
     }
@@ -83,7 +85,7 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error?.message || 'Failed to generate flashcards')
+        throw new Error(data.error?.message || t('pdfAnalyzer.flashcards.errorGenerate'))
       }
 
       const aiResponse = data.candidates[0].content.parts[0].text
@@ -103,11 +105,11 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
           await recordDailyActivity(user.id, 'flashcard')
         }
       } else {
-        throw new Error('Failed to parse flashcards from AI response')
+        throw new Error(t('pdfAnalyzer.flashcards.errorParse'))
       }
     } catch (err: any) {
       console.error('Generate flashcards error:', err)
-      setError(err.message || 'Failed to generate flashcards. Please try again.')
+      setError(err.message || t('pdfAnalyzer.flashcards.errorGenerate'))
     } finally {
       setGenerating(false)
     }
@@ -126,7 +128,7 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
   }
 
   if (loading) {
-    return <div className="tab-loading"><div className="spinner"></div><p>Loading flashcards...</p></div>
+    return <div className="tab-loading"><div className="spinner"></div><p>{t('pdfAnalyzer.flashcards.loading')}</p></div>
   }
 
   return (
@@ -140,14 +142,14 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
               <line x1="12" y1="5" x2="12" y2="19"/>
             </svg>
           </div>
-          <h3>Generate Flashcards</h3>
-          <p>Create interactive flashcards from this PDF to help you study and memorize key concepts.</p>
+          <h3>{t('pdfAnalyzer.flashcards.generateTitle')}</h3>
+          <p>{t('pdfAnalyzer.flashcards.generateDescription')}</p>
           <button
             className="btn-generate"
             onClick={generateFlashcards}
             disabled={generating}
           >
-            {generating ? 'Generating...' : 'Generate Flashcards'}
+            {generating ? t('pdfAnalyzer.flashcards.generating') : t('pdfAnalyzer.flashcards.generateButton')}
           </button>
           {error && (
             <div className="error-message" style={{ marginTop: '1rem', padding: '1rem', background: '#fee', color: '#c33', borderRadius: '8px' }}>
@@ -158,7 +160,7 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
       ) : (
         <>
           <div className="flashcards-header">
-            <h3>Flashcards</h3>
+            <h3>{t('pdfAnalyzer.flashcards.title')}</h3>
             <span className="flashcard-count">
               {currentIndex + 1} / {flashcards.length}
             </span>
@@ -181,14 +183,14 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
                   <div className="flashcard-content">
                     {flashcards[currentIndex].front}
                   </div>
-                  <div className="flashcard-hint">Click to flip</div>
+                  <div className="flashcard-hint">{t('pdfAnalyzer.flashcards.clickToFlip')}</div>
                 </div>
                 <div className="flashcard-back">
                   <div className="flashcard-category">{flashcards[currentIndex].category}</div>
                   <div className="flashcard-content">
                     {flashcards[currentIndex].back}
                   </div>
-                  <div className="flashcard-hint">Click to see question again</div>
+                  <div className="flashcard-hint">{t('pdfAnalyzer.flashcards.clickToSeeQuestion')}</div>
                 </div>
               </div>
             </div>
@@ -200,7 +202,7 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
               onClick={handlePrevious}
               disabled={flashcards.length <= 1}
             >
-              ← Previous
+              ← {t('pdfAnalyzer.flashcards.previous')}
             </button>
             <button
               className="btn-flashcard-shuffle"
@@ -210,14 +212,14 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
                 setCurrentIndex(Math.floor(Math.random() * flashcards.length))
               }}
             >
-              Random
+              {t('pdfAnalyzer.flashcards.random')}
             </button>
             <button
               className="btn-flashcard-nav"
               onClick={handleNext}
               disabled={flashcards.length <= 1}
             >
-              Next →
+              {t('pdfAnalyzer.flashcards.next')} →
             </button>
           </div>
 
