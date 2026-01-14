@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import ReactFlow, { Node, Edge, Background, Controls } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { getMindMap, createMindMap } from '../../services/pdfAnalysisApi'
@@ -11,6 +12,7 @@ interface MindMapTabProps {
 }
 
 export default function MindMapTab({ analysisId, pdfContent }: MindMapTabProps) {
+  const { t } = useTranslation()
   const [mindMap, setMindMap] = useState<PDFMindMap | null>(null)
   const [nodes, setNodes] = useState<Node[]>([])
   const [edges, setEdges] = useState<Edge[]>([])
@@ -149,13 +151,13 @@ export default function MindMapTab({ analysisId, pdfContent }: MindMapTabProps) 
     const apiKey = process.env.REACT_APP_GEMINI_API_KEY
 
     if (!apiKey) {
-      alert('Gemini API key not found. Please add REACT_APP_GEMINI_API_KEY to your .env file')
+      alert(t('pdfAnalyzer.common.errorNoApiKey'))
       setGenerating(false)
       return
     }
 
     if (!pdfContent || pdfContent.trim().length === 0) {
-      alert('PDF content not available. Please re-upload and analyze the PDF.')
+      alert(t('pdfAnalyzer.common.errorNoPDFContent'))
       setGenerating(false)
       return
     }
@@ -189,7 +191,7 @@ export default function MindMapTab({ analysisId, pdfContent }: MindMapTabProps) 
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error?.message || 'Failed to generate mind map')
+        throw new Error(data.error?.message || t('pdfAnalyzer.mindmap.errorGenerate'))
       }
 
       const aiResponse = data.candidates[0].content.parts[0].text
@@ -203,14 +205,14 @@ export default function MindMapTab({ analysisId, pdfContent }: MindMapTabProps) 
       }
     } catch (err) {
       console.error('Generate mind map error:', err)
-      alert('Failed to generate mind map. Please try again.')
+      alert(t('pdfAnalyzer.mindmap.errorGenerate'))
     } finally {
       setGenerating(false)
     }
   }
 
   if (loading) {
-    return <div className="tab-loading"><div className="spinner"></div><p>Loading mind map...</p></div>
+    return <div className="tab-loading"><div className="spinner"></div><p>{t('pdfAnalyzer.mindmap.loading')}</p></div>
   }
 
   if (!mindMap) {
@@ -229,14 +231,14 @@ export default function MindMapTab({ analysisId, pdfContent }: MindMapTabProps) 
             <line x1="14.5" y1="12.5" x2="17.5" y2="15.5"/>
           </svg>
         </div>
-        <h3>Generate Mind Map</h3>
-        <p>Create a visual mind map showing the relationships between concepts in this PDF.</p>
+        <h3>{t('pdfAnalyzer.mindmap.generateTitle')}</h3>
+        <p>{t('pdfAnalyzer.mindmap.generateDescription')}</p>
         <button
           className="btn-generate"
           onClick={generateMindMapData}
           disabled={generating}
         >
-          {generating ? 'Generating...' : 'Generate Mind Map'}
+          {generating ? t('pdfAnalyzer.mindmap.generating') : t('pdfAnalyzer.mindmap.generateButton')}
         </button>
       </div>
     )
@@ -245,8 +247,8 @@ export default function MindMapTab({ analysisId, pdfContent }: MindMapTabProps) 
   return (
     <div className="mindmap-tab">
       <div className="mindmap-header">
-        <h3>Mind Map</h3>
-        <p>Explore the interconnected concepts from this PDF</p>
+        <h3>{t('pdfAnalyzer.mindmap.title')}</h3>
+        <p>{t('pdfAnalyzer.mindmap.description')}</p>
       </div>
 
       <div className="mindmap-container" style={{ height: '600px' }}>
