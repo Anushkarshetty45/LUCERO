@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { getUserPDFAnalyses, deletePDFAnalysis } from '../../services/pdfAnalysisApi'
 import type { PDFAnalysis } from '../../types/pdfAnalysis'
 
@@ -8,6 +9,7 @@ interface HistoryTabProps {
 }
 
 export default function HistoryTab({ userId, onLoadAnalysis }: HistoryTabProps) {
+  const { t } = useTranslation()
   const [analyses, setAnalyses] = useState<PDFAnalysis[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -29,7 +31,7 @@ export default function HistoryTab({ userId, onLoadAnalysis }: HistoryTabProps) 
   }
 
   const handleDelete = async (analysisId: string) => {
-    if (!window.confirm('Are you sure you want to delete this analysis?')) return
+    if (!window.confirm(t('pdfAnalyzer.history.deleteConfirm'))) return
 
     try {
       await deletePDFAnalysis(analysisId)
@@ -53,7 +55,7 @@ export default function HistoryTab({ userId, onLoadAnalysis }: HistoryTabProps) 
     return (
       <div className="tab-loading">
         <div className="spinner"></div>
-        <p>Loading history...</p>
+        <p>{t('pdfAnalyzer.history.loading')}</p>
       </div>
     )
   }
@@ -62,7 +64,7 @@ export default function HistoryTab({ userId, onLoadAnalysis }: HistoryTabProps) 
     return (
       <div className="tab-error">
         <p>{error}</p>
-        <button onClick={loadHistory}>Retry</button>
+        <button onClick={loadHistory}>{t('pdfAnalyzer.history.retry')}</button>
       </div>
     )
   }
@@ -70,8 +72,8 @@ export default function HistoryTab({ userId, onLoadAnalysis }: HistoryTabProps) 
   return (
     <div className="history-tab">
       <div className="history-header">
-        <h3>Your PDF Analyses</h3>
-        <span className="history-count">{analyses.length} total</span>
+        <h3>{t('pdfAnalyzer.history.title')}</h3>
+        <span className="history-count">{t('pdfAnalyzer.history.totalCount', { count: analyses.length })}</span>
       </div>
 
       {analyses.length === 0 ? (
@@ -82,8 +84,8 @@ export default function HistoryTab({ userId, onLoadAnalysis }: HistoryTabProps) 
               <polyline points="14 2 14 8 20 8"/>
             </svg>
           </div>
-          <p>No PDF analyses yet</p>
-          <p className="empty-subtitle">Upload and analyze your first PDF to get started!</p>
+          <p>{t('pdfAnalyzer.history.noAnalyses')}</p>
+          <p className="empty-subtitle">{t('pdfAnalyzer.history.getStarted')}</p>
         </div>
       ) : (
         <div className="history-list">
@@ -97,16 +99,16 @@ export default function HistoryTab({ userId, onLoadAnalysis }: HistoryTabProps) 
                   <button
                     className="btn-load"
                     onClick={() => onLoadAnalysis(analysis.id, analysis)}
-                    title="Load this analysis"
+                    title={t('pdfAnalyzer.history.loadTitle')}
                   >
-                    View
+                    {t('pdfAnalyzer.history.view')}
                   </button>
                   <button
                     className="btn-delete-small"
                     onClick={() => handleDelete(analysis.id)}
-                    title="Delete"
+                    title={t('pdfAnalyzer.history.deleteTitle')}
                   >
-                    Delete
+                    {t('pdfAnalyzer.history.delete')}
                   </button>
                 </div>
               </div>
@@ -116,7 +118,7 @@ export default function HistoryTab({ userId, onLoadAnalysis }: HistoryTabProps) 
                   {formatDate(analysis.created_at)}
                 </span>
                 <span className="meta-item">
-                  {analysis.page_count} pages
+                  {t('pdfAnalyzer.history.pages', { count: analysis.page_count })}
                 </span>
                 {analysis.course && (
                   <span className="meta-item" style={{ color: analysis.course.color }}>
