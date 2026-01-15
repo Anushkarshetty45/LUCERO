@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { getQuiz, createQuiz, createQuizAttempt } from '../../services/pdfAnalysisApi'
 import { recordDailyActivity } from '../../services/api'
 import { generateQuizPrompt } from '../../services/aiPrompts'
@@ -11,6 +12,7 @@ interface QuizTabProps {
 }
 
 export default function QuizTab({ analysisId, pdfContent, userId }: QuizTabProps) {
+  const { t } = useTranslation()
   const [quiz, setQuiz] = useState<PDFQuiz[]>([])
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState('')
@@ -87,13 +89,13 @@ export default function QuizTab({ analysisId, pdfContent, userId }: QuizTabProps
     const apiKey = process.env.REACT_APP_GEMINI_API_KEY
 
     if (!apiKey) {
-      alert('Gemini API key not found. Please add REACT_APP_GEMINI_API_KEY to your .env file')
+      alert(t('pdfAnalyzer.common.errorNoApiKey'))
       setGenerating(false)
       return
     }
 
     if (!pdfContent || pdfContent.trim().length === 0) {
-      alert('PDF content not available. Please re-upload and analyze the PDF.')
+      alert(t('pdfAnalyzer.common.errorNoPDFContent'))
       setGenerating(false)
       return
     }
@@ -129,7 +131,7 @@ IMPORTANT: Generate EXACTLY ${count} questions. No more, no less.`
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error?.message || 'Failed to generate quiz')
+        throw new Error(data.error?.message || t('pdfAnalyzer.quiz.errorGenerate'))
       }
 
       const aiResponse = data.candidates[0].content.parts[0].text
@@ -146,7 +148,7 @@ IMPORTANT: Generate EXACTLY ${count} questions. No more, no less.`
       }
     } catch (err) {
       console.error('Generate quiz error:', err)
-      alert('Failed to generate quiz. Please try again.')
+      alert(t('pdfAnalyzer.quiz.errorGenerate'))
     } finally {
       setGenerating(false)
     }
@@ -197,7 +199,7 @@ IMPORTANT: Generate EXACTLY ${count} questions. No more, no less.`
   }
 
   if (loading) {
-    return <div className="tab-loading"><div className="spinner"></div><p>Loading quiz...</p></div>
+    return <div className="tab-loading"><div className="spinner"></div><p>{t('pdfAnalyzer.quiz.loading')}</p></div>
   }
 
   if (quiz.length === 0) {
@@ -211,8 +213,8 @@ IMPORTANT: Generate EXACTLY ${count} questions. No more, no less.`
               <path d="M12 8h.01"/>
             </svg>
           </div>
-          <h3>How many questions?</h3>
-          <p>Select the number of quiz questions you'd like to generate</p>
+          <h3>{t('pdfAnalyzer.quiz.howManyQuestions')}</h3>
+          <p>{t('pdfAnalyzer.quiz.selectQuestionCount')}</p>
 
           <div className="question-count-options">
             {[5, 10, 15, 20].map((count) => (
@@ -221,7 +223,7 @@ IMPORTANT: Generate EXACTLY ${count} questions. No more, no less.`
                 className={`count-option ${questionCount === count ? 'selected' : ''}`}
                 onClick={() => setQuestionCount(count)}
               >
-                {count} Questions
+                {t('pdfAnalyzer.quiz.questionsCount', { count })}
               </button>
             ))}
           </div>
@@ -231,14 +233,14 @@ IMPORTANT: Generate EXACTLY ${count} questions. No more, no less.`
               className="btn-secondary"
               onClick={() => setShowQuestionSelector(false)}
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               className="btn-generate"
               onClick={handleQuestionCountSelect}
               disabled={generating}
             >
-              {generating ? 'Generating...' : `Generate ${questionCount} Questions`}
+              {generating ? t('pdfAnalyzer.quiz.generating') : t('pdfAnalyzer.quiz.generateQuestionsButton', { count: questionCount })}
             </button>
           </div>
         </div>
@@ -254,13 +256,13 @@ IMPORTANT: Generate EXACTLY ${count} questions. No more, no less.`
             <path d="M12 8h.01"/>
           </svg>
         </div>
-        <h3>Generate Quiz</h3>
-        <p>Test your knowledge with an AI-generated quiz based on this PDF content.</p>
+        <h3>{t('pdfAnalyzer.quiz.generateTitle')}</h3>
+        <p>{t('pdfAnalyzer.quiz.generateDescription')}</p>
         <button
           className="btn-generate"
           onClick={() => setShowQuestionSelector(true)}
         >
-          Generate Quiz
+          {t('pdfAnalyzer.quiz.generateButton')}
         </button>
       </div>
     )
@@ -274,18 +276,18 @@ IMPORTANT: Generate EXACTLY ${count} questions. No more, no less.`
         <div className="results-icon">
           {percentageNum >= 80 ? '★' : percentageNum >= 60 ? '✓' : '○'}
         </div>
-        <h2>Quiz Complete!</h2>
+        <h2>{t('pdfAnalyzer.quiz.quizComplete')}</h2>
         <div className="score-display">
           <div className="score-number">{score} / {quiz.length}</div>
           <div className="score-percentage">{percentage}%</div>
         </div>
         <div className="score-message">
-          {percentageNum >= 80 && "Excellent work! You've mastered this material!"}
-          {percentageNum >= 60 && percentageNum < 80 && "Good job! Keep studying to improve further."}
-          {percentageNum < 60 && "Keep studying! Review the material and try again."}
+          {percentageNum >= 80 && t('pdfAnalyzer.quiz.scoreExcellent')}
+          {percentageNum >= 60 && percentageNum < 80 && t('pdfAnalyzer.quiz.scoreGood')}
+          {percentageNum < 60 && t('pdfAnalyzer.quiz.scoreKeepStudying')}
         </div>
         <button className="btn-restart" onClick={handleRestart}>
-          Restart Quiz
+          {t('pdfAnalyzer.quiz.restartQuiz')}
         </button>
       </div>
     )
@@ -294,10 +296,10 @@ IMPORTANT: Generate EXACTLY ${count} questions. No more, no less.`
   return (
     <div className="quiz-tab">
       <div className="quiz-header">
-        <h3>Quiz</h3>
+        <h3>{t('pdfAnalyzer.quiz.title')}</h3>
         <div className="quiz-meta">
           <div className="quiz-progress-text">
-            Question {currentQuestion + 1} of {quiz.length}
+            {t('pdfAnalyzer.quiz.questionProgress', { current: currentQuestion + 1, total: quiz.length })}
           </div>
           <div className={`quiz-timer ${timeRemaining <= 10 ? 'warning' : ''} ${timeRemaining <= 5 ? 'critical' : ''}`}>
             {formatTime(timeRemaining)}
@@ -352,16 +354,16 @@ IMPORTANT: Generate EXACTLY ${count} questions. No more, no less.`
 
         {selectedAnswer === 'TIMEOUT' && showExplanation && (
           <div className="timeout-message">
-            Time's up! The correct answer was <strong>{quiz[currentQuestion].correct_answer}</strong>
+            {t('pdfAnalyzer.quiz.timeUp', { answer: quiz[currentQuestion].correct_answer })}
           </div>
         )}
 
         {showExplanation && (
           <div className="quiz-explanation">
-            <h4>Explanation</h4>
+            <h4>{t('pdfAnalyzer.quiz.explanation')}</h4>
             <p>{quiz[currentQuestion].explanation}</p>
             <button className="btn-next-question" onClick={handleNext}>
-              {currentQuestion < quiz.length - 1 ? 'Next Question →' : 'Finish Quiz'}
+              {currentQuestion < quiz.length - 1 ? t('pdfAnalyzer.quiz.nextQuestion') : t('pdfAnalyzer.quiz.finishQuiz')}
             </button>
           </div>
         )}
