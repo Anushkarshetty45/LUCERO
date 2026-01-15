@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { getStudyPlan, createStudyPlan } from '../../services/pdfAnalysisApi'
 import { generateStudyPlanPrompt } from '../../services/aiPrompts'
 import { addDays, format } from 'date-fns'
@@ -12,6 +13,7 @@ interface StudyPlanTabProps {
 }
 
 export default function StudyPlanTab({ analysisId, pdfContent, title, userId }: StudyPlanTabProps) {
+  const { t } = useTranslation()
   const [studyPlan, setStudyPlan] = useState<PDFStudyPlan | null>(null)
   const [duration, setDuration] = useState(7)
   const [generating, setGenerating] = useState(false)
@@ -63,30 +65,30 @@ export default function StudyPlanTab({ analysisId, pdfContent, title, userId }: 
       }
     } catch (err) {
       console.error('Generate study plan error:', err)
-      alert('Failed to generate study plan. Please try again.')
+      alert(t('pdfAnalyzer.studyPlan.errorGenerate'))
     } finally {
       setGenerating(false)
     }
   }
 
   if (loading) {
-    return <div className="tab-loading"><div className="spinner"></div><p>Loading study plan...</p></div>
+    return <div className="tab-loading"><div className="spinner"></div><p>{t('pdfAnalyzer.studyPlan.loading')}</p></div>
   }
 
   if (!studyPlan) {
     return (
       <div className="studyplan-generate">
         <div className="generate-icon">📅</div>
-        <h3>Generate Study Plan</h3>
-        <p>Create a personalized study schedule to master this material.</p>
+        <h3>{t('pdfAnalyzer.studyPlan.generateTitle')}</h3>
+        <p>{t('pdfAnalyzer.studyPlan.generateDescription')}</p>
 
         <div className="duration-selector">
-          <label>Study Duration:</label>
+          <label>{t('pdfAnalyzer.studyPlan.studyDuration')}</label>
           <select value={duration} onChange={(e) => setDuration(+e.target.value)}>
-            <option value={3}>3 days (Intensive)</option>
-            <option value={7}>1 week</option>
-            <option value={14}>2 weeks</option>
-            <option value={30}>1 month</option>
+            <option value={3}>{t('pdfAnalyzer.studyPlan.duration3Days')}</option>
+            <option value={7}>{t('pdfAnalyzer.studyPlan.duration1Week')}</option>
+            <option value={14}>{t('pdfAnalyzer.studyPlan.duration2Weeks')}</option>
+            <option value={30}>{t('pdfAnalyzer.studyPlan.duration1Month')}</option>
           </select>
         </div>
 
@@ -95,7 +97,7 @@ export default function StudyPlanTab({ analysisId, pdfContent, title, userId }: 
           onClick={generatePlan}
           disabled={generating}
         >
-          {generating ? '⏳ Generating...' : '✨ Generate Study Plan'}
+          {generating ? t('pdfAnalyzer.studyPlan.generating') : t('pdfAnalyzer.studyPlan.generateButton')}
         </button>
       </div>
     )
@@ -104,15 +106,15 @@ export default function StudyPlanTab({ analysisId, pdfContent, title, userId }: 
   return (
     <div className="studyplan-tab">
       <div className="studyplan-header">
-        <h3>📅 Study Plan: {title}</h3>
-        <span className="plan-duration">{studyPlan.duration_days} days</span>
+        <h3>{t('pdfAnalyzer.studyPlan.title', { title })}</h3>
+        <span className="plan-duration">{t('pdfAnalyzer.studyPlan.daysCount', { count: studyPlan.duration_days })}</span>
       </div>
 
       <div className="daily-schedule">
         {studyPlan.plan_data.days.map((day, idx) => (
           <div key={idx} className="day-card">
             <div className="day-header">
-              <h4>Day {day.day}</h4>
+              <h4>{t('pdfAnalyzer.studyPlan.dayNumber', { day: day.day })}</h4>
               <span className="day-date">
                 {format(addDays(new Date(), idx), 'MMM dd, yyyy')}
               </span>
@@ -120,7 +122,7 @@ export default function StudyPlanTab({ analysisId, pdfContent, title, userId }: 
 
             <div className="day-content">
               <div className="day-section">
-                <strong>📚 Topics:</strong>
+                <strong>{t('pdfAnalyzer.studyPlan.topics')}</strong>
                 <ul className="topics-list">
                   {day.topics.map((topic, i) => (
                     <li key={i}>{topic}</li>
@@ -129,7 +131,7 @@ export default function StudyPlanTab({ analysisId, pdfContent, title, userId }: 
               </div>
 
               <div className="day-section">
-                <strong>✅ Activities:</strong>
+                <strong>{t('pdfAnalyzer.studyPlan.activities')}</strong>
                 <ul className="activities-list">
                   {day.activities.map((activity, i) => (
                     <li key={i}>
@@ -150,7 +152,7 @@ export default function StudyPlanTab({ analysisId, pdfContent, title, userId }: 
 
       <div className="plan-extras">
         <div className="milestones-section">
-          <h4>🎯 Milestones</h4>
+          <h4>{t('pdfAnalyzer.studyPlan.milestones')}</h4>
           <ul>
             {studyPlan.plan_data.milestones.map((milestone, i) => (
               <li key={i}>{milestone}</li>
@@ -159,7 +161,7 @@ export default function StudyPlanTab({ analysisId, pdfContent, title, userId }: 
         </div>
 
         <div className="tips-section">
-          <h4>💡 Study Tips</h4>
+          <h4>{t('pdfAnalyzer.studyPlan.studyTips')}</h4>
           <ul>
             {studyPlan.plan_data.tips.map((tip, i) => (
               <li key={i}>{tip}</li>
