@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../hooks/useAuth'
 import * as pdfjsLib from 'pdfjs-dist'
 import { uploadPDFToStorage, createPDFAnalysis } from '../../services/pdfAnalysisApi'
@@ -21,6 +22,7 @@ interface PDFAnalyzerModalProps {
 type TabType = 'upload' | 'analysis' | 'history' | 'flashcards' | 'quiz' | 'mindmap'
 
 export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const [activeTab, setActiveTab] = useState<TabType>('upload')
   const [isMaximized, setIsMaximized] = useState(false)
@@ -49,7 +51,7 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
       setError('')
       setTitle(selectedFile.name.replace('.pdf', ''))
     } else {
-      setError('Please select a valid PDF file')
+      setError(t('pdfAnalyzer.upload.errorInvalidFile'))
     }
   }
 
@@ -77,7 +79,7 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
     const apiKey = process.env.REACT_APP_GEMINI_API_KEY
 
     if (!apiKey) {
-      throw new Error('Gemini API key not found. Please add REACT_APP_GEMINI_API_KEY to your .env file')
+      throw new Error(t('pdfAnalyzer.common.errorNoApiKey'))
     }
 
     const maxLength = 30000
@@ -114,7 +116,7 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
 
     if (!response.ok) {
       const error = await response.json()
-      throw new Error(error.error?.message || 'Failed to analyze PDF')
+      throw new Error(error.error?.message || t('pdfAnalyzer.common.errorAnalysisFailed'))
     }
 
     const data = await response.json()
@@ -144,7 +146,7 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
       const text = await extractTextFromPDF(file)
 
       if (!text.trim()) {
-        throw new Error('No text could be extracted from the PDF')
+        throw new Error(t('pdfAnalyzer.upload.errorNoText'))
       }
 
       setPdfContent(text)
@@ -187,7 +189,7 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
 
     } catch (err: any) {
       console.error('PDF Analysis Error:', err)
-      setError(err.message || 'Failed to analyze PDF')
+      setError(err.message || t('pdfAnalyzer.common.errorAnalysisFailed'))
       setExtracting(false)
       setAnalyzing(false)
       setProgress(0)
@@ -226,15 +228,15 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
                   <polyline points="10 9 9 9 8 9"/>
                 </svg>
               </div>
-              <h3>Upload a PDF Document</h3>
-              <p>Upload any PDF file and I'll analyze, summarize, and create study materials!</p>
+              <h3>{t('pdfAnalyzer.upload.title')}</h3>
+              <p>{t('pdfAnalyzer.upload.description')}</p>
 
               <button
                 className="btn-upload"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={extracting || analyzing}
               >
-                {file ? file.name : 'Choose PDF File'}
+                {file ? file.name : t('pdfAnalyzer.upload.chooseFile')}
               </button>
 
               {file && (
@@ -244,7 +246,7 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
                     className="title-input"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Analysis title..."
+                    placeholder={t('pdfAnalyzer.upload.titlePlaceholder')}
                   />
                 </div>
               )}
@@ -253,10 +255,10 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
             {file && !extracting && !analyzing && (
               <div className="file-actions">
                 <button className="btn-analyze" onClick={handleAnalyze}>
-                  Analyze PDF
+                  {t('pdfAnalyzer.upload.analyzePDF')}
                 </button>
                 <button className="btn-remove" onClick={() => setFile(null)}>
-                  Remove
+                  {t('pdfAnalyzer.upload.remove')}
                 </button>
               </div>
             )}
@@ -267,8 +269,8 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
                   <div className="progress-fill" style={{ width: `${progress}%` }}></div>
                 </div>
                 <p>
-                  {extracting && 'Extracting text from PDF...'}
-                  {analyzing && 'Analyzing with AI...'}
+                  {extracting && t('pdfAnalyzer.upload.extracting')}
+                  {analyzing && t('pdfAnalyzer.upload.analyzing')}
                 </p>
                 <span className="progress-text">{progress}%</span>
               </div>
@@ -293,7 +295,7 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
           <FlashcardsTab analysisId={analysisId} pdfContent={pdfContent} />
         ) : (
           <div className="tab-empty-state">
-            <p>Please analyze a PDF first to generate flashcards!</p>
+            <p>{t('pdfAnalyzer.common.emptyStateFlashcards')}</p>
           </div>
         )
 
@@ -302,7 +304,7 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
           <QuizTab analysisId={analysisId} pdfContent={pdfContent} userId={user!.id} />
         ) : (
           <div className="tab-empty-state">
-            <p>Please analyze a PDF first to generate a quiz!</p>
+            <p>{t('pdfAnalyzer.common.emptyStateQuiz')}</p>
           </div>
         )
 
@@ -311,7 +313,7 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
           <MindMapTab analysisId={analysisId} pdfContent={pdfContent} />
         ) : (
           <div className="tab-empty-state">
-            <p>Please analyze a PDF first to generate a mind map!</p>
+            <p>{t('pdfAnalyzer.common.emptyStateMindMap')}</p>
           </div>
         )
 
@@ -324,12 +326,12 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
     <div className="modal-overlay" onClick={onClose}>
       <div className={`pdf-analyzer-modal enhanced ${isMaximized ? 'maximized' : ''}`} onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>PDF Analyzer</h2>
+          <h2>{t('pdfAnalyzer.title')}</h2>
           <div className="modal-header-actions">
             <button
               className="window-btn"
               onClick={() => setIsMaximized(!isMaximized)}
-              title={isMaximized ? 'Restore' : 'Maximize'}
+              title={isMaximized ? t('pdfAnalyzer.common.restore') : t('pdfAnalyzer.common.maximize')}
             >
               {isMaximized ? (
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -350,41 +352,41 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
             className={`tab-btn ${activeTab === 'upload' ? 'active' : ''}`}
             onClick={() => setActiveTab('upload')}
           >
-            Upload
+            {t('pdfAnalyzer.tabs.upload')}
           </button>
           <button
             className={`tab-btn ${activeTab === 'analysis' ? 'active' : ''}`}
             onClick={() => setActiveTab('analysis')}
             disabled={!summary}
           >
-            Analysis
+            {t('pdfAnalyzer.tabs.analysis')}
           </button>
           <button
             className={`tab-btn ${activeTab === 'history' ? 'active' : ''}`}
             onClick={() => setActiveTab('history')}
           >
-            History
+            {t('pdfAnalyzer.tabs.history')}
           </button>
           <button
             className={`tab-btn ${activeTab === 'flashcards' ? 'active' : ''}`}
             onClick={() => setActiveTab('flashcards')}
             disabled={!analysisId}
           >
-            Flashcards
+            {t('pdfAnalyzer.tabs.flashcards')}
           </button>
           <button
             className={`tab-btn ${activeTab === 'quiz' ? 'active' : ''}`}
             onClick={() => setActiveTab('quiz')}
             disabled={!analysisId}
           >
-            Quiz
+            {t('pdfAnalyzer.tabs.quiz')}
           </button>
           <button
             className={`tab-btn ${activeTab === 'mindmap' ? 'active' : ''}`}
             onClick={() => setActiveTab('mindmap')}
             disabled={!analysisId}
           >
-            Mind Map
+            {t('pdfAnalyzer.tabs.mindMap')}
           </button>
         </div>
 
