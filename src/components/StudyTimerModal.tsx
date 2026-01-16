@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import './StudyTimerModal.css'
 
 interface TimerHook {
@@ -18,13 +19,14 @@ interface StudyTimerModalProps {
 }
 
 export default function StudyTimerModal({ onClose, onMinimize, timer }: StudyTimerModalProps) {
+  const { t } = useTranslation()
   const [hours, setHours] = useState(0)
   const [minutes, setMinutes] = useState(25)
 
   const handleStart = () => {
     const success = timer.startTimer(hours, minutes)
     if (!success) {
-      alert('Please set a time greater than 0')
+      alert(t('studyTimer.errorSetTime'))
     }
   }
 
@@ -53,7 +55,7 @@ export default function StudyTimerModal({ onClose, onMinimize, timer }: StudyTim
     <div className="modal-overlay" onClick={handleClose}>
       <div className="modal-content timer-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>⏱️ Study Timer</h2>
+          <h2>{t('studyTimer.title')}</h2>
           <div className="modal-header-buttons">
             {timer.isRunning && (
               <button
@@ -72,12 +74,12 @@ export default function StudyTimerModal({ onClose, onMinimize, timer }: StudyTim
           {!timer.isRunning ? (
             <>
               <h3 style={{ textAlign: 'center', marginBottom: '30px', color: 'white' }}>
-                Set Your Study Time
+                {t('studyTimer.setTime')}
               </h3>
 
               <div className="time-inputs">
                 <div className="time-input-group">
-                  <label>Hours</label>
+                  <label>{t('studyTimer.hours')}</label>
                   <input
                     type="number"
                     min="0"
@@ -90,7 +92,7 @@ export default function StudyTimerModal({ onClose, onMinimize, timer }: StudyTim
                 <span className="time-separator">:</span>
 
                 <div className="time-input-group">
-                  <label>Minutes</label>
+                  <label>{t('studyTimer.minutes')}</label>
                   <input
                     type="number"
                     min="0"
@@ -105,7 +107,7 @@ export default function StudyTimerModal({ onClose, onMinimize, timer }: StudyTim
                 onClick={handleStart}
                 className="timer-btn timer-btn-start"
               >
-                Start Timer
+                {t('studyTimer.startTimer')}
               </button>
             </>
           ) : (
@@ -139,13 +141,13 @@ export default function StudyTimerModal({ onClose, onMinimize, timer }: StudyTim
                   onClick={timer.pauseTimer}
                   className="timer-btn timer-btn-pause"
                 >
-                  {timer.isPaused ? '▶️ Resume' : '⏸️ Pause'}
+                  {timer.isPaused ? t('studyTimer.resume') : t('studyTimer.pause')}
                 </button>
                 <button
                   onClick={timer.resetTimer}
                   className="timer-btn timer-btn-reset"
                 >
-                  🔄 Reset
+                  {t('studyTimer.reset')}
                 </button>
               </div>
             </>
