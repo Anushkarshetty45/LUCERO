@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { IoClose, IoFlame, IoTrophy, IoCheckmarkCircle, IoWarning, IoTimer, IoEye } from 'react-icons/io5'
 import './SessionReportModal.css'
 
@@ -33,23 +34,25 @@ export default function SessionReportModal({
   sessionDuration,
   onClose
 }: SessionReportModalProps) {
+  const { t } = useTranslation()
+
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600)
     const mins = Math.floor((seconds % 3600) / 60)
     const secs = seconds % 60
 
     if (hours > 0) {
-      return `${hours}h ${mins}m ${secs}s`
+      return t('sessionReport.timeFormat.hoursMinsSecs', { hours, mins, secs })
     }
-    return `${mins}m ${secs}s`
+    return t('sessionReport.timeFormat.minsSecs', { mins, secs })
   }
 
   const getFocusQuality = (score: number) => {
-    if (score >= 90) return { label: 'Excellent!', color: '#10b981', emoji: '🌟' }
-    if (score >= 75) return { label: 'Great!', color: '#3b82f6', emoji: '😊' }
-    if (score >= 60) return { label: 'Good', color: '#8b5cf6', emoji: '👍' }
-    if (score >= 45) return { label: 'Fair', color: '#f59e0b', emoji: '😐' }
-    return { label: 'Needs Improvement', color: '#ef4444', emoji: '😕' }
+    if (score >= 90) return { label: t('sessionReport.quality.excellent'), color: '#10b981', emoji: '🌟' }
+    if (score >= 75) return { label: t('sessionReport.quality.great'), color: '#3b82f6', emoji: '😊' }
+    if (score >= 60) return { label: t('sessionReport.quality.good'), color: '#8b5cf6', emoji: '👍' }
+    if (score >= 45) return { label: t('sessionReport.quality.fair'), color: '#f59e0b', emoji: '😐' }
+    return { label: t('sessionReport.quality.needsImprovement'), color: '#ef4444', emoji: '😕' }
   }
 
   const getInsights = () => {
@@ -58,28 +61,28 @@ export default function SessionReportModal({
     if (analytics.focusScore >= 85) {
       insights.push({
         type: 'positive',
-        message: 'Outstanding focus! You maintained excellent concentration throughout the session.'
+        message: t('sessionReport.insights.outstandingFocus')
       })
     }
 
     if (analytics.longestFocusStreak >= 1800) {
       insights.push({
         type: 'positive',
-        message: `Impressive! Your longest focus streak was ${formatTime(analytics.longestFocusStreak)}.`
+        message: t('sessionReport.insights.impressiveStreak', { time: formatTime(analytics.longestFocusStreak) })
       })
     }
 
     if (analytics.distractionCount > 5) {
       insights.push({
         type: 'improvement',
-        message: 'Try to minimize distractions by silencing notifications and finding a quiet space.'
+        message: t('sessionReport.insights.minimizeDistractions')
       })
     }
 
     if (analytics.averageFocusStreak < 600) {
       insights.push({
         type: 'improvement',
-        message: 'Consider using the Pomodoro technique (25 min focus + 5 min break) to improve sustained attention.'
+        message: t('sessionReport.insights.pomodoroTechnique')
       })
     }
 
@@ -99,8 +102,8 @@ export default function SessionReportModal({
 
         {/* Header */}
         <div className="report-header">
-          <h2>Session Complete! {quality.emoji}</h2>
-          <p>Here's how you did</p>
+          <h2>{t('sessionReport.sessionComplete', { emoji: quality.emoji })}</h2>
+          <p>{t('sessionReport.hereIsHow')}</p>
         </div>
 
         {/* Main Focus Score */}
@@ -115,7 +118,7 @@ export default function SessionReportModal({
           </div>
           <div className="score-quality">
             <h3 style={{ color: quality.color }}>{quality.label}</h3>
-            <p>Focus Score</p>
+            <p>{t('sessionReport.focusScore')}</p>
           </div>
         </div>
 
@@ -127,8 +130,8 @@ export default function SessionReportModal({
             </div>
             <div className="stat-content">
               <div className="stat-value">{formatTime(analytics.totalFocusedTime)}</div>
-              <div className="stat-label">Focused Time</div>
-              <div className="stat-sublabel">{focusPercentage}% of session</div>
+              <div className="stat-label">{t('sessionReport.stats.focusedTime')}</div>
+              <div className="stat-sublabel">{t('sessionReport.stats.percentOfSession', { percent: focusPercentage })}</div>
             </div>
           </div>
 
@@ -138,8 +141,8 @@ export default function SessionReportModal({
             </div>
             <div className="stat-content">
               <div className="stat-value">{formatTime(analytics.longestFocusStreak)}</div>
-              <div className="stat-label">Best Streak</div>
-              <div className="stat-sublabel">Personal record</div>
+              <div className="stat-label">{t('sessionReport.stats.bestStreak')}</div>
+              <div className="stat-sublabel">{t('sessionReport.stats.personalRecord')}</div>
             </div>
           </div>
 
@@ -149,8 +152,8 @@ export default function SessionReportModal({
             </div>
             <div className="stat-content">
               <div className="stat-value">{formatTime(analytics.averageFocusStreak)}</div>
-              <div className="stat-label">Avg Streak</div>
-              <div className="stat-sublabel">Per focus period</div>
+              <div className="stat-label">{t('sessionReport.stats.avgStreak')}</div>
+              <div className="stat-sublabel">{t('sessionReport.stats.perFocusPeriod')}</div>
             </div>
           </div>
 
@@ -160,8 +163,8 @@ export default function SessionReportModal({
             </div>
             <div className="stat-content">
               <div className="stat-value">{analytics.distractionCount}</div>
-              <div className="stat-label">Distractions</div>
-              <div className="stat-sublabel">Times lost focus</div>
+              <div className="stat-label">{t('sessionReport.stats.distractions')}</div>
+              <div className="stat-sublabel">{t('sessionReport.stats.timesLostFocus')}</div>
             </div>
           </div>
         </div>
@@ -169,7 +172,7 @@ export default function SessionReportModal({
         {/* Achievements */}
         {achievements.length > 0 && (
           <div className="achievements-section">
-            <h3><IoTrophy /> Achievements Unlocked!</h3>
+            <h3><IoTrophy /> {t('sessionReport.achievementsUnlocked')}</h3>
             <div className="achievements-grid">
               {achievements.map((achievement) => (
                 <div key={achievement.id} className={`achievement-card rarity-${achievement.rarity}`}>
@@ -188,7 +191,7 @@ export default function SessionReportModal({
         {/* Insights */}
         {insights.length > 0 && (
           <div className="insights-section">
-            <h3><IoEye /> Insights & Recommendations</h3>
+            <h3><IoEye /> {t('sessionReport.insightsRecommendations')}</h3>
             <div className="insights-list">
               {insights.map((insight, index) => (
                 <div key={index} className={`insight-item insight-${insight.type}`}>
@@ -204,7 +207,7 @@ export default function SessionReportModal({
 
         {/* Action Button */}
         <button className="btn-continue" onClick={onClose}>
-          Continue Learning
+          {t('sessionReport.continueLearning')}
         </button>
       </div>
     </div>
