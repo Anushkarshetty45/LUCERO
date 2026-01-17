@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useTheme } from '../hooks/useTheme'
 import { type ThemeName } from '../styles/themeDefinitions'
 import ThemePreviewCard from './ThemePreviewCard'
@@ -12,6 +13,7 @@ interface ThemeModalProps {
  * Pinterest-style grid modal for theme selection
  */
 export default function ThemeModal({ onClose }: ThemeModalProps) {
+  const { t } = useTranslation()
   const { currentTheme, setTheme, particlesEnabled, setParticlesEnabled } = useTheme()
 
   const allThemes: ThemeName[] = [
@@ -43,7 +45,7 @@ export default function ThemeModal({ onClose }: ThemeModalProps) {
       <div className="theme-modal" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="modal-header theme-modal-header">
-          <h2>🎨 Choose Your Theme</h2>
+          <h2>{t('theme.title')}</h2>
           <button className="close-btn" onClick={onClose} aria-label="Close">
             ✕
           </button>
@@ -52,8 +54,8 @@ export default function ThemeModal({ onClose }: ThemeModalProps) {
         {/* Animation Toggle */}
         <div className="theme-animation-toggle">
           <div className="toggle-info">
-            <h3>Background Animations</h3>
-            <p>Show floating particles and visual effects</p>
+            <h3>{t('theme.backgroundAnimations')}</h3>
+            <p>{t('theme.animationsDescription')}</p>
           </div>
           <label className="toggle-switch">
             <input
@@ -80,10 +82,10 @@ export default function ThemeModal({ onClose }: ThemeModalProps) {
         {/* Footer */}
         <div className="theme-modal-footer">
           <p className="theme-tip">
-            💡 Tip: Your theme syncs across all your devices automatically!
+            {t('theme.tip')}
           </p>
           <button className="btn-primary btn-done" onClick={onClose}>
-            Done
+            {t('theme.done')}
           </button>
         </div>
       </div>
