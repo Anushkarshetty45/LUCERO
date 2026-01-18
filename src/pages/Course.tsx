@@ -1,9 +1,12 @@
 import { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../hooks/useAuth'
-import { getCourse, getLessons, deleteLesson, getCourseWithProgress } from '../services/api'
+import { useContentTranslation } from '../hooks/useContentTranslation'
+import { getCourse, getLessons, deleteLesson, getCourseWithProgress, updateCourseAccess } from '../services/api'
 import { Course as CourseType, Lesson } from '../types'
 import AddTopicModal from '../components/AddTopicModal'
+import LessonItem from '../components/LessonItem'
 import './Course.css'
 import NotesModal from '../components/NotesModal'
 
@@ -15,6 +18,7 @@ interface ChatMessage {
 export default function Course() {
   const { courseId } = useParams<{ courseId: string }>()
   const { user } = useAuth()
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [course, setCourse] = useState<CourseType | null>(null)
   const [lessons, setLessons] = useState<Lesson[]>([])
@@ -22,6 +26,9 @@ export default function Course() {
   const [showAddTopic, setShowAddTopic] = useState(false)
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null)
   const [showNotes, setShowNotes] = useState(false)
+
+  // Translate the selected lesson title
+  const translatedLessonTitle = useContentTranslation(selectedLesson?.title || '')
 
   // Chat state
   const [showChat, setShowChat] = useState(false)
@@ -59,6 +66,11 @@ export default function Course() {
       }
 
       setLessons(lessonsData)
+
+      // Update the last accessed timestamp
+      if (user?.id) {
+        await updateCourseAccess(user.id, courseId!)
+      }
     } catch (error) {
       console.error('Error loading course:', error)
     } finally {
@@ -128,7 +140,7 @@ PERSONALITY:
 - Use friendly language and occasional emojis to keep things engaging
 
 CONTEXT:
-The student is learning about "${selectedLesson.title}" in their ${course?.subject} course titled "${course?.title}".
+The student is learning about "${translatedLessonTitle}" in their ${course?.subject} course titled "${course?.title}".
 
 LESSON CONTENT:
 ${lessonContext.substring(0, 2500)}
@@ -278,8 +290,8 @@ Be the tutor every student wishes they had - knowledgeable, patient, and genuine
   if (!course) {
     return (
       <div className="error-screen">
-        <h2>Course not found</h2>
-        <button onClick={() => navigate('/dashboard')}>Back to Dashboard</button>
+        <h2>{t('course.courseNotFound')}</h2>
+        <button onClick={() => navigate('/dashboard')}>{t('course.backToDashboard')}</button>
       </div>
     )
   }
@@ -295,7 +307,7 @@ Be the tutor every student wishes they had - knowledgeable, patient, and genuine
         }}
       >
         <div className="course-header-content">
-          <Link to="/dashboard" className="back-button">← Back to Dashboard</Link>
+          <Link to="/dashboard" className="back-button">← {t('course.backToDashboard')}</Link>
           <h1>{course.title}</h1>
           <p className="course-subject">{course.subject}</p>
           {course.description && <p className="course-description">{course.description}</p>}
@@ -303,7 +315,7 @@ Be the tutor every student wishes they had - knowledgeable, patient, and genuine
             className="btn-notes"
             onClick={() => setShowNotes(true)}
           >
-            📝 My Notes
+            📝 {t('course.myNotes')}
           </button>
         </div>
       </header>
@@ -312,45 +324,31 @@ Be the tutor every student wishes they had - knowledgeable, patient, and genuine
         {/* Sidebar - Topics List */}
         <aside className="topics-sidebar">
           <div className="sidebar-header">
-            <h2>Topics</h2>
+            <h2>{t('course.topics')}</h2>
             <button
               className="btn-add-topic"
               onClick={() => setShowAddTopic(true)}
             >
-              + Add Topic
+              + {t('course.addTopic')}
             </button>
           </div>
 
           {lessons.length === 0 ? (
             <div className="empty-topics">
-              <p>No topics yet</p>
-              <p className="small">Click "Add Topic" to start learning!</p>
+              <p>{t('course.noTopics')}</p>
+              <p className="small">{t('course.addTopicPrompt')}</p>
             </div>
           ) : (
             <ul className="topics-list">
               {lessons.map((lesson, index) => (
-                <li
+                <LessonItem
                   key={lesson.id}
-                  className={selectedLesson?.id === lesson.id ? 'active' : ''}
+                  lesson={lesson}
+                  index={index}
+                  isActive={selectedLesson?.id === lesson.id}
                   onClick={() => setSelectedLesson(lesson)}
-                >
-                  <div className="topic-number">{index + 1}</div>
-                  <div className="topic-info">
-                    <h3>{lesson.title}</h3>
-                    {(lesson.duration || 0) > 0 && (
-                      <span className="topic-duration">{lesson.duration} min</span>
-                    )}
-                  </div>
-                  <button
-                    className="btn-delete-topic"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleDeleteLesson(lesson.id)
-                    }}
-                  >
-                    🗑️
-                  </button>
-                </li>
+                  onDelete={handleDeleteLesson}
+                />
               ))}
             </ul>
           )}
@@ -360,7 +358,7 @@ Be the tutor every student wishes they had - knowledgeable, patient, and genuine
         <main className="notes-content">
           {selectedLesson ? (
             <div className="notes-viewer">
-              <h2>{selectedLesson.title}</h2>
+              <h2>{translatedLessonTitle}</h2>
               <div
                 className="notes-text"
                 dangerouslySetInnerHTML={{ __html: selectedLesson.content || '<p>No notes available</p>' }}
@@ -477,7 +475,7 @@ Be the tutor every student wishes they had - knowledgeable, patient, and genuine
                 {chatMessages.length === 0 ? (
                   <div className="chat-empty">
                     <p>👋 Hey there! I'm your friendly AI tutor!</p>
-                    <p>I'm here to help you master <strong>{selectedLesson.title}</strong>! 🎓</p>
+                    <p>I'm here to help you master <strong>{translatedLessonTitle}</strong>! 🎓</p>
                     <p style={{ fontSize: '14px', opacity: 0.8, marginTop: '12px' }}>
                       Ask me anything - I'll remember our entire conversation and build on what we discuss! ✨
                     </p>
