@@ -239,6 +239,34 @@
   cursor: not-allowed;
 }
 
+.form-group textarea,
+.bio-textarea {
+  padding: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 15px;
+  color: var(--text-primary);
+  font-family: inherit;
+  resize: vertical;
+  transition: all 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-group textarea:focus,
+.bio-textarea:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  background: var(--bg-card-hover);
+}
+
+.form-group textarea::placeholder,
+.bio-textarea::placeholder {
+  color: var(--text-tertiary);
+  opacity: 0.7;
+}
+
 .form-group small {
   font-size: 12px;
   color: var(--text-tertiary);
