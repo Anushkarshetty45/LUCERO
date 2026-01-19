@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { useNavigate, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { getProfile, getCourses, getTodayStudyTime, getCourseWithProgress, recordDailyActivity, getUserStreak } from '../services/api'
 import { Profile, CourseWithProgress } from '../types'
 import { getGreeting, formatTime, getMotivationalQuote } from '../utils/helpers'
@@ -13,13 +14,14 @@ import ChatbotModal from '../components/ChatbotModal'
 import PDFAnalyzerModal from '../components/PDFAnalyzer/PDFAnalyzerModal'
 import FlashcardsModal from '../components/FlashcardsModal'
 import GroupStudyModal from '../components/GroupStudyModal'
-import QuickThemeSwitcher from '../components/QuickThemeSwitcher'
 import { useTimerContext } from '../contexts/TimerContext'
 import { useLiveStudy } from '../contexts/LiveStudyContext'
+import { useStudyReminder } from '../hooks/useStudyReminder'
 import { IoBookSharp, IoFlame, IoTimer } from 'react-icons/io5'
 import './Dashboard.css'
 
 export default function Dashboard() {
+  const { t } = useTranslation()
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -34,10 +36,22 @@ export default function Dashboard() {
   const [showGroupStudy, setShowGroupStudy] = useState(false)
   const [streak, setStreak] = useState(0)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
+  const [showMigrationWarning, setShowMigrationWarning] = useState(false)
 
   // Use timer context for app-level timer state
   const { timer, setIsMinimized, showTimerModal, setShowTimerModal } = useTimerContext()
   const { setShowLiveStudy } = useLiveStudy()
+
+  // Enable study reminders
+  const { testNotification } = useStudyReminder(user?.id)
+
+  // Expose test notification to window for debugging
+  useEffect(() => {
+    if (testNotification) {
+      (window as any).testNotification = testNotification
+      console.log('💡 Tip: Type testNotification() in console to test notifications!')
+    }
+  }, [testNotification])
 
   useEffect(() => {
     if (user) {
@@ -63,8 +77,17 @@ export default function Dashboard() {
 
   const loadDashboardData = async () => {
     try {
-      // Record daily login activity FIRST
-      await recordDailyActivity(user!.id, 'login')
+      // Record daily login activity FIRST - check if migration is needed
+      try {
+        await recordDailyActivity(user!.id, 'login')
+      } catch (activityError: any) {
+        // Check if error is due to missing table
+        if (activityError?.message?.includes('daily_activities') ||
+            activityError?.code === '42P01') {
+          setShowMigrationWarning(true)
+          console.error('⚠️ Database migration needed! Please run the migration in Supabase.')
+        }
+      }
 
       // Parallelize all independent API calls for faster loading
       const [profileResult, coursesData, studyTime, streakData] = await Promise.all([
@@ -86,9 +109,9 @@ export default function Dashboard() {
         // Load courses
         getCourses(user!.id),
         // Load today's study time
-        getTodayStudyTime(user!.id),
+        getTodayStudyTime(user!.id).catch(() => 0),
         // Get user streak (updated by recordDailyActivity above)
-        getUserStreak(user!.id)
+        getUserStreak(user!.id).catch(() => ({ current: 0, longest: 0 }))
       ])
 
       console.log('📋 Profile loaded:', profileResult)
@@ -174,37 +197,37 @@ export default function Dashboard() {
         <nav className="sidebar-nav">
           <Link to="/dashboard" className="sidebar-nav-item active">
             <span className="nav-icon">🏠</span>
-            Home
+            {t('nav.home')}
           </Link>
           <button className="sidebar-nav-item" onClick={() => setShowChatbot(true)}>
             <span className="nav-icon">💬</span>
-            Chat
+            {t('nav.chat')}
           </button>
           <button className="sidebar-nav-item" onClick={() => setShowAllNotes(true)}>
             <span className="nav-icon">📝</span>
-            Notes
+            {t('nav.notes')}
           </button>
           <button className="sidebar-nav-item" onClick={() => setShowTimerModal(true)}>
             <span className="nav-icon">⏱️</span>
-            Timer
+            {t('nav.timer')}
           </button>
           <button className="sidebar-nav-item" onClick={() => setShowPDFAnalyzer(true)}>
             <span className="nav-icon">📄</span>
-            PDF Analyzer
+            {t('nav.pdfAnalyzer')}
           </button>
           <button className="sidebar-nav-item" onClick={() => setShowGroupStudy(true)}>
             <span className="nav-icon">🎥</span>
-            Group Study
+            {t('nav.groupStudy')}
           </button>
           <button className="sidebar-nav-item" onClick={() => setShowLiveStudy(true)}>
             <span className="nav-icon">📹</span>
-            Live Study
+            {t('nav.liveStudy')}
           </button>
         </nav>
 
         <div className="sidebar-courses">
           <div className="sidebar-courses-header">
-            <h3>Courses</h3>
+            <h3>{t('dashboard.myCourses')}</h3>
             <button className="btn-add-course" onClick={() => setShowCreateModal(true)}>+</button>
           </div>
           <div className="sidebar-courses-list">
@@ -238,11 +261,6 @@ export default function Dashboard() {
             <h1 className="nav-logo">LUCERO</h1>
           </div>
           <div className="nav-right">
-            <QuickThemeSwitcher />
-            <button className="nav-icon-btn" title="Notifications">
-              🔔
-              <span className="notification-badge">3</span>
-            </button>
             <div className="user-menu">
               <button className="user-button" onClick={() => setShowProfileMenu(!showProfileMenu)}>
                 <div className="user-avatar">
@@ -252,9 +270,9 @@ export default function Dashboard() {
               </button>
               {showProfileMenu && (
                 <div className="user-dropdown">
-                  <Link to="/profile" onClick={() => setShowProfileMenu(false)}>Profile</Link>
-                  <Link to="/settings" onClick={() => setShowProfileMenu(false)}>Settings</Link>
-                  <button onClick={handleSignOut}>Sign Out</button>
+                  <Link to="/profile" onClick={() => setShowProfileMenu(false)}>{t('nav.profile')}</Link>
+                  <Link to="/settings" onClick={() => setShowProfileMenu(false)}>{t('nav.settings')}</Link>
+                  <button onClick={handleSignOut}>{t('nav.signOut')}</button>
                 </div>
               )}
             </div>
@@ -263,6 +281,26 @@ export default function Dashboard() {
 
         {/* Main Content */}
         <main className="dashboard-content">
+          {/* Migration Warning Banner */}
+          {showMigrationWarning && (
+            <div className="migration-warning-banner">
+              <div className="warning-content">
+                <span className="warning-icon">⚠️</span>
+                <div className="warning-text">
+                  <strong>Database Migration Required</strong>
+                  <p>Your streak and study time features need a database update. Please check the <code>RUN_THIS_MIGRATION.md</code> file in your project folder for instructions.</p>
+                </div>
+                <button
+                  className="btn-dismiss-warning"
+                  onClick={() => setShowMigrationWarning(false)}
+                  aria-label="Dismiss warning"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Welcome Section */}
           <div className="welcome-section">
             <div className="welcome-text">
@@ -270,7 +308,7 @@ export default function Dashboard() {
               <p>{quote}</p>
             </div>
             <div className="streak-badge">
-               {streak} day streak
+              {t('dashboard.dayStreakLabel', { count: streak })}
             </div>
           </div>
 
@@ -280,7 +318,7 @@ export default function Dashboard() {
               <div className="stat-icon"><IoBookSharp /></div>
               <div className="stat-content">
                 <h3>{totalCourses}</h3>
-                <p>Total Courses</p>
+                <p>{t('dashboard.totalCourses')}</p>
               </div>
             </div>
 
@@ -288,7 +326,7 @@ export default function Dashboard() {
               <div className="stat-icon"><IoFlame /></div>
               <div className="stat-content">
                 <h3>{streak}</h3>
-                <p>Day Streak</p>
+                <p>{t('dashboard.dayStreak')}</p>
               </div>
             </div>
 
@@ -296,7 +334,7 @@ export default function Dashboard() {
               <div className="stat-icon"><IoTimer /></div>
               <div className="stat-content">
                 <h3>{formatTime(todayStudyTime)}</h3>
-                <p>Today's Study Time</p>
+                <p>{t('dashboard.todayStudyTime')}</p>
               </div>
             </div>
           </div>
@@ -304,7 +342,7 @@ export default function Dashboard() {
           {/* Continue Learning */}
           {continueLearningCourse && (
             <section className="dashboard-section">
-              <h3 className="section-title">Continue Learning</h3>
+              <h3 className="section-title">{t('dashboard.continueLearning')}</h3>
               <div className="continue-learning-card">
                 <div className="continue-card-header" style={{ background: continueLearningCourse.color }}>
                   <h4>{continueLearningCourse.title}</h4>
@@ -312,14 +350,14 @@ export default function Dashboard() {
                 </div>
                 <div className="continue-card-body">
                   <div className="progress-info">
-                    <span> {continueLearningCourse.total_lessons} Topics</span>
-                    <span>🕒 Last studied: {new Date(continueLearningCourse.last_accessed!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                    <span> {continueLearningCourse.total_lessons} {t('course.topics')}</span>
+                    <span>🕒 {t('dashboard.lastStudied')}: {new Date(continueLearningCourse.last_accessed!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                   </div>
                   <button
                     className="btn-continue"
                     onClick={() => navigate(`/course/${continueLearningCourse.id}`)}
                   >
-                    Continue Learning →
+                    {t('dashboard.continueLearning')} →
                   </button>
                 </div>
               </div>
@@ -329,25 +367,25 @@ export default function Dashboard() {
           {/* My Courses */}
           <section className="dashboard-section">
             <div className="section-header">
-              <h3 className="section-title">My Courses</h3>
+              <h3 className="section-title">{t('dashboard.myCourses')}</h3>
               <button
                 className="btn-primary"
                 onClick={() => setShowCreateModal(true)}
               >
-                + Create Course
+                + {t('dashboard.createCourse')}
               </button>
             </div>
 
             {courses.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-icon">📚</div>
-                <h3>No courses yet</h3>
-                <p>Create your first course to start learning!</p>
+                <h3>{t('dashboard.noCourses')}</h3>
+                <p>{t('dashboard.createFirstCourse')}</p>
                 <button
                   className="btn-primary"
                   onClick={() => setShowCreateModal(true)}
                 >
-                  Create Your First Course
+                  {t('dashboard.createCourse')}
                 </button>
               </div>
             ) : (
@@ -365,29 +403,29 @@ export default function Dashboard() {
 
           {/* Study Tools */}
           <section className="dashboard-section">
-            <h3 className="section-title">Study Tools</h3>
+            <h3 className="section-title">{t('dashboard.studyTools')}</h3>
             <div className="tools-grid">
               <button className="tool-card" onClick={() => setShowPDFAnalyzer(true)}>
                 <span className="tool-icon">📄</span>
-                <span className="tool-name">PDF Analyzer</span>
-                <span className="tool-badge new">New!</span>
+                <span className="tool-name">{t('dashboard.tools.pdfAnalyzer')}</span>
+                <span className="tool-badge new">{t('dashboard.tools.new')}</span>
               </button>
               <button className="tool-card" onClick={() => setShowGroupStudy(true)}>
                 <span className="tool-icon">🎥</span>
-                <span className="tool-name">Group Study</span>
-                <span className="tool-badge new">New!</span>
+                <span className="tool-name">{t('dashboard.tools.groupStudy')}</span>
+                <span className="tool-badge new">{t('dashboard.tools.new')}</span>
               </button>
               <button className="tool-card" onClick={() => setShowAllNotes(true)}>
                 <span className="tool-icon">📝</span>
-                <span className="tool-name">Notes</span>
+                <span className="tool-name">{t('dashboard.tools.notes')}</span>
               </button>
               <button className="tool-card" onClick={() => setShowFlashcards(true)}>
                 <span className="tool-icon">🃏</span>
-                <span className="tool-name">Flashcards</span>
+                <span className="tool-name">{t('dashboard.tools.flashcards')}</span>
               </button>
               <button className="tool-card" onClick={() => setShowTimerModal(true)}>
                 <span className="tool-icon">⏱️</span>
-                <span className="tool-name">Study Timer</span>
+                <span className="tool-name">{t('dashboard.tools.studyTimer')}</span>
               </button>
             </div>
           </section>
