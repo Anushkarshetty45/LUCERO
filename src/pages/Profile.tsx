@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { useNavigate } from 'react-router-dom'
-import { getProfile, getTodayStudyTime, calculateUserStreak } from '../services/api'
+import { getProfile, getTodayStudyTime, getUserStreak } from '../services/api'
 import { supabase } from '../services/supabase'
 import { Profile as ProfileType } from '../types'
 import './Profile.css'
@@ -49,8 +49,8 @@ export default function Profile() {
       const studyTime = await getTodayStudyTime(user!.id)
       setTodayStudyTime(studyTime)
 
-      const streakDays = await calculateUserStreak(user!.id)
-      setStreak(streakDays)
+      const streakData = await getUserStreak(user!.id)
+      setStreak(streakData.current)
 
       // Calculate total study time
       const { data: sessions } = await supabase
@@ -176,11 +176,11 @@ export default function Profile() {
                 <div className="stat-label">Day Streak</div>
               </div>
               <div className="stat-box">
-                <div className="stat-value">{Math.floor(todayStudyTime / 60)}h {todayStudyTime % 60}m</div>
+                <div className="stat-value">{Math.floor(todayStudyTime / 3600)}h {Math.floor((todayStudyTime % 3600) / 60)}m</div>
                 <div className="stat-label">Today's Study</div>
               </div>
               <div className="stat-box">
-                <div className="stat-value">{Math.floor(totalStudyTime / 60)}h</div>
+                <div className="stat-value">{Math.floor(totalStudyTime / 3600)}h {Math.floor((totalStudyTime % 3600) / 60)}m</div>
                 <div className="stat-label">Total Study Time</div>
               </div>
             </div>
@@ -216,15 +216,7 @@ export default function Profile() {
                     onChange={(e) => setBio(e.target.value)}
                     placeholder="Tell us about yourself..."
                     rows={4}
-                    style={{
-                      padding: '12px',
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      borderRadius: '8px',
-                      fontSize: '15px',
-                      color: '#fff',
-                      resize: 'vertical'
-                    }}
+                    className="bio-textarea"
                   />
                 </div>
                 <div className="form-group">
