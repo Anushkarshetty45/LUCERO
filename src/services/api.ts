@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import { Course, Lesson, Material, LessonProgress, Profile, TopicChat, TopicChatMessage } from '../types'
+import { Course, Lesson, Material, LessonProgress, Profile, TopicChat, TopicChatMessage, CourseFlashcard } from '../types'
 
 // ==================== PROFILE ====================
 export const getProfile = async (userId: string): Promise<Profile> => {
@@ -286,6 +286,12 @@ export const updateLessonProgress = async (
     .single()
 
   if (error) throw error
+
+  // Record course activity for streak if lesson is completed
+  if (progress.completed || progress.progress_percentage === 100) {
+    await recordDailyActivity(userId, 'course')
+  }
+
   return data
 }
 
@@ -628,6 +634,42 @@ export const getUserStreak = async (userId: string): Promise<{ current: number; 
   } catch (error) {
     console.error('Error getting user streak:', error)
     return { current: 0, longest: 0 }
+  }
+}
+
+/**
+ * Updates the last accessed timestamp for a course
+ * This creates or updates a lesson_progress entry for the first lesson in the course
+ */
+export const updateCourseAccess = async (userId: string, courseId: string) => {
+  try {
+    // Get the first lesson of the course
+    const { data: lessons } = await supabase
+      .from('lessons')
+      .select('id')
+      .eq('course_id', courseId)
+      .order('created_at', { ascending: true })
+      .limit(1)
+
+    if (!lessons || lessons.length === 0) {
+      // If there are no lessons yet, we can't update access time
+      return
+    }
+
+    const firstLessonId = lessons[0].id
+
+    // Create or update lesson_progress to record the access time
+    await supabase
+      .from('lesson_progress')
+      .upsert({
+        user_id: userId,
+        lesson_id: firstLessonId,
+        last_accessed: new Date().toISOString()
+      }, {
+        onConflict: 'user_id,lesson_id'
+      })
+  } catch (error) {
+    console.error('Error updating course access:', error)
   }
 }
 
@@ -1303,4 +1345,44 @@ export const endStudySessionByHost = async (
     console.error('Error ending study session:', error)
     throw error
   }
+}
+// ==================== FLASHCARDS ====================
+export const saveFlashcards = async (userId: string, courseId: string, flashcards: Array<{ question: string; answer: string; category: string }>) => {
+  const flashcardsWithMeta = flashcards.map(card => ({
+    user_id: userId,
+    course_id: courseId,
+    question: card.question,
+    answer: card.answer,
+    category: card.category
+  }))
+
+  const { data, error } = await supabase
+    .from('pdf_flashcards')
+    .insert(flashcardsWithMeta)
+    .select()
+
+  if (error) throw error
+  return data
+}
+
+export const getCourseFlashcards = async (userId: string, courseId: string): Promise<CourseFlashcard[]> => {
+  const { data, error } = await supabase
+    .from('pdf_flashcards')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('course_id', courseId)
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return data || []
+}
+
+export const deleteFlashcardsForCourse = async (userId: string, courseId: string) => {
+  const { error } = await supabase
+    .from('pdf_flashcards')
+    .delete()
+    .eq('user_id', userId)
+    .eq('course_id', courseId)
+
+  if (error) throw error
 }
