@@ -96,3 +96,13 @@ export interface TopicChatMessage {
   timestamp: string
   metadata?: Record<string, any>
 }
+
+export interface CourseFlashcard {
+  id: string
+  user_id: string
+  course_id: string
+  question: string
+  answer: string
+  category: string
+  created_at: string
+}
