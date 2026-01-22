@@ -1,15 +1,17 @@
+import i18next from 'i18next'
+
 // Get personalized greeting based on time
 export const getGreeting = (firstName: string): string => {
   const hour = new Date().getHours()
 
   if (hour >= 5 && hour < 12) {
-    return `Good morning, ${firstName}! `
+    return `${(i18next.t as any)('dashboard.greeting.morning')}, ${firstName}! `
   } else if (hour >= 12 && hour < 17) {
-    return `Good afternoon, ${firstName}! `
+    return `${(i18next.t as any)('dashboard.greeting.afternoon')}, ${firstName}! `
   } else if (hour >= 17 && hour < 22) {
-    return `Good evening, ${firstName}! `
+    return `${(i18next.t as any)('dashboard.greeting.evening')}, ${firstName}! `
   } else {
-    return `Burning the midnight oil, ${firstName}? 🔥`
+    return `${(i18next.t as any)('dashboard.greeting.lateNight', { name: firstName })} `
   }
 }
 
@@ -31,11 +33,11 @@ export const formatDate = (dateString: string): string => {
   const diffTime = Math.abs(now.getTime() - date.getTime())
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
-  if (diffDays === 0) return 'Today'
-  if (diffDays === 1) return 'Yesterday'
-  if (diffDays < 7) return `${diffDays} days ago`
+  if (diffDays === 0) return (i18next.t as any)('common.today')
+  if (diffDays === 1) return (i18next.t as any)('common.yesterday')
+  if (diffDays < 7) return (i18next.t as any)('common.daysAgo', { count: diffDays })
 
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  return date.toLocaleDateString(i18next.language, { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
 // Calculate streak days (mock for now, you can enhance this)
@@ -47,27 +49,29 @@ export const calculateStreak = (): number => {
 
 // Get daily motivational quote (persists for the entire day)
 export const getMotivationalQuote = (): string => {
-  const quotes = [
-    "Ready to crush it?",
-    "Let's make today count!",
-    "Your future self will thank you!",
-    "Keep going, you're doing great!",
-    "Learning is a journey, enjoy the ride!",
-    "Every expert was once a beginner!",
-    "Progress, not perfection!",
-    "You're one step closer to your goals!"
+  const quoteKeys = [
+    'dashboard.quotes.crush',
+    'dashboard.quotes.today',
+    'dashboard.quotes.future',
+    'dashboard.quotes.keepGoing',
+    'dashboard.quotes.journey',
+    'dashboard.quotes.beginner',
+    'dashboard.quotes.progress',
+    'dashboard.quotes.goals'
   ]
 
   // Get today's date string (YYYY-MM-DD)
   const today = new Date().toISOString().split('T')[0]
+  const currentLanguage = i18next.language
 
   // Check localStorage for today's quote
   const stored = localStorage.getItem('dailyQuote')
   if (stored) {
     try {
-      const { date, quote } = JSON.parse(stored)
-      if (date === today) {
-        return quote
+      const { date, quoteKey, language } = JSON.parse(stored)
+      // Return stored quote only if it's for today and same language
+      if (date === today && language === currentLanguage) {
+        return (i18next.t as any)(quoteKey)
       }
     } catch (e) {
       // Invalid stored data, generate new quote
@@ -75,9 +79,13 @@ export const getMotivationalQuote = (): string => {
   }
 
   // Generate new quote for today
-  const newQuote = quotes[Math.floor(Math.random() * quotes.length)]
-  localStorage.setItem('dailyQuote', JSON.stringify({ date: today, quote: newQuote }))
-  return newQuote
+  const newQuoteKey = quoteKeys[Math.floor(Math.random() * quoteKeys.length)]
+  localStorage.setItem('dailyQuote', JSON.stringify({
+    date: today,
+    quoteKey: newQuoteKey,
+    language: currentLanguage
+  }))
+  return (i18next.t as any)(newQuoteKey)
 }
 // Get color for course (cycle through colors)
 export const getCourseColor = (index: number): string => {
