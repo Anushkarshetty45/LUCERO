@@ -12,18 +12,18 @@ CREATE INDEX IF NOT EXISTS idx_user_settings_last_active
 CREATE TABLE IF NOT EXISTS daily_activities (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  activity_date DATE NOT NULL,
-  activity_types TEXT[] DEFAULT '{}', -- Array of activity types: login, flashcard, quiz, study_session
+  date DATE NOT NULL,
+  activity_types TEXT[] DEFAULT '{}', -- Array of activity types: login, flashcard, quiz, study_session, group_study, pdf_analysis, course
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 
   -- Ensure one row per user per day
-  UNIQUE(user_id, activity_date)
+  UNIQUE(user_id, date)
 );
 
 -- Create index for daily activities
 CREATE INDEX IF NOT EXISTS idx_daily_activities_user_date
-  ON daily_activities(user_id, activity_date DESC);
+  ON daily_activities(user_id, date DESC);
 
 -- Add RLS policies for daily_activities
 ALTER TABLE daily_activities ENABLE ROW LEVEL SECURITY;
