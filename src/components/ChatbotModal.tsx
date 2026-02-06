@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import './ChatbotModal.css'
 
 interface Message {
+    id: string
     role: 'user' | 'assistant'
     content: string
     timestamp: Date
@@ -98,6 +99,7 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
     const { t } = useTranslation()
     const [messages, setMessages] = useState<Message[]>([
         {
+            id: `assistant-welcome-${Date.now()}`,
             role: 'assistant',
             content: t('chat.welcomeMessage'),
             timestamp: new Date()
@@ -126,6 +128,7 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
         if (!input.trim() || loading) return
 
         const userMessage: Message = {
+            id: `user-${Date.now()}`,
             role: 'user',
             content: input,
             timestamp: new Date()
@@ -208,6 +211,7 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
             const formattedResponse = formatResponse(rawResponse)
 
             const assistantMessage: Message = {
+                id: `assistant-${Date.now()}`,
                 role: 'assistant',
                 content: formattedResponse,
                 timestamp: new Date()
@@ -225,6 +229,7 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
             }
 
             const errorMessage: Message = {
+                id: `assistant-error-${Date.now()}`,
                 role: 'assistant',
                 content: errorContent,
                 timestamp: new Date()
@@ -283,8 +288,8 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
                 </div>
 
                 <div className="chatbot-messages">
-                    {messages.map((message, index) => (
-                        <div key={index} className={`message ${message.role}`}>
+                    {messages.map((message) => (
+                        <div key={message.id} className={`message ${message.role}`}>
                             <div className="message-avatar">
                                 {message.role === 'user' ? '👤' : '🤖'}
                             </div>
