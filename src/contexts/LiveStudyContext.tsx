@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useEffect, useRef, ReactNode, useCallback, useMemo } from 'react'
 import { Distraction } from '../types/liveStudy'
 import { useFaceDetection } from '../hooks/useFaceDetection'
 import { useTabVisibility } from '../hooks/useTabVisibility'
@@ -91,6 +91,8 @@ export function LiveStudyProvider({ children }: { children: ReactNode }) {
     const faceResultRef = useRef<any>({ faceDetected: true, lookingDown: false })
     const isTabVisibleRef = useRef(true)
     const modelsLoadedRef = useRef(false)
+    const lastFocusEventTimeRef = useRef<number>(Date.now())
+    const lastFocusStateRef = useRef<boolean>(true)
 
     // Hooks
     const {
@@ -118,7 +120,7 @@ export function LiveStudyProvider({ children }: { children: ReactNode }) {
     }, [modelsLoaded])
 
     // Start session
-    const startSession = async () => {
+    const startSession = useCallback(async () => {
         // Resume audio context
         const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
         if (audioContext.state === 'suspended') {
@@ -146,11 +148,18 @@ export function LiveStudyProvider({ children }: { children: ReactNode }) {
         setFocusTimeline([])
         setLastFocusEventTime(Date.now())
         setLastFocusState(true)
+        lastFocusEventTimeRef.current = Date.now()
+        lastFocusStateRef.current = true
         resetCount()
-    }
+    }, [startWebcam, resetCount])
+
+    // Calculate focus score (needed by stopSession callback)
+    const focusScore = sessionTime > 0
+        ? Math.round((focusTime / sessionTime) * 100)
+        : 100
 
     // Stop session
-    const stopSession = async () => {
+    const stopSession = useCallback(async () => {
         // Calculate focus streaks from timeline
         const focusStreaks: number[] = []
         let currentStreakDuration = 0
@@ -228,7 +237,7 @@ export function LiveStudyProvider({ children }: { children: ReactNode }) {
                 // Modal still shows even if database save fails
             }
         }
-    }
+    }, [focusTime, sessionTime, distractions, focusTimeline, user, sessionId, stopWebcam])
 
     // Timer logic - uses refs to avoid interval restarts
     useEffect(() => {
@@ -281,16 +290,16 @@ export function LiveStudyProvider({ children }: { children: ReactNode }) {
 
             const isCurrentlyFocused = isFaceFocused && tabVisible
 
-            // Track state changes and duration
+            // Track state changes and duration using refs
             const now = Date.now()
-            const duration = Math.round((now - lastFocusEventTime) / 1000)
+            const duration = Math.round((now - lastFocusEventTimeRef.current) / 1000)
 
             if (duration > 0) {
-                const timelineEventType = lastFocusState ? 'focused' : 'distracted'
+                const timelineEventType = lastFocusStateRef.current ? 'focused' : 'distracted'
 
                 // Map to database event types
                 let dbEventType: 'face_detected' | 'face_lost' | 'looking_away' | 'resumed_focus'
-                if (lastFocusState) {
+                if (lastFocusStateRef.current) {
                     dbEventType = 'face_detected'
                 } else {
                     dbEventType = tabVisible ? 'looking_away' : 'face_lost'
@@ -298,7 +307,7 @@ export function LiveStudyProvider({ children }: { children: ReactNode }) {
 
                 // Add to timeline
                 setFocusTimeline(prev => [...prev, {
-                    timestamp: lastFocusEventTime,
+                    timestamp: lastFocusEventTimeRef.current,
                     type: timelineEventType,
                     duration
                 }])
@@ -312,12 +321,17 @@ export function LiveStudyProvider({ children }: { children: ReactNode }) {
                 }).catch(error => console.error('Error creating focus event:', error))
             }
 
+            // Update refs instead of state
+            lastFocusEventTimeRef.current = now
+            lastFocusStateRef.current = isCurrentlyFocused
+
+            // Update state for UI display purposes only
             setLastFocusEventTime(now)
             setLastFocusState(isCurrentlyFocused)
         }, 5000) // Track every 5 seconds
 
         return () => clearInterval(trackingInterval)
-    }, [isActive, user, sessionId, lastFocusEventTime, lastFocusState])
+    }, [isActive, user, sessionId]) // Only depends on these - interval never restarts
 
     // Distraction Handling: Tab Switching with ESCALATING warnings
     useEffect(() => {
@@ -455,44 +469,61 @@ export function LiveStudyProvider({ children }: { children: ReactNode }) {
         return () => clearTimeout(timeout)
     }, [faceResult.holdingPhone, isActive, stream, distractions.length, modelsLoaded])
 
-    const focusScore = sessionTime > 0
-        ? Math.round((focusTime / sessionTime) * 100)
-        : 100
-
-    // Calculate real-time focus metrics
-    const focusMetrics: FocusMetrics = {
+    // Calculate real-time focus metrics (memoized to prevent re-renders)
+    const focusMetrics = useMemo<FocusMetrics>(() => ({
         focusScore,
         currentStreak,
         longestStreak,
         distractionCount: distractions.length,
         totalFocusTime: focusTime,
         isFocused: currentStreak > 0
-    }
+    }), [focusScore, currentStreak, longestStreak, distractions.length, focusTime])
+
+    // Memoize provider value to prevent unnecessary re-renders
+    const value = useMemo<LiveStudyContextType>(() => ({
+        isActive,
+        setIsActive,
+        isMinimized,
+        setIsMinimized,
+        showLiveStudy,
+        setShowLiveStudy,
+        sessionTime,
+        focusScore,
+        distractions,
+        startSession,
+        stopSession,
+        videoRef,
+        stream,
+        faceResult,
+        modelsLoaded,
+        warningMessage,
+        focusMetrics,
+        showSessionReport,
+        setShowSessionReport,
+        sessionAnalytics,
+        unlockedAchievements
+    }), [
+        isActive,
+        isMinimized,
+        showLiveStudy,
+        sessionTime,
+        focusScore,
+        distractions,
+        startSession,
+        stopSession,
+        videoRef,
+        stream,
+        faceResult,
+        modelsLoaded,
+        warningMessage,
+        focusMetrics,
+        showSessionReport,
+        sessionAnalytics,
+        unlockedAchievements
+    ])
 
     return (
-        <LiveStudyContext.Provider value={{
-            isActive,
-            setIsActive,
-            isMinimized,
-            setIsMinimized,
-            showLiveStudy,
-            setShowLiveStudy,
-            sessionTime,
-            focusScore,
-            distractions,
-            startSession,
-            stopSession,
-            videoRef,
-            stream,
-            faceResult,
-            modelsLoaded,
-            warningMessage,
-            focusMetrics,
-            showSessionReport,
-            setShowSessionReport,
-            sessionAnalytics,
-            unlockedAchievements
-        }}>
+        <LiveStudyContext.Provider value={value}>
             {children}
         </LiveStudyContext.Provider>
     )
