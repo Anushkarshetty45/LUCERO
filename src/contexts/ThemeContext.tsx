@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { useSeason } from '../hooks/useSeason'
 import { supabase } from '../services/supabase'
@@ -228,13 +228,13 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     }
   }
 
-  const value: ThemeContextType = {
+  const value = useMemo<ThemeContextType>(() => ({
     currentTheme,
     setTheme,
     particlesEnabled,
     setParticlesEnabled,
     isLoading,
-  }
+  }), [currentTheme, setTheme, particlesEnabled, setParticlesEnabled, isLoading])
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
 }
