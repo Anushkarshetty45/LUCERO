@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, ReactNode, useMemo } from 'react'
 import { useTimer } from '../hooks/useTimer'
 
 interface TimerContextType {
@@ -28,16 +28,16 @@ export function TimerProvider({ children }: TimerProviderProps) {
     const [isMinimized, setIsMinimized] = useState(false)
     const [showTimerModal, setShowTimerModal] = useState(false)
 
+    const value = useMemo<TimerContextType>(() => ({
+        timer,
+        isMinimized,
+        setIsMinimized,
+        showTimerModal,
+        setShowTimerModal
+    }), [timer, isMinimized, showTimerModal])
+
     return (
-        <TimerContext.Provider
-            value={{
-                timer,
-                isMinimized,
-                setIsMinimized,
-                showTimerModal,
-                setShowTimerModal
-            }}
-        >
+        <TimerContext.Provider value={value}>
             {children}
         </TimerContext.Provider>
     )
