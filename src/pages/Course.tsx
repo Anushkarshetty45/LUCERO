@@ -11,6 +11,7 @@ import './Course.css'
 import NotesModal from '../components/NotesModal'
 
 interface ChatMessage {
+  id: string
   role: 'user' | 'assistant'
   content: string
 }
@@ -111,10 +112,10 @@ export default function Course() {
     setChatInput('')
     setChatLoading(true)
 
-    // Add user message
+    // Add user message with unique ID
     const newMessages: ChatMessage[] = [
       ...chatMessages,
-      { role: 'user', content: userMessage }
+      { id: `user-${Date.now()}`, role: 'user', content: userMessage }
     ]
     setChatMessages(newMessages)
 
@@ -212,16 +213,16 @@ Be the tutor every student wishes they had - knowledgeable, patient, and genuine
       const data = await response.json()
       const aiResponse = data.candidates[0].content.parts[0].text
 
-      // Add AI response
+      // Add AI response with unique ID
       setChatMessages([
         ...newMessages,
-        { role: 'assistant', content: aiResponse }
+        { id: `assistant-${Date.now()}`, role: 'assistant', content: aiResponse }
       ])
     } catch (error: any) {
       console.error('Chat error:', error)
       setChatMessages([
         ...newMessages,
-        { role: 'assistant', content: 'Oops! I ran into a small hiccup. 😅 Could you try asking that again? I promise I\'m listening!' }
+        { id: `assistant-error-${Date.now()}`, role: 'assistant', content: 'Oops! I ran into a small hiccup. 😅 Could you try asking that again? I promise I\'m listening!' }
       ])
     } finally {
       setChatLoading(false)
@@ -481,8 +482,8 @@ Be the tutor every student wishes they had - knowledgeable, patient, and genuine
                     </p>
                   </div>
                 ) : (
-                  chatMessages.map((msg, idx) => (
-                    <div key={idx} className={`chat-message ${msg.role}`}>
+                  chatMessages.map((msg) => (
+                    <div key={msg.id} className={`chat-message ${msg.role}`}>
                       <div className="message-content">
                         {msg.role === 'assistant' ? (
                           <div dangerouslySetInnerHTML={{
