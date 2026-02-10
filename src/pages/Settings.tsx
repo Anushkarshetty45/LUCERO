@@ -520,26 +520,6 @@ export default function Settings() {
                 <option value="kn">ಕನ್ನಡ (Kannada)</option>
                 <option value="te">తెలుగు (Telugu)</option>
                 <option value="ta">தமிழ் (Tamil)</option>
-                <option value="ru">Русский (Russian)</option>
-                <option value="it">Italiano (Italian)</option>
-                <option value="nl">Nederlands (Dutch)</option>
-                <option value="pl">Polski (Polish)</option>
-                <option value="tr">Türkçe (Turkish)</option>
-                <option value="vi">Tiếng Việt (Vietnamese)</option>
-                <option value="th">ไทย (Thai)</option>
-                <option value="id">Bahasa Indonesia</option>
-                <option value="ms">Bahasa Melayu (Malay)</option>
-                <option value="sv">Svenska (Swedish)</option>
-                <option value="no">Norsk (Norwegian)</option>
-                <option value="da">Dansk (Danish)</option>
-                <option value="fi">Suomi (Finnish)</option>
-                <option value="cs">Čeština (Czech)</option>
-                <option value="el">Ελληνικά (Greek)</option>
-                <option value="he">עברית (Hebrew)</option>
-                <option value="uk">Українська (Ukrainian)</option>
-                <option value="ro">Română (Romanian)</option>
-                <option value="hu">Magyar (Hungarian)</option>
-                <option value="bg">Български (Bulgarian)</option>
               </select>
             </div>
 
