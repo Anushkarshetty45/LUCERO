@@ -12,10 +12,7 @@ import './Settings.css'
 interface UserSettings {
   id?: string
   user_id: string
-  notifications_enabled: boolean
   email_updates: boolean
-  dark_mode: boolean
-  study_reminders: boolean
   reminder_time: string
   auto_save_notes: boolean
   sound_effects: boolean
@@ -32,10 +29,7 @@ export default function Settings() {
   const { currentTheme, particlesEnabled, setParticlesEnabled } = useTheme()
   const { t, i18n } = useTranslation()
   const [showThemeModal, setShowThemeModal] = useState(false)
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true)
   const [emailUpdates, setEmailUpdates] = useState(true)
-  const [darkMode, setDarkMode] = useState(true)
-  const [studyReminders, setStudyReminders] = useState(false)
   const [reminderTime, setReminderTime] = useState('09:00')
   const [autoSaveNotes, setAutoSaveNotes] = useState(true)
   const [soundEffects, setSoundEffects] = useState(true)
@@ -69,13 +63,10 @@ export default function Settings() {
       }
 
       if (data) {
-        setNotificationsEnabled(data.notifications_enabled)
-        setEmailUpdates(data.email_updates)
-        setDarkMode(data.dark_mode)
-        setStudyReminders(data.study_reminders)
-        setReminderTime(data.reminder_time)
-        setAutoSaveNotes(data.auto_save_notes)
-        setSoundEffects(data.sound_effects)
+        setEmailUpdates(data.email_updates ?? true)
+        setReminderTime(data.reminder_time || '09:00')
+        setAutoSaveNotes(data.auto_save_notes ?? true)
+        setSoundEffects(data.sound_effects ?? true)
         const userLang = data.language || 'en'
         setLanguage(userLang)
         // Set i18n language
@@ -96,10 +87,7 @@ export default function Settings() {
 
       const settings: UserSettings = {
         user_id: user!.id,
-        notifications_enabled: notificationsEnabled,
         email_updates: emailUpdates,
-        dark_mode: darkMode,
-        study_reminders: studyReminders,
         reminder_time: reminderTime,
         auto_save_notes: autoSaveNotes,
         sound_effects: soundEffects,
@@ -420,20 +408,6 @@ export default function Settings() {
         <div className="settings-card">
           <div className="settings-section">
             <h2>{t('settings.preferences')}</h2>
-            <div className="setting-item">
-              <div className="setting-info">
-                <h3>{t('settings.notifications')}</h3>
-                <p>{t('settings.notificationsDesc')}</p>
-              </div>
-              <label className="toggle-switch">
-                <input
-                  type="checkbox"
-                  checked={notificationsEnabled}
-                  onChange={(e) => setNotificationsEnabled(e.target.checked)}
-                />
-                <span className="slider"></span>
-              </label>
-            </div>
 
             <div className="setting-item">
               <div className="setting-info">
@@ -452,33 +426,16 @@ export default function Settings() {
 
             <div className="setting-item">
               <div className="setting-info">
-                <h3>{t('settings.studyReminders')}</h3>
-                <p>{t('settings.studyRemindersDesc')}</p>
+                <h3>{t('settings.reminderTime')}</h3>
+                <p>{t('settings.reminderTimeDesc')}</p>
               </div>
-              <label className="toggle-switch">
-                <input
-                  type="checkbox"
-                  checked={studyReminders}
-                  onChange={(e) => setStudyReminders(e.target.checked)}
-                />
-                <span className="slider"></span>
-              </label>
+              <input
+                type="time"
+                value={reminderTime}
+                onChange={(e) => setReminderTime(e.target.value)}
+                className="time-input"
+              />
             </div>
-
-            {studyReminders && (
-              <div className="setting-item">
-                <div className="setting-info">
-                  <h3>{t('settings.reminderTime')}</h3>
-                  <p>{t('settings.reminderTimeDesc')}</p>
-                </div>
-                <input
-                  type="time"
-                  value={reminderTime}
-                  onChange={(e) => setReminderTime(e.target.value)}
-                  className="time-input"
-                />
-              </div>
-            )}
 
             <div className="setting-item">
               <div className="setting-info">
@@ -660,21 +617,6 @@ export default function Settings() {
 
           <div className="settings-section">
             <h2>{t('settings.appearance')}</h2>
-
-            <div className="setting-item">
-              <div className="setting-info">
-                <h3>{t('settings.darkMode')}</h3>
-                <p>{t('settings.darkModeDesc')}</p>
-              </div>
-              <label className="toggle-switch">
-                <input
-                  type="checkbox"
-                  checked={darkMode}
-                  onChange={(e) => setDarkMode(e.target.checked)}
-                />
-                <span className="slider"></span>
-              </label>
-            </div>
 
             <div className="setting-item">
               <div className="setting-info">

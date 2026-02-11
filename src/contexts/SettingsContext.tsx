@@ -3,10 +3,7 @@ import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../services/supabase'
 
 interface UserSettings {
-  notifications_enabled: boolean
   email_updates: boolean
-  dark_mode: boolean
-  study_reminders: boolean
   reminder_time: string
   auto_save_notes: boolean
   sound_effects: boolean
@@ -22,10 +19,7 @@ interface SettingsContextType {
 }
 
 const DEFAULT_SETTINGS: UserSettings = {
-  notifications_enabled: true,
   email_updates: true,
-  dark_mode: true,
-  study_reminders: false,
   reminder_time: '09:00',
   auto_save_notes: true,
   sound_effects: true,
@@ -78,10 +72,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
 
       if (data) {
         setSettings({
-          notifications_enabled: data.notifications_enabled ?? DEFAULT_SETTINGS.notifications_enabled,
           email_updates: data.email_updates ?? DEFAULT_SETTINGS.email_updates,
-          dark_mode: data.dark_mode ?? DEFAULT_SETTINGS.dark_mode,
-          study_reminders: data.study_reminders ?? DEFAULT_SETTINGS.study_reminders,
           reminder_time: data.reminder_time || DEFAULT_SETTINGS.reminder_time,
           auto_save_notes: data.auto_save_notes ?? DEFAULT_SETTINGS.auto_save_notes,
           sound_effects: data.sound_effects ?? DEFAULT_SETTINGS.sound_effects,
