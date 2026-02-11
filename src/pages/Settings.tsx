@@ -437,6 +437,21 @@ export default function Settings() {
 
             <div className="setting-item">
               <div className="setting-info">
+                <h3>{t('settings.emailUpdates')}</h3>
+                <p>{t('settings.emailUpdatesDesc')}</p>
+              </div>
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={emailUpdates}
+                  onChange={(e) => setEmailUpdates(e.target.checked)}
+                />
+                <span className="slider"></span>
+              </label>
+            </div>
+
+            <div className="setting-item">
+              <div className="setting-info">
                 <h3>{t('settings.studyReminders')}</h3>
                 <p>{t('settings.studyRemindersDesc')}</p>
               </div>
@@ -503,7 +518,10 @@ export default function Settings() {
               <select
                 value={language}
                 onChange={(e) => {
-                  setLanguage(e.target.value)
+                  const newLang = e.target.value
+                  setLanguage(newLang)
+                  // Apply language change immediately
+                  i18n.changeLanguage(newLang)
                 }}
                 className="setting-select"
               >
@@ -642,6 +660,21 @@ export default function Settings() {
 
           <div className="settings-section">
             <h2>{t('settings.appearance')}</h2>
+
+            <div className="setting-item">
+              <div className="setting-info">
+                <h3>{t('settings.darkMode')}</h3>
+                <p>{t('settings.darkModeDesc')}</p>
+              </div>
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={darkMode}
+                  onChange={(e) => setDarkMode(e.target.checked)}
+                />
+                <span className="slider"></span>
+              </label>
+            </div>
 
             <div className="setting-item">
               <div className="setting-info">
