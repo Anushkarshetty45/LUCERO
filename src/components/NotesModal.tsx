@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getAllUserNotes, createUserNote, updateUserNote, deleteUserNote } from '../services/api'
 import { UserNote } from '../types'
+import { useSettings } from '../contexts/SettingsContext'
+import { useAutoSave } from '../hooks/useAutoSave'
 import './NotesModal.css'
 
 interface NotesModalProps {
@@ -15,6 +17,7 @@ type View = 'menu' | 'list' | 'create' | 'edit'
 
 export default function NotesModal({ userId, courseId, courseTitle, onClose }: NotesModalProps) {
   const { t } = useTranslation()
+  const { settings } = useSettings()
   const [view, setView] = useState<View>('menu')
   const [notes, setNotes] = useState<UserNote[]>([])
   const [currentNote, setCurrentNote] = useState<UserNote | null>(null)
@@ -83,6 +86,27 @@ export default function NotesModal({ userId, courseId, courseTitle, onClose }: N
       setSaving(false)
     }
   }
+
+  const handleAutoSave = async () => {
+    if (!currentNote || !content.trim()) {
+      return
+    }
+
+    try {
+      await updateUserNote(currentNote.id, content)
+      // Update the current note's timestamp
+      if (currentNote) {
+        setCurrentNote({ ...currentNote, updated_at: new Date().toISOString() })
+      }
+    } catch (error) {
+      console.error('Error auto-saving note:', error)
+    }
+  }
+
+  const { triggerAutoSave, isSaving: isAutoSaving, lastSaved, autoSaveEnabled } = useAutoSave({
+    onSave: handleAutoSave,
+    delay: 2000
+  })
 
   const handleEditNote = (note: UserNote) => {
     setCurrentNote(note)
@@ -172,7 +196,7 @@ export default function NotesModal({ userId, courseId, courseTitle, onClose }: N
                           <button onClick={() => handleDeleteNote(note.id)}>{t('notesModal.delete')}</button>
                         </div>
                       </div>
-                      <p className="note-preview">{note.content.substring(0, 100)}...</p>
+                      <p className={`note-preview font-${settings.note_font_size}`}>{note.content.substring(0, 100)}...</p>
                       <p className="note-date">{t('notesModal.lastUpdated')} {new Date(note.updated_at).toLocaleDateString()}</p>
                     </div>
                   ))}
@@ -210,7 +234,7 @@ export default function NotesModal({ userId, courseId, courseTitle, onClose }: N
               <div className="form-group">
                 <label>{t('notesModal.yourNotes')}</label>
                 <textarea
-                  className="notes-textarea"
+                  className={`notes-textarea font-${settings.note_font_size}`}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder={t('notesModal.notesPlaceholder')}
@@ -244,15 +268,24 @@ export default function NotesModal({ userId, courseId, courseTitle, onClose }: N
             </div>
             <div className="notes-body">
               <textarea
-                className="notes-textarea"
+                className={`notes-textarea font-${settings.note_font_size}`}
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={(e) => {
+                  setContent(e.target.value)
+                  triggerAutoSave()
+                }}
                 placeholder={t('notesModal.notesPlaceholder')}
               />
             </div>
             <div className="notes-footer">
               <div className="last-saved">
-                {t('notesModal.lastSaved')} {new Date(currentNote.updated_at).toLocaleString()}
+                {isAutoSaving && autoSaveEnabled ? (
+                  <>{t('notesModal.autoSaving')}</>
+                ) : lastSaved && autoSaveEnabled ? (
+                  <>{t('notesModal.autoSaved')} {lastSaved.toLocaleTimeString()}</>
+                ) : (
+                  <>{t('notesModal.lastSaved')} {new Date(currentNote.updated_at).toLocaleString()}</>
+                )}
               </div>
               <div className="notes-actions">
                 <button className="btn-secondary" onClick={() => setView('list')}>

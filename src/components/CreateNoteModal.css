@@ -63,6 +63,18 @@
   line-height: 1.6;
 }
 
+.create-note-modal .form-group textarea.font-small {
+  font-size: 13px;
+}
+
+.create-note-modal .form-group textarea.font-medium {
+  font-size: 15px;
+}
+
+.create-note-modal .form-group textarea.font-large {
+  font-size: 17px;
+}
+
 .create-note-modal .hint {
   display: block;
   margin-top: 6px;

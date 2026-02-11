@@ -226,6 +226,30 @@
   color: var(--text-primary);
 }
 
+.notes-textarea.font-small {
+  font-size: 13px;
+}
+
+.notes-textarea.font-medium {
+  font-size: 15px;
+}
+
+.notes-textarea.font-large {
+  font-size: 17px;
+}
+
+.note-preview.font-small {
+  font-size: 12px;
+}
+
+.note-preview.font-medium {
+  font-size: 14px;
+}
+
+.note-preview.font-large {
+  font-size: 16px;
+}
+
 .notes-textarea:focus {
   outline: none;
   border-color: var(--accent-primary);

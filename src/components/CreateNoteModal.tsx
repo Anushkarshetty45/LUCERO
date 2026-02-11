@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../services/supabase'
 import { Course } from '../types'
+import { useSettings } from '../contexts/SettingsContext'
 import './CreateNoteModal.css'
 
 interface CreateNoteModalProps {
@@ -12,6 +13,7 @@ interface CreateNoteModalProps {
 
 export default function CreateNoteModal({ userId, onClose, onNoteCreated }: CreateNoteModalProps) {
   const { t } = useTranslation()
+  const { settings } = useSettings()
   const [courses, setCourses] = useState<Course[]>([])
   const [selectedCourseId, setSelectedCourseId] = useState('')
   const [topic, setTopic] = useState('')
@@ -121,6 +123,7 @@ export default function CreateNoteModal({ userId, onClose, onNoteCreated }: Crea
               <label htmlFor="content">{t('createNote.content')}</label>
               <textarea
                 id="content"
+                className={`font-${settings.note_font_size}`}
                 placeholder={t('createNote.contentPlaceholder')}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}

@@ -233,6 +233,30 @@
   transition: all 0.2s;
 }
 
+.note-editor-textarea.font-small {
+  font-size: 13px;
+}
+
+.note-editor-textarea.font-medium {
+  font-size: 15px;
+}
+
+.note-editor-textarea.font-large {
+  font-size: 17px;
+}
+
+.note-card-preview.font-small {
+  font-size: 12px;
+}
+
+.note-card-preview.font-medium {
+  font-size: 14px;
+}
+
+.note-card-preview.font-large {
+  font-size: 16px;
+}
+
 .note-editor-textarea:focus {
   outline: none;
   border-color: var(--accent-primary);

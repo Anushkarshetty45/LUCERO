@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../services/supabase'
 import { UserNote } from '../types'
+import { useSettings } from '../contexts/SettingsContext'
+import { useAutoSave } from '../hooks/useAutoSave'
 import CreateNoteModal from './CreateNoteModal'
 import './AllNotesModal.css'
 
@@ -13,6 +15,7 @@ interface AllNotesModalProps {
 
 export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesModalProps) {
   const { t } = useTranslation()
+  const { settings } = useSettings()
   const [notes, setNotes] = useState<(UserNote & { course_title?: string })[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -126,6 +129,38 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
     }
   }
 
+  const handleAutoSave = async () => {
+    if (!selectedNote || !noteContent.trim()) {
+      return
+    }
+
+    try {
+      const { error } = await supabase
+        .from('user_notes')
+        .update({ content: noteContent, updated_at: new Date().toISOString() })
+        .eq('id', selectedNote.id)
+
+      if (error) throw error
+
+      // Update the note in the local state
+      setNotes(notes.map(n =>
+        n.id === selectedNote.id
+          ? { ...n, content: noteContent, updated_at: new Date().toISOString() }
+          : n
+      ))
+
+      // Update selected note timestamp
+      setSelectedNote({ ...selectedNote, updated_at: new Date().toISOString() })
+    } catch (error) {
+      console.error('Error auto-saving note:', error)
+    }
+  }
+
+  const { triggerAutoSave, isSaving: isAutoSaving, lastSaved, autoSaveEnabled } = useAutoSave({
+    onSave: handleAutoSave,
+    delay: 2000
+  })
+
   const handleBackToList = () => {
     setSelectedNote(null)
     setNoteContent('')
@@ -162,14 +197,23 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
                 </div>
               </div>
               <textarea
-                className="note-editor-textarea"
+                className={`note-editor-textarea font-${settings.note_font_size}`}
                 value={noteContent}
-                onChange={(e) => setNoteContent(e.target.value)}
+                onChange={(e) => {
+                  setNoteContent(e.target.value)
+                  triggerAutoSave()
+                }}
                 placeholder={t('notes.notesPlaceholder')}
               />
               <div className="note-editor-footer">
                 <span className="last-saved">
-                  {t('notes.lastSaved')}: {new Date(selectedNote.updated_at).toLocaleString()}
+                  {isAutoSaving && autoSaveEnabled ? (
+                    <>{t('notes.autoSaving')}</>
+                  ) : lastSaved && autoSaveEnabled ? (
+                    <>{t('notes.autoSaved')} {lastSaved.toLocaleTimeString()}</>
+                  ) : (
+                    <>{t('notes.lastSaved')}: {new Date(selectedNote.updated_at).toLocaleString()}</>
+                  )}
                 </span>
                 <div className="note-editor-actions">
                   <button
@@ -220,7 +264,7 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
                         <h3>{note.topic}</h3>
                         <span className="course-badge">{note.course_title}</span>
                       </div>
-                      <div className="note-card-preview">
+                      <div className={`note-card-preview font-${settings.note_font_size}`}>
                         {note.content.slice(0, 150)}...
                       </div>
                       <div className="note-card-footer">
