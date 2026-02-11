@@ -3,6 +3,7 @@ import { useAuth } from './hooks/useAuth'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { TimerProvider } from './contexts/TimerContext'
 import { LiveStudyProvider } from './contexts/LiveStudyContext'
+import { SettingsProvider } from './contexts/SettingsContext'
 import ParticleSystem from './components/BackgroundParticles/ParticleSystem'
 import LoadingScreen from './components/LoadingScreen'
 import Auth from './pages/Auth'
@@ -32,10 +33,11 @@ function App() {
 
   return (
     <ThemeProvider>
-      <ParticleSystem />
-      <BrowserRouter>
-        <TimerProvider>
-          <LiveStudyProvider>
+      <SettingsProvider>
+        <ParticleSystem />
+        <BrowserRouter>
+          <TimerProvider>
+            <LiveStudyProvider>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route
@@ -70,6 +72,7 @@ function App() {
           </LiveStudyProvider>
         </TimerProvider>
       </BrowserRouter>
+      </SettingsProvider>
     </ThemeProvider>
   )
 }
