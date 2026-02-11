@@ -4,6 +4,7 @@ import { getAllUserNotes, createUserNote, updateUserNote, deleteUserNote } from 
 import { UserNote } from '../types'
 import { useSettings } from '../contexts/SettingsContext'
 import { useAutoSave } from '../hooks/useAutoSave'
+import { useSoundEffects } from '../hooks/useSoundEffects'
 import './NotesModal.css'
 
 interface NotesModalProps {
@@ -18,6 +19,7 @@ type View = 'menu' | 'list' | 'create' | 'edit'
 export default function NotesModal({ userId, courseId, courseTitle, onClose }: NotesModalProps) {
   const { t } = useTranslation()
   const { settings } = useSettings()
+  const { playSuccess, playError } = useSoundEffects()
   const [view, setView] = useState<View>('menu')
   const [notes, setNotes] = useState<UserNote[]>([])
   const [currentNote, setCurrentNote] = useState<UserNote | null>(null)
@@ -47,6 +49,7 @@ export default function NotesModal({ userId, courseId, courseTitle, onClose }: N
 
   const handleCreateNote = async () => {
     if (!newTopic.trim() || !content.trim()) {
+      playError()
       alert(t('notesModal.errorBothFields'))
       return
     }
@@ -54,12 +57,14 @@ export default function NotesModal({ userId, courseId, courseTitle, onClose }: N
     setSaving(true)
     try {
       await createUserNote(userId, courseId, newTopic, content)
+      playSuccess()
       alert(t('notesModal.successCreate'))
       setView('menu')
       setNewTopic('')
       setContent('')
     } catch (error) {
       console.error('Error creating note:', error)
+      playError()
       alert(t('notesModal.errorCreate'))
     } finally {
       setSaving(false)
@@ -68,6 +73,7 @@ export default function NotesModal({ userId, courseId, courseTitle, onClose }: N
 
   const handleUpdateNote = async () => {
     if (!currentNote || !content.trim()) {
+      playError()
       alert(t('notesModal.errorContent'))
       return
     }
@@ -75,12 +81,14 @@ export default function NotesModal({ userId, courseId, courseTitle, onClose }: N
     setSaving(true)
     try {
       await updateUserNote(currentNote.id, content)
+      playSuccess()
       alert(t('notesModal.successUpdate'))
       setView('list')
       setCurrentNote(null)
       setContent('')
     } catch (error) {
       console.error('Error updating note:', error)
+      playError()
       alert(t('notesModal.errorUpdate'))
     } finally {
       setSaving(false)
@@ -119,9 +127,11 @@ export default function NotesModal({ userId, courseId, courseTitle, onClose }: N
 
     try {
       await deleteUserNote(noteId)
+      playSuccess()
       loadNotes()
     } catch (error) {
       console.error('Error deleting note:', error)
+      playError()
       alert(t('notesModal.errorDelete'))
     }
   }

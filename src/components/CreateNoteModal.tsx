@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { supabase } from '../services/supabase'
 import { Course } from '../types'
 import { useSettings } from '../contexts/SettingsContext'
+import { useSoundEffects } from '../hooks/useSoundEffects'
 import './CreateNoteModal.css'
 
 interface CreateNoteModalProps {
@@ -14,6 +15,7 @@ interface CreateNoteModalProps {
 export default function CreateNoteModal({ userId, onClose, onNoteCreated }: CreateNoteModalProps) {
   const { t } = useTranslation()
   const { settings } = useSettings()
+  const { playSuccess, playError } = useSoundEffects()
   const [courses, setCourses] = useState<Course[]>([])
   const [selectedCourseId, setSelectedCourseId] = useState('')
   const [topic, setTopic] = useState('')
@@ -46,6 +48,7 @@ export default function CreateNoteModal({ userId, onClose, onNoteCreated }: Crea
     setError('')
 
     if (!selectedCourseId || !topic.trim() || !content.trim()) {
+      playError()
       setError(t('createNote.errorAllFields'))
       return
     }
@@ -63,10 +66,12 @@ export default function CreateNoteModal({ userId, onClose, onNoteCreated }: Crea
 
       if (error) throw error
 
+      playSuccess()
       onNoteCreated()
       onClose()
     } catch (err) {
       console.error('Error creating note:', err)
+      playError()
       setError(t('createNote.errorFailed'))
     } finally {
       setLoading(false)

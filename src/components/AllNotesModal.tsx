@@ -4,6 +4,7 @@ import { supabase } from '../services/supabase'
 import { UserNote } from '../types'
 import { useSettings } from '../contexts/SettingsContext'
 import { useAutoSave } from '../hooks/useAutoSave'
+import { useSoundEffects } from '../hooks/useSoundEffects'
 import CreateNoteModal from './CreateNoteModal'
 import './AllNotesModal.css'
 
@@ -16,6 +17,7 @@ interface AllNotesModalProps {
 export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesModalProps) {
   const { t } = useTranslation()
   const { settings } = useSettings()
+  const { playSuccess, playError } = useSoundEffects()
   const [notes, setNotes] = useState<(UserNote & { course_title?: string })[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -84,9 +86,11 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
 
       if (error) throw error
 
+      playSuccess()
       setNotes(notes.filter(n => n.id !== noteId))
     } catch (error) {
       console.error('Error deleting note:', error)
+      playError()
       alert(t('notes.errorDelete'))
     }
   }
@@ -112,6 +116,7 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
 
       if (error) throw error
 
+      playSuccess()
       // Update the note in the local state
       setNotes(notes.map(n =>
         n.id === selectedNote.id
@@ -123,6 +128,7 @@ export default function AllNotesModal({ userId, onClose, onOpenNote }: AllNotesM
       setNoteContent('')
     } catch (error) {
       console.error('Error saving note:', error)
+      playError()
       alert(t('notes.errorSave'))
     } finally {
       setIsSaving(false)
