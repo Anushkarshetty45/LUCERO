@@ -10,7 +10,7 @@ export function useAutoSave({ onSave, delay = 2000 }: UseAutoSaveOptions) {
   const { settings } = useSettings()
   const [isSaving, setIsSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
-  const saveTimeoutRef = useRef<NodeJS.Timeout>()
+  const saveTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   const triggerAutoSave = () => {
     // Only auto-save if the setting is enabled
