@@ -14,9 +14,9 @@ CREATE TABLE IF NOT EXISTS topic_chats (
 );
 
 -- Indexes for better query performance
-CREATE INDEX idx_topic_chats_user ON topic_chats(user_id);
-CREATE INDEX idx_topic_chats_course ON topic_chats(course_id);
-CREATE INDEX idx_topic_chats_created ON topic_chats(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_topic_chats_user ON topic_chats(user_id);
+CREATE INDEX IF NOT EXISTS idx_topic_chats_course ON topic_chats(course_id);
+CREATE INDEX IF NOT EXISTS idx_topic_chats_created ON topic_chats(created_at DESC);
 
 -- ==================== TOPIC CHAT MESSAGES TABLE ====================
 -- Stores individual messages within each chat session
@@ -31,8 +31,8 @@ CREATE TABLE IF NOT EXISTS topic_chat_messages (
 );
 
 -- Indexes for better query performance
-CREATE INDEX idx_topic_chat_messages_chat ON topic_chat_messages(chat_id);
-CREATE INDEX idx_topic_chat_messages_timestamp ON topic_chat_messages(timestamp);
+CREATE INDEX IF NOT EXISTS idx_topic_chat_messages_chat ON topic_chat_messages(chat_id);
+CREATE INDEX IF NOT EXISTS idx_topic_chat_messages_timestamp ON topic_chat_messages(timestamp);
 
 -- ==================== ROW LEVEL SECURITY ====================
 
