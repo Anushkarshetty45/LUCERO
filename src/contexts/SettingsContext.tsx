@@ -20,7 +20,7 @@ interface SettingsContextType {
 
 const DEFAULT_SETTINGS: UserSettings = {
   email_updates: true,
-  reminder_time: '09:00',
+  reminder_time: '06:30', // 12:00 PM IST = 06:30 UTC
   auto_save_notes: true,
   sound_effects: true,
   language: 'en',
