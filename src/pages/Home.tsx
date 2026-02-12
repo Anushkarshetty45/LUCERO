@@ -22,6 +22,7 @@ import {
   HiOutlineBookOpen,
   HiOutlineChartBarSquare
 } from 'react-icons/hi2'
+import { IoTimer as HiOutlineTimer } from 'react-icons/io5'
 
 // Particle Field Background
 function ParticleField({ count = 1500 }: { count?: number }) {
@@ -90,15 +91,20 @@ export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [isAnnual, setIsAnnual] = useState(true)
 
-  // Intersection Observer for scroll animations
+  // Intersection Observer for scroll animations - Optimized for faster loading
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('is-visible')
+          // Stop observing once animated to improve performance
+          observer.unobserve(entry.target)
         }
       })
-    }, { threshold: 0.1 })
+    }, {
+      threshold: 0,
+      rootMargin: '50px' // Trigger animations 50px before element enters viewport
+    })
 
     const hiddenElements = document.querySelectorAll('.animate-on-scroll')
     hiddenElements.forEach((el) => observer.observe(el))
@@ -115,7 +121,7 @@ export default function Home() {
   const faqs = [
     {
       question: "What are the limits of Lucero?",
-      answer: "The free plan includes 5 uploads and 30 AI chat messages per month. The Pro plan offers unlimited uploads, notes, exercises, and AI chat for just $4.99/month."
+      answer: "The free plan includes 5 courses, 5 PDF uploads, and 30 AI chat messages per month. The Pro plan offers unlimited courses, uploads, AI chat, and access to advanced features like Live Study, Group Study, and Golden Notes for just $4.99/month (or $59.99/year with 50% savings)."
     },
     {
       question: "How is Lucero AI different from other AI models?",
@@ -189,39 +195,40 @@ export default function Home() {
         {/* Features Section */}
         <section className="features-section">
           <div className="section-header">
-            <h2>Focus starts <br />with <span className="highlight-circle">structure</span></h2>
+            <h2>Everything you need <br />to <span className="highlight-circle">succeed</span></h2>
+            <p>All the tools to study smarter, stay focused, and ace your exams</p>
           </div>
 
           <div className="features-grid">
             <div className="feature-item animate-on-scroll delay-100">
               <div className="feature-icon"><HiOutlineDocumentText /></div>
               <h3>Smart Notes</h3>
-              <p>Auto-generated notes from your materials</p>
+              <p>Auto-generated notes from your PDFs and materials</p>
             </div>
             <div className="feature-item animate-on-scroll delay-200">
-              <div className="feature-icon"><HiOutlineQuestionMarkCircle /></div>
-              <h3>Quizzes</h3>
-              <p>Test yourself on your material</p>
+              <div className="feature-icon"><HiOutlineArrowUpTray /></div>
+              <h3>PDF Analyzer</h3>
+              <p>Upload PDFs and get instant analysis, mind maps & study plans</p>
             </div>
             <div className="feature-item animate-on-scroll delay-300">
-              <div className="feature-icon"><HiOutlineSquare3Stack3D /></div>
-              <h3>Flashcards</h3>
-              <p>Review key concepts</p>
+              <div className="feature-icon"><HiOutlineQuestionMarkCircle /></div>
+              <h3>Quizzes & Flashcards</h3>
+              <p>Practice questions and spaced repetition to remember more</p>
             </div>
             <div className="feature-item animate-on-scroll delay-100">
-              <div className="feature-icon"><HiOutlineChartBar /></div>
-              <h3>Progress Tracker</h3>
-              <p>See your performance over time</p>
+              <div className="feature-icon"><HiOutlineChatBubbleLeftRight /></div>
+              <h3>AI Tutor Chat</h3>
+              <p>Ask questions and get instant explanations</p>
             </div>
             <div className="feature-item animate-on-scroll delay-200">
-              <div className="feature-icon"><HiOutlineChatBubbleLeftRight /></div>
-              <h3>AI Chat</h3>
-              <p>Ask questions about your material</p>
+              <div className="feature-icon"><HiOutlineBolt /></div>
+              <h3>Live Study Mode</h3>
+              <p>Face detection & focus tracking with real-time analytics</p>
             </div>
             <div className="feature-item animate-on-scroll delay-300">
-              <div className="feature-icon"><HiOutlineUserGroup /></div>
-              <h3>Study Groups</h3>
-              <p>Share notes with classmates</p>
+              <div className="feature-icon"><HiOutlineChartBar /></div>
+              <h3>Progress Tracking</h3>
+              <p>Track study time, streaks & performance over time</p>
             </div>
           </div>
         </section>
@@ -454,8 +461,10 @@ export default function Home() {
               </div>
               <Link to="/auth?mode=register" className="pricing-button outline">Get started</Link>
               <ul className="features-list">
-                <li><span className="check-icon">✔</span> Access to all features</li>
-                <li><span className="check-icon">✔</span> Only 5 uploads and 30 AI chats per month</li>
+                <li><span className="check-icon">✔</span> 5 PDF uploads per month</li>
+                <li><span className="check-icon">✔</span> 30 AI chat messages per month</li>
+                <li><span className="check-icon">✔</span> Basic quizzes & flashcards</li>
+                <li><span className="check-icon">✔</span> Progress tracking & study timer</li>
               </ul>
             </div>
 
@@ -475,10 +484,13 @@ export default function Home() {
               </p>
               <Link to="/auth?mode=register" className="pricing-button solid">Get started</Link>
               <ul className="features-list">
-                <li><span className="check-icon">✔</span> Unlimited notes</li>
-                <li><span className="check-icon">✔</span> Unlimited exercises</li>
-                <li><span className="check-icon">✔</span> Unlimited uploads</li>
-                <li><span className="check-icon">✔</span> Unlimited AI chat</li>
+                <li><span className="check-icon">✔</span> Everything in Starter, plus:</li>
+                <li><span className="check-icon">✔</span> Unlimited uploads & AI chat</li>
+                <li><span className="check-icon">✔</span> Advanced PDF Analyzer</li>
+                <li><span className="check-icon">✔</span> Live Study Mode with face detection</li>
+                <li><span className="check-icon">✔</span> Group Study & Video Rooms</li>
+                <li><span className="check-icon">✔</span> Golden Note & Export features</li>
+                <li><span className="check-icon">✔</span> 15+ premium themes</li>
               </ul>
               <div className="card-illustration">
                 <img src="/lucero-new-logo.png" alt="Lucero Horse" className="horse-mascot-small" />
