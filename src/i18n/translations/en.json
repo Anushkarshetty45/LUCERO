@@ -74,7 +74,7 @@
     "notifications": "Notifications",
     "notificationsDesc": "Receive notifications about your study progress",
     "emailUpdates": "Daily Email Reminders",
-    "emailUpdatesDesc": "Receive daily motivational messages and progress updates via email",
+    "emailUpdatesDesc": "Receive daily motivational messages and progress updates via email automatically at 12:00 PM IST",
     "studyReminders": "Study Reminders",
     "studyRemindersDesc": "Get daily reminders to keep your study streak going",
     "reminderTime": "Daily Reminder Time",

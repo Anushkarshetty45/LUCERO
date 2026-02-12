@@ -12,8 +12,6 @@ import './Settings.css'
 interface UserSettings {
   id?: string
   user_id: string
-  email_updates: boolean
-  reminder_time: string
   auto_save_notes: boolean
   sound_effects: boolean
   language: string
@@ -29,8 +27,6 @@ export default function Settings() {
   const { currentTheme, particlesEnabled, setParticlesEnabled } = useTheme()
   const { t, i18n } = useTranslation()
   const [showThemeModal, setShowThemeModal] = useState(false)
-  const [emailUpdates, setEmailUpdates] = useState(true)
-  const [reminderTime, setReminderTime] = useState('09:00')
   const [autoSaveNotes, setAutoSaveNotes] = useState(true)
   const [soundEffects, setSoundEffects] = useState(true)
   const [language, setLanguage] = useState('en')
@@ -63,8 +59,6 @@ export default function Settings() {
       }
 
       if (data) {
-        setEmailUpdates(data.email_updates ?? true)
-        setReminderTime(data.reminder_time || '09:00')
         setAutoSaveNotes(data.auto_save_notes ?? true)
         setSoundEffects(data.sound_effects ?? true)
         const userLang = data.language || 'en'
@@ -87,8 +81,6 @@ export default function Settings() {
 
       const settings: UserSettings = {
         user_id: user!.id,
-        email_updates: emailUpdates,
-        reminder_time: reminderTime,
         auto_save_notes: autoSaveNotes,
         sound_effects: soundEffects,
         language: language,
@@ -408,34 +400,6 @@ export default function Settings() {
         <div className="settings-card">
           <div className="settings-section">
             <h2>{t('settings.preferences')}</h2>
-
-            <div className="setting-item">
-              <div className="setting-info">
-                <h3>{t('settings.emailUpdates')}</h3>
-                <p>{t('settings.emailUpdatesDesc')}</p>
-              </div>
-              <label className="toggle-switch">
-                <input
-                  type="checkbox"
-                  checked={emailUpdates}
-                  onChange={(e) => setEmailUpdates(e.target.checked)}
-                />
-                <span className="slider"></span>
-              </label>
-            </div>
-
-            <div className="setting-item">
-              <div className="setting-info">
-                <h3>{t('settings.reminderTime')}</h3>
-                <p>{t('settings.reminderTimeDesc')}</p>
-              </div>
-              <input
-                type="time"
-                value={reminderTime}
-                onChange={(e) => setReminderTime(e.target.value)}
-                className="time-input"
-              />
-            </div>
 
             <div className="setting-item">
               <div className="setting-info">

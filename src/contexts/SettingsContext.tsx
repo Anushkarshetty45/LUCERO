@@ -3,8 +3,6 @@ import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../services/supabase'
 
 interface UserSettings {
-  email_updates: boolean
-  reminder_time: string
   auto_save_notes: boolean
   sound_effects: boolean
   language: string
@@ -19,8 +17,6 @@ interface SettingsContextType {
 }
 
 const DEFAULT_SETTINGS: UserSettings = {
-  email_updates: true,
-  reminder_time: '06:30', // 12:00 PM IST = 06:30 UTC
   auto_save_notes: true,
   sound_effects: true,
   language: 'en',
@@ -72,8 +68,6 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
 
       if (data) {
         setSettings({
-          email_updates: data.email_updates ?? DEFAULT_SETTINGS.email_updates,
-          reminder_time: data.reminder_time || DEFAULT_SETTINGS.reminder_time,
           auto_save_notes: data.auto_save_notes ?? DEFAULT_SETTINGS.auto_save_notes,
           sound_effects: data.sound_effects ?? DEFAULT_SETTINGS.sound_effects,
           language: data.language || DEFAULT_SETTINGS.language,
