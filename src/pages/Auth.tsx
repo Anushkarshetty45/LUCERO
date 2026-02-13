@@ -7,6 +7,7 @@ import RegisterForm from '../components/auth/RegisterForm'
 export default function Auth() {
   const [searchParams] = useSearchParams()
   const mode = searchParams.get('mode')
+  const plan = searchParams.get('plan') as 'free' | 'pro' | null
   const [isLogin, setIsLogin] = useState(mode === 'login')
 
   useEffect(() => {
@@ -22,7 +23,7 @@ export default function Auth() {
       {isLogin ? (
         <LoginForm onToggle={() => setIsLogin(false)} />
       ) : (
-        <RegisterForm onToggle={() => setIsLogin(true)} />
+        <RegisterForm onToggle={() => setIsLogin(true)} selectedPlan={plan || 'free'} />
       )}
     </AuthLayout>
   )
