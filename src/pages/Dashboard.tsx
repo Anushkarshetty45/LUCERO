@@ -1,6 +1,7 @@
 // FORCE RECOMPILE - VERSION 2
 import { useEffect, useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
+import { useSubscription } from '../hooks/useSubscription'
 import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { getProfile, getCourses, getTodayStudyTime, getCourseWithProgress, recordDailyActivity, getUserStreak } from '../services/api'
@@ -41,6 +42,7 @@ export default function Dashboard() {
   // Use timer context for app-level timer state
   const { timer, setIsMinimized, showTimerModal, setShowTimerModal } = useTimerContext()
   const { setShowLiveStudy } = useLiveStudy()
+  const { limits } = useSubscription()
 
   // Enable study reminders
   const { testNotification } = useStudyReminder(user?.id)
@@ -102,6 +104,11 @@ export default function Dashboard() {
             last_name: user!.user_metadata?.last_name || '',
             full_name: user!.user_metadata?.full_name || user!.email?.split('@')[0] || 'User',
             avatar_url: user!.user_metadata?.avatar_url || '',
+            subscription_plan: 'free' as const,
+            subscription_status: 'active' as const,
+            monthly_pdf_uploads: 0,
+            monthly_ai_messages: 0,
+            usage_reset_date: new Date().toISOString(),
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           }
@@ -161,6 +168,38 @@ export default function Dashboard() {
     setIsMinimized(false)
   }
 
+  const handleLiveStudyClick = () => {
+    if (!limits.isPro) {
+      alert(
+        '📹 Live Study is a Pro Feature!\n\n' +
+        'Upgrade to Pro to access:\n' +
+        '• Live study sessions with webcam\n' +
+        '• Screen sharing\n' +
+        '• Focus tracking with AI\n' +
+        '• Session recordings\n\n' +
+        'Upgrade to Pro for just $4.99/month!'
+      )
+      return
+    }
+    setShowLiveStudy(true)
+  }
+
+  const handleGroupStudyClick = () => {
+    if (!limits.isPro) {
+      alert(
+        '🎥 Group Study is a Pro Feature!\n\n' +
+        'Upgrade to Pro to access:\n' +
+        '• Video calls with study groups\n' +
+        '• Screen sharing\n' +
+        '• Private study rooms\n' +
+        '• Meeting codes\n\n' +
+        'Upgrade to Pro for just $4.99/month!'
+      )
+      return
+    }
+    setShowGroupStudy(true)
+  }
+
   if (loading) {
     return (
       <div className="loading-screen">
@@ -215,11 +254,11 @@ export default function Dashboard() {
             <span className="nav-icon">📄</span>
             {t('nav.pdfAnalyzer')}
           </button>
-          <button className="sidebar-nav-item" onClick={() => setShowGroupStudy(true)}>
+          <button className="sidebar-nav-item" onClick={handleGroupStudyClick}>
             <span className="nav-icon">🎥</span>
             {t('nav.groupStudy')}
           </button>
-          <button className="sidebar-nav-item" onClick={() => setShowLiveStudy(true)}>
+          <button className="sidebar-nav-item" onClick={handleLiveStudyClick}>
             <span className="nav-icon">📹</span>
             {t('nav.liveStudy')}
           </button>
@@ -437,6 +476,7 @@ export default function Dashboard() {
         <CreateCourseModal
           onClose={() => setShowCreateModal(false)}
           onSuccess={handleCourseCreated}
+          currentCourseCount={courses.length}
         />
       )}
 
