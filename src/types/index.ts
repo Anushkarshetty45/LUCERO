@@ -1,3 +1,6 @@
+export type SubscriptionPlan = 'free' | 'pro'
+export type SubscriptionStatus = 'active' | 'cancelled' | 'expired'
+
 export interface Profile {
   id: string
   email: string
@@ -7,6 +10,13 @@ export interface Profile {
   avatar_url: string
   bio?: string
   location?: string
+  subscription_plan: SubscriptionPlan
+  subscription_status: SubscriptionStatus
+  subscription_started_at?: string
+  subscription_expires_at?: string
+  monthly_pdf_uploads: number
+  monthly_ai_messages: number
+  usage_reset_date: string
   created_at: string
   updated_at: string
 }
