@@ -459,7 +459,7 @@ export default function Home() {
                 <span className="amount">Free</span>
                 <span className="period">Forever</span>
               </div>
-              <Link to="/auth?mode=register" className="pricing-button outline">Get started</Link>
+              <Link to="/auth?mode=register&plan=free" className="pricing-button outline">Get started</Link>
               <ul className="features-list">
                 <li><span className="check-icon">✔</span> 5 PDF uploads per month</li>
                 <li><span className="check-icon">✔</span> 30 AI chat messages per month</li>
@@ -482,7 +482,7 @@ export default function Home() {
               <p className="billing-info">
                 {isAnnual ? '$59.99 billed annually' : '$9.99 billed monthly'}
               </p>
-              <Link to="/auth?mode=register" className="pricing-button solid">Get started</Link>
+              <Link to="/auth?mode=register&plan=pro" className="pricing-button solid">Get started</Link>
               <ul className="features-list">
                 <li><span className="check-icon">✔</span> Everything in Starter, plus:</li>
                 <li><span className="check-icon">✔</span> Unlimited uploads & AI chat</li>
