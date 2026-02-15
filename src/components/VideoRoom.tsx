@@ -85,40 +85,58 @@ export default function VideoRoom({ session, userId, onLeave, onClose }: VideoRo
             startInTileView: true,
             // Ensure participants can see each other
             disableModeratorIndicator: false,
-            // Video quality settings
-            resolution: 720,
+            // Optimized video quality settings for better performance and aspect ratio
+            resolution: 480,
             constraints: {
               video: {
+                aspectRatio: 16 / 9,
                 height: {
-                  ideal: 720,
-                  max: 1080,
-                  min: 240
+                  ideal: 480,
+                  max: 720,
+                  min: 180
+                },
+                width: {
+                  ideal: 640,
+                  max: 1280,
+                  min: 320
+                },
+                frameRate: {
+                  ideal: 24,
+                  max: 30
                 }
               }
             },
+            // Performance optimizations
+            disableAudioLevels: false,
+            enableLayerSuspension: true,
+            enableNoisyMicDetection: false,
+            p2p: {
+              enabled: true,
+              stunServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+              ]
+            },
+            // Better video quality control
+            videoQuality: {
+              maxBitratesVideo: {
+                low: 200000,
+                standard: 500000,
+                high: 1500000
+              }
+            },
+            // Simplified toolbar for better performance
             toolbarButtons: [
               'microphone',
               'camera',
-              'closedcaptions',
               'desktop',
               'fullscreen',
-              'fodeviceselection',
               'hangup',
-              'profile',
               'chat',
-              'recording',
-              'livestreaming',
-              'etherpad',
-              'sharedvideo',
               'settings',
               'raisehand',
-              'videoquality',
-              'filmstrip',
-              'participants-pane',
               'tileview',
-              'download',
-              'help',
-              'mute-everyone'
+              'participants-pane'
             ]
           },
           interfaceConfigOverwrite: {
@@ -127,13 +145,19 @@ export default function VideoRoom({ session, userId, onLeave, onClose }: VideoRo
             DEFAULT_BACKGROUND: '#030510',
             DISABLE_JOIN_LEAVE_NOTIFICATIONS: false,
             TOOLBAR_ALWAYS_VISIBLE: true,
-            // Grid view settings for better participant visibility
-            TILE_VIEW_MAX_COLUMNS: 4,
+            // Optimized grid view settings
+            TILE_VIEW_MAX_COLUMNS: 3,
             VERTICAL_FILMSTRIP: false,
-            // Ensure video is prominent
-            FILM_STRIP_MAX_HEIGHT: 120,
+            // Better video aspect ratio handling
+            FILM_STRIP_MAX_HEIGHT: 100,
+            VIDEO_LAYOUT_FIT: 'both',
+            // Longer toolbar timeout for less distraction
             INITIAL_TOOLBAR_TIMEOUT: 20000,
-            TOOLBAR_TIMEOUT: 4000
+            TOOLBAR_TIMEOUT: 5000,
+            // Disable animations for better performance
+            DISABLE_VIDEO_BACKGROUND: true,
+            // Better video quality
+            VIDEO_QUALITY_LABEL_DISABLED: false
           }
         }
 
