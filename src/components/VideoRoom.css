@@ -100,6 +100,20 @@
   left: 0;
 }
 
+/* Fix for Jitsi video aspect ratio and layout */
+.jitsi-container iframe {
+  width: 100% !important;
+  height: 100% !important;
+  border: none;
+}
+
+/* Ensure videos maintain proper aspect ratio */
+.jitsi-container video {
+  object-fit: contain !important;
+  max-width: 100%;
+  max-height: 100%;
+}
+
 .video-loading {
   position: absolute;
   top: 50%;
