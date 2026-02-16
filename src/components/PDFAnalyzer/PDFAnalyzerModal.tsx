@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../hooks/useAuth'
+import { useSubscription } from '../../hooks/useSubscription'
 import * as pdfjsLib from 'pdfjs-dist'
 import { uploadPDFToStorage, createPDFAnalysis } from '../../services/pdfAnalysisApi'
 import { recordDailyActivity } from '../../services/api'
@@ -24,6 +25,7 @@ type TabType = 'upload' | 'analysis' | 'history' | 'flashcards' | 'quiz' | 'mind
 export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
   const { t } = useTranslation()
   const { user } = useAuth()
+  const { limits, incrementUsage } = useSubscription()
   const [activeTab, setActiveTab] = useState<TabType>('upload')
   const [isMaximized, setIsMaximized] = useState(false)
 
@@ -136,6 +138,17 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
   const handleAnalyze = async () => {
     if (!file || !user) return
 
+    // Subscription limits temporarily disabled - all users have full access
+    // if (!limits.canUploadPDF) {
+    //   setError(
+    //     `📊 Upload Limit Reached!\n\n` +
+    //     `Free plan: 5 PDF uploads/month\n` +
+    //     `You've used all your uploads this month.\n\n` +
+    //     `Upgrade to Pro for unlimited uploads!`
+    //   )
+    //   return
+    // }
+
     setExtracting(true)
     setAnalyzing(false)
     setError('')
@@ -184,6 +197,9 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
       // Record PDF analysis activity for streak
       await recordDailyActivity(user.id, 'pdf_analysis')
 
+      // Subscription usage tracking temporarily disabled
+      // await incrementUsage('pdf_upload')
+
       // Auto-navigate to Analysis tab after successful analysis
       setActiveTab('analysis')
 
@@ -230,6 +246,22 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
               </div>
               <h3>{t('pdfAnalyzer.upload.title')}</h3>
               <p>{t('pdfAnalyzer.upload.description')}</p>
+
+              {/* Subscription limits temporarily disabled - usage counter hidden */}
+              {/* {!limits.isPro && (
+                <div style={{
+                  margin: '1rem 0',
+                  padding: '0.75rem',
+                  background: limits.canUploadPDF ? '#e3f2fd' : '#ffebee',
+                  borderRadius: '8px',
+                  fontSize: '0.9rem',
+                  color: limits.canUploadPDF ? '#1565c0' : '#c62828'
+                }}>
+                  📊 {limits.canUploadPDF
+                    ? `${limits.remainingPDFUploads} PDF uploads remaining this month`
+                    : 'Upload limit reached! Upgrade to Pro for unlimited uploads.'}
+                </div>
+              )} */}
 
               <button
                 className="btn-upload"
