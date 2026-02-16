@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSubscription } from '../hooks/useSubscription'
 import './ChatbotModal.css'
 
 interface Message {
@@ -97,6 +98,7 @@ const formatResponse = (text: string): string => {
 
 export default function ChatbotModal({ onClose }: ChatbotModalProps) {
     const { t } = useTranslation()
+    const { limits, incrementUsage } = useSubscription()
     const [messages, setMessages] = useState<Message[]>([
         {
             id: `assistant-welcome-${Date.now()}`,
@@ -126,6 +128,18 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
 
     const handleSend = async () => {
         if (!input.trim() || loading) return
+
+        // Subscription limits temporarily disabled - all users have full access
+        // if (!limits.canSendAIMessage) {
+        //     const errorMessage: Message = {
+        //         id: `assistant-limit-${Date.now()}`,
+        //         role: 'assistant',
+        //         content: `💬 Chat Limit Reached!\n\nFree plan: 30 AI messages/month\nYou've used all your messages this month.\n\nUpgrade to Pro for unlimited AI chat!`,
+        //         timestamp: new Date()
+        //     }
+        //     setMessages(prev => [...prev, errorMessage])
+        //     return
+        // }
 
         const userMessage: Message = {
             id: `user-${Date.now()}`,
@@ -218,6 +232,9 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
             }
 
             setMessages(prev => [...prev, assistantMessage])
+
+            // Subscription usage tracking temporarily disabled
+            // await incrementUsage('ai_message')
         } catch (error: any) {
             console.error('❌ Error getting AI response:', error)
 
