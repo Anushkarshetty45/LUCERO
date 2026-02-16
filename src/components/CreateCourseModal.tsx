@@ -1,17 +1,20 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../hooks/useAuth'
+import { useSubscription } from '../hooks/useSubscription'
 import { createCourse } from '../services/api'
 import './CreateCourseModal.css'
 
 interface CreateCourseModalProps {
   onClose: () => void
   onSuccess: () => void
+  currentCourseCount: number
 }
 
-export default function CreateCourseModal({ onClose, onSuccess }: CreateCourseModalProps) {
+export default function CreateCourseModal({ onClose, onSuccess, currentCourseCount }: CreateCourseModalProps) {
   const { t } = useTranslation()
   const { user } = useAuth()
+  const { limits } = useSubscription()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [subject, setSubject] = useState('')
@@ -26,6 +29,17 @@ export default function CreateCourseModal({ onClose, onSuccess }: CreateCourseMo
       setError(t('createCourse.errorTitleRequired'))
       return
     }
+
+    // Subscription limits temporarily disabled - all users have full access
+    // if (!limits.isPro && currentCourseCount >= 5) {
+    //   setError(
+    //     '📚 Course Limit Reached!\n\n' +
+    //     'Free plan: 5 courses maximum\n' +
+    //     `You currently have ${currentCourseCount} courses.\n\n` +
+    //     'Upgrade to Pro for unlimited courses!'
+    //   )
+    //   return
+    // }
 
     setLoading(true)
     setError('')
