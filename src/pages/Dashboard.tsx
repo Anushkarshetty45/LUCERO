@@ -169,34 +169,36 @@ export default function Dashboard() {
   }
 
   const handleLiveStudyClick = () => {
-    if (!limits.isPro) {
-      alert(
-        '📹 Live Study is a Pro Feature!\n\n' +
-        'Upgrade to Pro to access:\n' +
-        '• Live study sessions with webcam\n' +
-        '• Screen sharing\n' +
-        '• Focus tracking with AI\n' +
-        '• Session recordings\n\n' +
-        'Upgrade to Pro for just $4.99/month!'
-      )
-      return
-    }
+    // Subscription limits temporarily disabled - all users have full access
+    // if (!limits.isPro) {
+    //   alert(
+    //     '📹 Live Study is a Pro Feature!\n\n' +
+    //     'Upgrade to Pro to access:\n' +
+    //     '• Live study sessions with webcam\n' +
+    //     '• Screen sharing\n' +
+    //     '• Focus tracking with AI\n' +
+    //     '• Session recordings\n\n' +
+    //     'Upgrade to Pro for just $4.99/month!'
+    //   )
+    //   return
+    // }
     setShowLiveStudy(true)
   }
 
   const handleGroupStudyClick = () => {
-    if (!limits.isPro) {
-      alert(
-        '🎥 Group Study is a Pro Feature!\n\n' +
-        'Upgrade to Pro to access:\n' +
-        '• Video calls with study groups\n' +
-        '• Screen sharing\n' +
-        '• Private study rooms\n' +
-        '• Meeting codes\n\n' +
-        'Upgrade to Pro for just $4.99/month!'
-      )
-      return
-    }
+    // Subscription limits temporarily disabled - all users have full access
+    // if (!limits.isPro) {
+    //   alert(
+    //     '🎥 Group Study is a Pro Feature!\n\n' +
+    //     'Upgrade to Pro to access:\n' +
+    //     '• Video calls with study groups\n' +
+    //     '• Screen sharing\n' +
+    //     '• Private study rooms\n' +
+    //     '• Meeting codes\n\n' +
+    //     'Upgrade to Pro for just $4.99/month!'
+    //   )
+    //   return
+    // }
     setShowGroupStudy(true)
   }
 
