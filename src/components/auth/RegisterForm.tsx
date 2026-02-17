@@ -3,7 +3,12 @@ import { supabase } from '../../services/supabase'
 
 import './AuthForms.css'
 
-export default function RegisterForm({ onToggle }: { onToggle: () => void }) {
+interface RegisterFormProps {
+  onToggle: () => void
+  selectedPlan: 'free' | 'pro'
+}
+
+export default function RegisterForm({ onToggle, selectedPlan }: RegisterFormProps) {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
@@ -62,7 +67,8 @@ export default function RegisterForm({ onToggle }: { onToggle: () => void }) {
           data: {
             first_name: firstName,
             last_name: lastName,
-            full_name: `${firstName} ${lastName}`
+            full_name: `${firstName} ${lastName}`,
+            subscription_plan: selectedPlan
           },
           emailRedirectTo: `${window.location.origin}/dashboard`
         }
