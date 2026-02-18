@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useSubscription } from '../hooks/useSubscription'
 import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { getProfile, getCourses, getTodayStudyTime, getCourseWithProgress, recordDailyActivity, getUserStreak } from '../services/api'
+import { getProfile, getCourses, getTodayStudyTime, getCourseWithProgress, recordDailyActivity } from '../services/api'
 import { Profile, CourseWithProgress } from '../types'
 import { getGreeting, formatTime, getMotivationalQuote } from '../utils/helpers'
 import CreateCourseModal from '../components/CreateCourseModal'
@@ -18,7 +18,7 @@ import GroupStudyModal from '../components/GroupStudyModal'
 import { useTimerContext } from '../contexts/TimerContext'
 import { useLiveStudy } from '../contexts/LiveStudyContext'
 import { useStudyReminder } from '../hooks/useStudyReminder'
-import { IoBookSharp, IoFlame, IoTimer } from 'react-icons/io5'
+import { IoBookSharp, IoTimer } from 'react-icons/io5'
 import './Dashboard.css'
 
 export default function Dashboard() {
@@ -35,7 +35,6 @@ export default function Dashboard() {
   const [showPDFAnalyzer, setShowPDFAnalyzer] = useState(false)
   const [showFlashcards, setShowFlashcards] = useState(false)
   const [showGroupStudy, setShowGroupStudy] = useState(false)
-  const [streak, setStreak] = useState(0)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
   const [showMigrationWarning, setShowMigrationWarning] = useState(false)
 
@@ -62,6 +61,20 @@ export default function Dashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
+  // Refresh study time every 60 seconds to pick up timer sessions
+  useEffect(() => {
+    if (!user) return
+    const interval = setInterval(async () => {
+      try {
+        const studyTime = await getTodayStudyTime(user.id)
+        setTodayStudyTime(studyTime)
+      } catch (err) {
+        // Silently ignore refresh errors
+      }
+    }, 60000)
+    return () => clearInterval(interval)
+  }, [user])
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -79,24 +92,19 @@ export default function Dashboard() {
 
   const loadDashboardData = async () => {
     try {
-      // Record daily login activity FIRST - check if migration is needed
-      try {
-        await recordDailyActivity(user!.id, 'login')
-      } catch (activityError: any) {
-        // Check if error is due to missing table
+      // Fire-and-forget: record login activity without blocking the UI
+      recordDailyActivity(user!.id, 'login').catch((activityError: any) => {
         if (activityError?.message?.includes('daily_activities') ||
             activityError?.code === '42P01') {
           setShowMigrationWarning(true)
-          console.error('⚠️ Database migration needed! Please run the migration in Supabase.')
         }
-      }
+      })
 
       // Parallelize all independent API calls for faster loading
-      const [profileResult, coursesData, studyTime, streakData] = await Promise.all([
+      const [profileResult, coursesData, studyTime] = await Promise.all([
         // Load profile with fallback
         getProfile(user!.id).catch((error) => {
           console.error('⚠️ Profile load error:', error)
-          // Use data from auth user as fallback
           return {
             id: user!.id,
             email: user!.email || '',
@@ -116,25 +124,38 @@ export default function Dashboard() {
         // Load courses
         getCourses(user!.id),
         // Load today's study time
-        getTodayStudyTime(user!.id).catch(() => 0),
-        // Get user streak (updated by recordDailyActivity above)
-        getUserStreak(user!.id).catch(() => ({ current: 0, longest: 0 }))
+        getTodayStudyTime(user!.id).catch(() => 0)
       ])
-
-      console.log('📋 Profile loaded:', profileResult)
 
       setProfile(profileResult)
       setTodayStudyTime(studyTime)
-      setStreak(streakData.current)
 
-      // Hide loading screen early to show UI faster
+      // Show courses immediately with basic data (no spinner waiting for progress)
+      setCourses(coursesData.map(course => ({ ...course, total_lessons: 0, last_accessed: null })))
+
+      // Hide loading screen early
       setLoading(false)
 
-      // Load progress for each course in background (progressive loading)
-      const coursesWithProgress = await Promise.all(
-        coursesData.map(course => getCourseWithProgress(course.id, user!.id))
-      )
-      setCourses(coursesWithProgress)
+      // Load all course lesson counts in ONE batch query (not N separate queries)
+      if (coursesData.length > 0) {
+        const courseIds = coursesData.map(c => c.id)
+        const { data: allLessons } = await supabase
+          .from('lessons')
+          .select('id, course_id')
+          .in('course_id', courseIds)
+
+        // Count lessons per course in memory
+        const lessonCountMap: Record<string, number> = {}
+        allLessons?.forEach(lesson => {
+          lessonCountMap[lesson.course_id] = (lessonCountMap[lesson.course_id] || 0) + 1
+        })
+
+        setCourses(coursesData.map(course => ({
+          ...course,
+          total_lessons: lessonCountMap[course.id] || 0,
+          last_accessed: (course as any).last_accessed || null
+        })))
+      }
 
     } catch (error) {
       console.error('Error loading dashboard:', error)
@@ -348,9 +369,6 @@ export default function Dashboard() {
               <h2>{greeting}</h2>
               <p>{quote}</p>
             </div>
-            <div className="streak-badge">
-              {t('dashboard.dayStreakLabel', { count: streak })}
-            </div>
           </div>
 
           {/* Quick Stats */}
@@ -360,14 +378,6 @@ export default function Dashboard() {
               <div className="stat-content">
                 <h3>{totalCourses}</h3>
                 <p>{t('dashboard.totalCourses')}</p>
-              </div>
-            </div>
-
-            <div className="stat-card">
-              <div className="stat-icon"><IoFlame /></div>
-              <div className="stat-content">
-                <h3>{streak}</h3>
-                <p>{t('dashboard.dayStreak')}</p>
               </div>
             </div>
 
