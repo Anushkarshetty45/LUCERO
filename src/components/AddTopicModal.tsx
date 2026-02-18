@@ -34,109 +34,42 @@ export default function AddTopicModal({
       throw new Error(t('addTopic.errorNoApiKey'))
     }
 
-    const prompt = `You are a world-class educator and subject matter expert. Create EXTREMELY DETAILED, COMPREHENSIVE study notes about "${topic}" for a "${courseSubject}" course titled "${courseTitle}".
-
-REQUIREMENTS:
-- Length: Minimum 1500-2000 words
-- Depth: Explain as if teaching a complete beginner AND providing advanced insights
-- Organization: Use clear hierarchical structure with multiple levels of headings
-- Examples: Provide multiple real-world examples for every concept
-
-STRUCTURE YOUR RESPONSE AS FOLLOWS:
+    const prompt = `Create comprehensive, well-structured study notes about "${topic}" for a "${courseSubject}" course titled "${courseTitle}". Write as a knowledgeable tutor explaining to a student.
 
 # ${topic}
 
-## 1. Introduction & Overview
-- What is ${topic}? (detailed definition)
-- Why is this important in ${courseSubject}?
-- Historical context and evolution
-- How it connects to other concepts in ${courseTitle}
-- Prerequisites needed to understand this topic
+## Overview
+- Clear definition of ${topic}
+- Why it matters in ${courseSubject} and how it fits into ${courseTitle}
+- Key prerequisites or background knowledge needed
 
-## 2. Core Concepts & Fundamentals
-Break down into multiple subsections (use ### for each):
-- Define every key term and concept
-- Explain the underlying principles
-- Show the logical progression of ideas
-- Use analogies to explain complex concepts
-- Provide visual descriptions
+## Core Concepts & Theory
+Explain each fundamental concept thoroughly using **bold** for key terms. Use analogies to make complex ideas clear. Cover the underlying principles and theory in enough depth that a student can genuinely understand — not just memorize.
 
-## 3. Deep Dive: How It Works
-Provide a comprehensive, step-by-step explanation:
-- The mechanism/process in detail
-- Why it works this way
-- Theoretical foundations
-- Mathematical/logical frameworks (if applicable)
-- Edge cases and special conditions
+## How It Works
+Detailed step-by-step breakdown of the mechanism, process, or logic. Explain the "why" behind each step, not just the "what". Include any important formulas, rules, or frameworks.
 
-## 4. Real-World Applications
-Provide 5-7 detailed examples:
-- Practical use cases
-- Industry applications
-- Daily life examples
-- Case studies
-- Success stories
-- Each example should be 2-3 paragraphs
+## Real-World Applications
+4-5 concrete examples showing ${topic} in action across different contexts:
+- Each example should explain the scenario and why ${topic} applies
+- Include both common everyday examples and professional/academic uses
 
-## 5. Types/Categories/Classifications
-If applicable, break down different types or categories:
-- Complete classification
-- Comparison between different types
-- When to use each type
-- Advantages and disadvantages of each
+## Types & Variations (if applicable)
+Break down any important categories, types, or variations. Compare their differences, when to use each, and their trade-offs.
 
-## 6. Implementation/Practice
-- Step-by-step guide for practical application
-- Code examples (if applicable)
-- Procedures and methodologies
-- Best practices
-- Tips and tricks
+## Common Mistakes & How to Avoid Them
+5 frequent misconceptions or errors students make with this topic, and how to avoid or fix each one.
 
-## 7. Common Challenges & Solutions
-- 5-7 common mistakes beginners make
-- Why these mistakes happen
-- How to avoid them
-- How to fix them
-- Debugging strategies
+## Key Takeaways
+8-10 bullet points covering the most important things to remember about ${topic}.
 
-## 8. Advanced Topics & Extensions
-- Related advanced concepts
-- Next steps for deeper learning
-- Current research or developments
-- Future trends
-- Connections to other topics
+## Practice Questions
+- **Easy:** 2 questions testing basic recall
+- **Medium:** 2 questions requiring understanding and application
+- **Hard:** 1 question requiring analysis or synthesis
+Include a brief hint for each.
 
-## 9. Practice & Assessment
-Provide:
-- 3 easy practice questions
-- 3 medium difficulty questions  
-- 2 challenging questions
-- Include hints and approaches for each
-
-## 10. Key Takeaways & Summary
-- 10-15 bullet points summarizing everything
-- Most important concepts to remember
-- Quick reference guide
-- Study tips for this topic
-
-## 11. Additional Resources
-- Recommended readings
-- Videos to watch
-- Tools and software
-- Websites and documentation
-
-FORMAT INSTRUCTIONS:
-- Use ### for main sections
-- Use #### for subsections
-- Use **bold** for important terms
-- Use *italic* for emphasis
-- Use bullet points extensively
-- Use numbered lists for sequences
-- Add code blocks if showing code
-- Make it visually organized and scannable
-- Use tables if comparing concepts
-
-Write in a clear, engaging, conversational but professional tone. Explain complex ideas simply without dumbing them down. Be thorough and leave no concept unexplained.`
+FORMAT: Use ## for sections, ### for subsections, **bold** for key terms, bullet points and numbered lists throughout. Be thorough but clear.`
 
     try {
       const response = await fetch(
@@ -156,7 +89,7 @@ Write in a clear, engaging, conversational but professional tone. Explain comple
               temperature: 0.7,
               topK: 40,
               topP: 0.95,
-              maxOutputTokens: 32768,
+              maxOutputTokens: 8192,
             }
           })
         }
