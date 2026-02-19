@@ -83,27 +83,24 @@ export const deleteCourse = async (courseId: string) => {
 // Get course with progress (optimized to reduce queries)
 export const getCourseWithProgress = async (courseId: string, userId: string) => {
   try {
-    // Parallelize course data and lessons info
     const [course, lessonsResult] = await Promise.all([
-      // Get course
       getCourse(courseId),
-      // Get lessons with count
-      supabase
-        .from('lessons')
-        .select('id')
-        .eq('course_id', courseId)
+      supabase.from('lessons').select('id').eq('course_id', courseId)
     ])
 
     const lessonIds = lessonsResult.data?.map(l => l.id) || []
 
-    // Get last accessed date if there are lessons
-    let lastAccessed = null
-    if (lessonIds.length > 0) {
+    // Prefer courses.last_accessed (available after migration 10),
+    // otherwise fall back to most recent lesson_progress record
+    let lastAccessed: string | null = (course as any).last_accessed || null
+
+    if (!lastAccessed && lessonIds.length > 0) {
       const { data: progressData } = await supabase
         .from('lesson_progress')
         .select('last_accessed')
         .eq('user_id', userId)
         .in('lesson_id', lessonIds)
+        .not('last_accessed', 'is', null)
         .order('last_accessed', { ascending: false })
         .limit(1)
         .maybeSingle()
@@ -118,14 +115,9 @@ export const getCourseWithProgress = async (courseId: string, userId: string) =>
     }
   } catch (error) {
     console.error('Error in getCourseWithProgress:', error)
-    // Fallback: get just the course without progress
     try {
       const course = await getCourse(courseId)
-      return {
-        ...course,
-        total_lessons: 0,
-        last_accessed: null
-      }
+      return { ...course, total_lessons: 0, last_accessed: null }
     } catch (fallbackError) {
       console.error('Fallback failed:', fallbackError)
       throw fallbackError
@@ -638,12 +630,15 @@ export const getUserStreak = async (userId: string): Promise<{ current: number; 
 }
 
 /**
- * Updates the last accessed timestamp for a course
- * This creates or updates a lesson_progress entry for the first lesson in the course
+ * Updates the last accessed timestamp for a course.
+ * Writes to lesson_progress (always works) and also to courses.last_accessed
+ * (works after running migration 10-add-last-accessed-to-courses.sql).
  */
 export const updateCourseAccess = async (userId: string, courseId: string) => {
   try {
-    // Get the first lesson of the course
+    const now = new Date().toISOString()
+
+    // Get the first lesson to anchor the lesson_progress record
     const { data: lessons } = await supabase
       .from('lessons')
       .select('id')
@@ -651,23 +646,25 @@ export const updateCourseAccess = async (userId: string, courseId: string) => {
       .order('created_at', { ascending: true })
       .limit(1)
 
-    if (!lessons || lessons.length === 0) {
-      // If there are no lessons yet, we can't update access time
-      return
+    if (lessons && lessons.length > 0) {
+      // Upsert into lesson_progress — works without any migration
+      await supabase
+        .from('lesson_progress')
+        .upsert({
+          user_id: userId,
+          lesson_id: lessons[0].id,
+          last_accessed: now,
+          completed: false,
+          progress_percentage: 0
+        }, { onConflict: 'user_id,lesson_id' })
     }
 
-    const firstLessonId = lessons[0].id
-
-    // Create or update lesson_progress to record the access time
+    // Also update courses.last_accessed if the column exists (migration 10)
     await supabase
-      .from('lesson_progress')
-      .upsert({
-        user_id: userId,
-        lesson_id: firstLessonId,
-        last_accessed: new Date().toISOString()
-      }, {
-        onConflict: 'user_id,lesson_id'
-      })
+      .from('courses')
+      .update({ last_accessed: now })
+      .eq('id', courseId)
+      .eq('user_id', userId)
   } catch (error) {
     console.error('Error updating course access:', error)
   }
