@@ -30,6 +30,7 @@ export interface Course {
   color: string
   created_at: string
   updated_at: string
+  last_accessed?: string | null
 }
 
 export interface Lesson {
