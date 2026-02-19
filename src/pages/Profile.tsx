@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { useNavigate } from 'react-router-dom'
-import { getProfile, getTodayStudyTime, getUserStreak } from '../services/api'
+import { getProfile, getTodayStudyTime } from '../services/api'
 import { supabase } from '../services/supabase'
 import { Profile as ProfileType } from '../types'
 import './Profile.css'
@@ -19,7 +19,6 @@ export default function Profile() {
   const [saving, setSaving] = useState(false)
   const [totalCourses, setTotalCourses] = useState(0)
   const [todayStudyTime, setTodayStudyTime] = useState(0)
-  const [streak, setStreak] = useState(0)
   const [totalStudyTime, setTotalStudyTime] = useState(0)
 
   useEffect(() => {
@@ -48,9 +47,6 @@ export default function Profile() {
 
       const studyTime = await getTodayStudyTime(user!.id)
       setTodayStudyTime(studyTime)
-
-      const streakData = await getUserStreak(user!.id)
-      setStreak(streakData.current)
 
       // Calculate total study time
       const { data: sessions } = await supabase
@@ -170,10 +166,6 @@ export default function Profile() {
               <div className="stat-box">
                 <div className="stat-value">{totalCourses}</div>
                 <div className="stat-label">Total Courses</div>
-              </div>
-              <div className="stat-box">
-                <div className="stat-value">{streak}</div>
-                <div className="stat-label">Day Streak</div>
               </div>
               <div className="stat-box">
                 <div className="stat-value">{Math.floor(todayStudyTime / 3600)}h {Math.floor((todayStudyTime % 3600) / 60)}m</div>
