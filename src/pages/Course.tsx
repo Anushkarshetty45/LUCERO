@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../hooks/useAuth'
 import { useContentTranslation } from '../hooks/useContentTranslation'
-import { getCourse, getLessons, deleteLesson, getCourseWithProgress, updateCourseAccess } from '../services/api'
+import { getCourse, getLessons, deleteLesson, getCourseWithProgress, updateCourseAccess, startStudySession, endStudySession } from '../services/api'
 import { Course as CourseType, Lesson } from '../types'
 import AddTopicModal from '../components/AddTopicModal'
 import LessonItem from '../components/LessonItem'
@@ -14,6 +14,106 @@ interface ChatMessage {
   id: string
   role: 'user' | 'assistant'
   content: string
+}
+
+// Converts raw markdown from AI to clean HTML
+function formatMarkdown(text: string): string {
+  const lines = text.split('\n')
+  const html: string[] = []
+  let inList = false
+  let inSubList = false
+
+  const closeSubList = () => {
+    if (inSubList) { html.push('</ul>'); inSubList = false }
+  }
+  const closeList = () => {
+    closeSubList()
+    if (inList) { html.push('</ul>'); inList = false }
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i]
+
+    // Horizontal rule ***  or ---
+    if (/^\s*(\*{3,}|-{3,})\s*$/.test(line)) {
+      closeList()
+      html.push('<hr class="ai-divider"/>')
+      continue
+    }
+
+    // H3 heading: ### text
+    if (/^###\s+/.test(line)) {
+      closeList()
+      const content = inlineFormat(line.replace(/^###\s+/, ''))
+      html.push(`<h3 class="ai-heading">${content}</h3>`)
+      continue
+    }
+
+    // H2 heading: ## text
+    if (/^##\s+/.test(line)) {
+      closeList()
+      const content = inlineFormat(line.replace(/^##\s+/, ''))
+      html.push(`<h2 class="ai-heading">${content}</h2>`)
+      continue
+    }
+
+    // H1 heading: # text
+    if (/^#\s+/.test(line)) {
+      closeList()
+      const content = inlineFormat(line.replace(/^#\s+/, ''))
+      html.push(`<h2 class="ai-heading">${content}</h2>`)
+      continue
+    }
+
+    // Sub-bullet:   * or   - or   ◦ (2+ spaces indent)
+    if (/^( {2,}|\t)([*\-•◦])\s+/.test(line)) {
+      if (!inList) { html.push('<ul class="ai-list">'); inList = true }
+      if (!inSubList) { html.push('<ul class="ai-sublist">'); inSubList = true }
+      const content = inlineFormat(line.replace(/^[ \t]+[*\-•◦]\s+/, ''))
+      html.push(`<li>${content}</li>`)
+      continue
+    }
+
+    // Top-level bullet: * or - or • at start of line
+    if (/^[*\-•]\s+/.test(line)) {
+      closeSubList()
+      if (!inList) { html.push('<ul class="ai-list">'); inList = true }
+      const content = inlineFormat(line.replace(/^[*\-•]\s+/, ''))
+      html.push(`<li>${content}</li>`)
+      continue
+    }
+
+    // Numbered list: 1. text
+    if (/^\d+\.\s+/.test(line)) {
+      closeSubList()
+      if (!inList) { html.push('<ol class="ai-list">'); inList = true }
+      const content = inlineFormat(line.replace(/^\d+\.\s+/, ''))
+      html.push(`<li>${content}</li>`)
+      continue
+    }
+
+    // Empty line
+    if (line.trim() === '') {
+      closeList()
+      html.push('<div class="ai-spacer"></div>')
+      continue
+    }
+
+    // Regular paragraph
+    closeList()
+    html.push(`<p>${inlineFormat(line)}</p>`)
+  }
+
+  closeList()
+  return html.join('')
+}
+
+function inlineFormat(text: string): string {
+  return text
+    .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`(.+?)`/g, '<code>$1</code>')
 }
 
 export default function Course() {
@@ -42,6 +142,30 @@ export default function Course() {
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const chatEndRef = useRef<HTMLDivElement>(null)
   const dragRef = useRef<{ startX: number; startY: number; initialX: number; initialY: number } | null>(null)
+  const sessionIdRef = useRef<string | null>(null)
+  const sessionStartRef = useRef<Date | null>(null)
+
+  // Track study time while on Course page
+  useEffect(() => {
+    if (!user) return
+    startStudySession(user.id)
+      .then(session => {
+        sessionIdRef.current = session.id
+        sessionStartRef.current = new Date()
+      })
+      .catch(err => console.error('Failed to start course study session:', err))
+
+    return () => {
+      if (sessionIdRef.current && sessionStartRef.current) {
+        const duration = Math.floor((Date.now() - sessionStartRef.current.getTime()) / 1000)
+        if (duration >= 60) {
+          endStudySession(sessionIdRef.current, duration, user.id)
+            .catch(err => console.error('Failed to end course study session:', err))
+        }
+      }
+    }
+  }, [user])
+
   useEffect(() => {
     if (courseId) {
       loadCourseData()
@@ -486,12 +610,7 @@ Be the tutor every student wishes they had - knowledgeable, patient, and genuine
                     <div key={msg.id} className={`chat-message ${msg.role}`}>
                       <div className="message-content">
                         {msg.role === 'assistant' ? (
-                          <div dangerouslySetInnerHTML={{
-                            __html: msg.content
-                              .replace(/\n/g, '<br/>')
-                              .replace(/•/g, '• ')
-                              .replace(/◦/g, '&nbsp;&nbsp;◦ ')
-                          }} />
+                          <div dangerouslySetInnerHTML={{ __html: formatMarkdown(msg.content) }} />
                         ) : (
                           msg.content
                         )}
