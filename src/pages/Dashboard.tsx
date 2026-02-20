@@ -5,6 +5,7 @@ import { useSubscription } from '../hooks/useSubscription'
 import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { getProfile, getCourses, getTodayStudyTime, getCourseWithProgress, recordDailyActivity } from '../services/api'
+import { supabase } from '../services/supabase'
 import { Profile, CourseWithProgress } from '../types'
 import { getGreeting, formatTime, getMotivationalQuote } from '../utils/helpers'
 import CreateCourseModal from '../components/CreateCourseModal'
@@ -146,7 +147,7 @@ export default function Dashboard() {
 
         // Count lessons per course in memory
         const lessonCountMap: Record<string, number> = {}
-        allLessons?.forEach(lesson => {
+        allLessons?.forEach((lesson: { id: string; course_id: string }) => {
           lessonCountMap[lesson.course_id] = (lessonCountMap[lesson.course_id] || 0) + 1
         })
 
