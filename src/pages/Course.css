@@ -776,7 +776,6 @@
   line-height: 1.8;
   font-size: 14px;
   word-wrap: break-word;
-  white-space: pre-wrap;
 }
 
 .chat-message.user .message-content {
@@ -796,9 +795,6 @@
 }
 
 /* Better formatting for AI responses */
-.chat-message.assistant .message-content p {
-  margin: 8px 0;
-}
 
 .chat-message.assistant .message-content ul,
 .chat-message.assistant .message-content ol {
@@ -823,6 +819,59 @@
   font-family: 'Monaco', 'Courier New', monospace;
   font-size: 13px;
   color: #ffd700;
+}
+
+/* AI markdown formatting */
+.chat-message.assistant .message-content h2.ai-heading,
+.chat-message.assistant .message-content h3.ai-heading {
+  font-weight: 700;
+  color: var(--accent-primary);
+  margin: 14px 0 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border-color);
+  line-height: 1.4;
+}
+
+.chat-message.assistant .message-content h2.ai-heading {
+  font-size: 15px;
+}
+
+.chat-message.assistant .message-content h3.ai-heading {
+  font-size: 14px;
+}
+
+.chat-message.assistant .message-content .ai-list {
+  margin: 8px 0;
+  padding-left: 22px;
+  list-style: disc;
+}
+
+.chat-message.assistant .message-content .ai-sublist {
+  margin: 4px 0;
+  padding-left: 18px;
+  list-style: circle;
+}
+
+.chat-message.assistant .message-content .ai-list li,
+.chat-message.assistant .message-content .ai-sublist li {
+  margin: 5px 0;
+  line-height: 1.6;
+}
+
+.chat-message.assistant .message-content .ai-divider {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 12px 0;
+  opacity: 0.5;
+}
+
+.chat-message.assistant .message-content .ai-spacer {
+  height: 8px;
+}
+
+.chat-message.assistant .message-content p {
+  margin: 6px 0;
+  line-height: 1.7;
 }
 
 .message-content.typing {
