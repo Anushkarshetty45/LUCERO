@@ -9,6 +9,7 @@ import AddTopicModal from '../components/AddTopicModal'
 import LessonItem from '../components/LessonItem'
 import './Course.css'
 import NotesModal from '../components/NotesModal'
+import { sanitizeHTML } from '../utils/security'
 
 interface ChatMessage {
   id: string
@@ -105,7 +106,8 @@ function formatMarkdown(text: string): string {
   }
 
   closeList()
-  return html.join('')
+  // Sanitize the generated HTML to prevent XSS attacks
+  return sanitizeHTML(html.join(''))
 }
 
 function inlineFormat(text: string): string {
@@ -486,7 +488,7 @@ Be the tutor every student wishes they had - knowledgeable, patient, and genuine
               <h2>{translatedLessonTitle}</h2>
               <div
                 className="notes-text"
-                dangerouslySetInnerHTML={{ __html: selectedLesson.content || '<p>No notes available</p>' }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHTML(selectedLesson.content || '<p>No notes available</p>') }}
               />
             </div>
           ) : (
