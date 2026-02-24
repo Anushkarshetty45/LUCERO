@@ -9,7 +9,9 @@ import {
     createSessionAnalytics,
     checkAndUnlockAchievements,
     updateDailyStats,
-    getDailyStats
+    getDailyStats,
+    startStudySession,
+    endStudySession
 } from '../services/api'
 
 interface FocusMetrics {
@@ -93,6 +95,7 @@ export function LiveStudyProvider({ children }: { children: ReactNode }) {
     const modelsLoadedRef = useRef(false)
     const lastFocusEventTimeRef = useRef<number>(Date.now())
     const lastFocusStateRef = useRef<boolean>(true)
+    const dbSessionIdRef = useRef<string | null>(null)
 
     // Hooks
     const {
@@ -141,6 +144,13 @@ export function LiveStudyProvider({ children }: { children: ReactNode }) {
         // Reset all tracking state
         setIsActive(true)
         setSessionTime(0)
+
+        // Record DB study session
+        if (user) {
+            startStudySession(user.id)
+                .then(session => { dbSessionIdRef.current = session.id })
+                .catch(err => console.error('Failed to start live study DB session:', err))
+        }
         setFocusTime(0)
         setDistractions([])
         setCurrentStreak(0)
@@ -198,6 +208,13 @@ export function LiveStudyProvider({ children }: { children: ReactNode }) {
         setIsActive(false)
         stopWebcam()
         setIsMinimized(false)
+
+        // End DB study session (sessionTime is already in seconds)
+        if (dbSessionIdRef.current && user && sessionTime >= 60) {
+            endStudySession(dbSessionIdRef.current, sessionTime, user.id)
+                .catch(err => console.error('Failed to end live study DB session:', err))
+            dbSessionIdRef.current = null
+        }
 
         // Set analytics and show report
         setSessionAnalytics(analytics)
