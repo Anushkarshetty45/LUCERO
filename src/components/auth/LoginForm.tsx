@@ -33,8 +33,6 @@ export default function LoginForm({ onToggle }: { onToggle: () => void }) {
     setLoading(true)
     setError('')
 
-    console.log('🔑 Attempting login with:', email)
-
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -42,8 +40,6 @@ export default function LoginForm({ onToggle }: { onToggle: () => void }) {
       })
 
       if (error) {
-        console.error('❌ Login error:', error)
-
         // Handle specific error cases with user-friendly messages
         let errorMessage = error.message
 
@@ -64,19 +60,14 @@ export default function LoginForm({ onToggle }: { onToggle: () => void }) {
         setError(errorMessage)
         setLoading(false)
       } else {
-        console.log('✅ Login successful!')
-        console.log('👤 User:', data.user?.email)
-        console.log('🔑 Session:', data.session ? 'Active' : 'None')
-        
         // Force redirect to dashboard
-        console.log('🎉 Redirecting to dashboard...')
         setTimeout(() => {
           window.location.href = '/dashboard'
         }, 500)
       }
     } catch (err: any) {
-      console.error('💥 Login error:', err)
-      setError(err?.message || 'Login failed. Please try again.')
+      // Security: Don't log sensitive error details in production
+      setError('Login failed. Please try again.')
       setLoading(false)
     }
   }
