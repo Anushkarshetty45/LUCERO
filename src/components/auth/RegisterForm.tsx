@@ -19,11 +19,53 @@ export default function RegisterForm({ onToggle, selectedPlan }: RegisterFormPro
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [passwordStrength, setPasswordStrength] = useState('')
+
+  // Security: Password strength validation (OWASP guidelines)
+  const validatePasswordStrength = (pwd: string): { isValid: boolean; message: string } => {
+    if (pwd.length < 12) {
+      return { isValid: false, message: 'Password must be at least 12 characters long.' }
+    }
+
+    const hasUpperCase = /[A-Z]/.test(pwd)
+    const hasLowerCase = /[a-z]/.test(pwd)
+    const hasNumbers = /\d/.test(pwd)
+    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pwd)
+
+    if (!hasUpperCase) {
+      return { isValid: false, message: 'Password must contain at least one uppercase letter.' }
+    }
+
+    if (!hasLowerCase) {
+      return { isValid: false, message: 'Password must contain at least one lowercase letter.' }
+    }
+
+    if (!hasNumbers) {
+      return { isValid: false, message: 'Password must contain at least one number.' }
+    }
+
+    if (!hasSpecialChar) {
+      return { isValid: false, message: 'Password must contain at least one special character (!@#$%^&*...).' }
+    }
+
+    // Check for common weak passwords
+    const weakPasswords = ['password', '12345678', 'qwerty', 'abc123']
+    if (weakPasswords.some(weak => pwd.toLowerCase().includes(weak))) {
+      return { isValid: false, message: 'Password contains common weak patterns.' }
+    }
+
+    return { isValid: true, message: 'Strong password' }
+  }
+
+  // Update password strength indicator when password changes
+  const handlePasswordChange = (newPassword: string) => {
+    setPassword(newPassword)
+    const strength = validatePasswordStrength(newPassword)
+    setPasswordStrength(strength.message)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    console.log('🚀 Starting registration...')
 
     // Client-side validation
     if (!firstName.trim() || !lastName.trim()) {
@@ -43,8 +85,10 @@ export default function RegisterForm({ onToggle, selectedPlan }: RegisterFormPro
       return
     }
 
-    if (!password || password.length < 6) {
-      setError('⚠️ Password must be at least 6 characters long.')
+    // Security: Validate password strength
+    const passwordValidation = validatePasswordStrength(password)
+    if (!passwordValidation.isValid) {
+      setError(`⚠️ ${passwordValidation.message}`)
       return
     }
 
@@ -57,8 +101,6 @@ export default function RegisterForm({ onToggle, selectedPlan }: RegisterFormPro
     setError('')
 
     try {
-      console.log('📧 Signing up with email:', email)
-
       // Create user account - Supabase will send confirmation email automatically
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -74,11 +116,7 @@ export default function RegisterForm({ onToggle, selectedPlan }: RegisterFormPro
         }
       })
 
-      console.log('📦 Signup response:', { data, error })
-
       if (error) {
-        console.error('❌ Signup error:', error)
-
         // Handle specific error cases with user-friendly messages
         let errorMessage = error.message
 
@@ -102,25 +140,20 @@ export default function RegisterForm({ onToggle, selectedPlan }: RegisterFormPro
         return
       }
 
-      console.log('✅ Signup successful!')
-      console.log('👤 User:', data.user?.email)
-
       // Check if email confirmation is disabled (auto-confirmed)
       if (data.user && data.user.confirmed_at) {
-        console.log('✅ Email auto-confirmed, redirecting to dashboard...')
         setTimeout(() => {
           window.location.href = '/dashboard'
         }, 1000)
       } else {
-        console.log('📧 Confirmation email sent')
         setSuccess(true)
       }
 
       setLoading(false)
 
     } catch (err: any) {
-      console.error('💥 Unexpected error:', err)
-      setError(err?.message || 'An unexpected error occurred. Please try again.')
+      // Security: Don't log sensitive error details in production
+      setError('An unexpected error occurred. Please try again.')
       setLoading(false)
     }
   }
@@ -219,11 +252,11 @@ export default function RegisterForm({ onToggle, selectedPlan }: RegisterFormPro
           <div className="password-input">
             <input
               type={showPassword ? 'text' : 'password'}
-              placeholder="••••••••"
+              placeholder="Min 12 chars, uppercase, lowercase, number, special char"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => handlePasswordChange(e.target.value)}
               required
-              minLength={6}
+              minLength={12}
             />
             <button
               type="button"
@@ -233,6 +266,15 @@ export default function RegisterForm({ onToggle, selectedPlan }: RegisterFormPro
               {showPassword ? '👁️' : '👁️‍🗨️'}
             </button>
           </div>
+          {password && (
+            <div style={{
+              fontSize: '12px',
+              marginTop: '4px',
+              color: passwordStrength === 'Strong password' ? '#10b981' : '#f59e0b'
+            }}>
+              {passwordStrength}
+            </div>
+          )}
         </div>
 
         <div className="checkbox-group">
