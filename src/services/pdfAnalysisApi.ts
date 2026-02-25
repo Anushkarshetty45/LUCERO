@@ -19,7 +19,28 @@ import type {
 // ============================================================================
 
 export const uploadPDFToStorage = async (file: File, userId: string): Promise<{ fileName: string; url: string }> => {
-  const fileExt = file.name.split('.').pop()
+  // Security: Validate file type
+  if (file.type !== 'application/pdf') {
+    throw new Error('Invalid file type. Only PDF files are allowed.')
+  }
+
+  // Security: Validate file extension
+  const fileExt = file.name.split('.').pop()?.toLowerCase()
+  if (fileExt !== 'pdf') {
+    throw new Error('Invalid file extension. Only .pdf files are allowed.')
+  }
+
+  // Security: Validate file size (max 50MB)
+  const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB in bytes
+  if (file.size > MAX_FILE_SIZE) {
+    throw new Error('File size exceeds 50MB limit.')
+  }
+
+  // Security: Validate minimum file size
+  if (file.size < 100) {
+    throw new Error('File is too small or corrupted.')
+  }
+
   const timestamp = Date.now()
   const fileName = `${userId}/${timestamp}.${fileExt}`
 
@@ -27,7 +48,8 @@ export const uploadPDFToStorage = async (file: File, userId: string): Promise<{ 
     .from('pdf-files')
     .upload(fileName, file, {
       cacheControl: '3600',
-      upsert: false
+      upsert: false,
+      contentType: 'application/pdf' // Explicitly set content type
     })
 
   if (error) {
