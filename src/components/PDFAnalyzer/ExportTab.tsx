@@ -4,6 +4,7 @@ import { saveAs } from 'file-saver'
 import { useTranslation } from 'react-i18next'
 import { getFlashcards } from '../../services/pdfAnalysisApi'
 import { useState } from 'react'
+import { sanitizeHTML, stripHTML } from '../../utils/security'
 
 interface ExportTabProps {
   analysisId: string
@@ -19,15 +20,20 @@ export default function ExportTab({ analysisId, title, summary, explanation }: E
   const exportAsPDF = async () => {
     setExporting(true)
     try {
+      // Sanitize all user-provided content to prevent XSS
+      const sanitizedTitle = stripHTML(title)
+      const sanitizedSummary = sanitizeHTML(summary)
+      const sanitizedExplanation = sanitizeHTML(explanation)
+
       const content = `
         <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
-          <h1 style="color: #333; margin-bottom: 30px;">${title}</h1>
+          <h1 style="color: #333; margin-bottom: 30px;">${sanitizedTitle}</h1>
 
           <h2 style="color: #667eea; margin-top: 30px;">Summary</h2>
-          <div style="line-height: 1.8; color: #444;">${summary}</div>
+          <div style="line-height: 1.8; color: #444;">${sanitizedSummary}</div>
 
           <h2 style="color: #667eea; margin-top: 30px;">Detailed Explanation</h2>
-          <div style="line-height: 1.8; color: #444;">${explanation}</div>
+          <div style="line-height: 1.8; color: #444;">${sanitizedExplanation}</div>
 
           <div style="margin-top: 50px; text-align: center; color: #999; font-size: 12px;">
             Generated with LUCERO PDF Analyzer
@@ -36,7 +42,7 @@ export default function ExportTab({ analysisId, title, summary, explanation }: E
       `
 
       const element = document.createElement('div')
-      element.innerHTML = content
+      element.innerHTML = sanitizeHTML(content)
 
       html2pdf()
         .from(element)
@@ -58,16 +64,21 @@ export default function ExportTab({ analysisId, title, summary, explanation }: E
   const exportAsWord = () => {
     setExporting(true)
     try {
+      // Sanitize all user-provided content to prevent XSS
+      const sanitizedTitle = stripHTML(title)
+      const sanitizedSummary = sanitizeHTML(summary)
+      const sanitizedExplanation = sanitizeHTML(explanation)
+
       const header = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'>`
       const content = `
         <body>
-          <h1>${title}</h1>
+          <h1>${sanitizedTitle}</h1>
 
           <h2>Summary</h2>
-          <p>${summary}</p>
+          <p>${sanitizedSummary}</p>
 
           <h2>Detailed Explanation</h2>
-          <div>${explanation}</div>
+          <div>${sanitizedExplanation}</div>
         </body>
       `
       const html = `${header}${content}</html>`
@@ -88,17 +99,22 @@ export default function ExportTab({ analysisId, title, summary, explanation }: E
   const exportAsText = () => {
     setExporting(true)
     try{
+      // Strip all HTML tags for plain text export
+      const plainTitle = stripHTML(title)
+      const plainSummary = stripHTML(summary)
+      const plainExplanation = stripHTML(explanation)
+
       const text = `
-${title}
-${'='.repeat(title.length)}
+${plainTitle}
+${'='.repeat(plainTitle.length)}
 
 SUMMARY
 -------
-${summary}
+${plainSummary}
 
 DETAILED EXPLANATION
 -------------------
-${explanation}
+${plainExplanation}
 
 ---
 Generated with LUCERO PDF Analyzer
@@ -228,11 +244,11 @@ Generated with LUCERO PDF Analyzer
         <div className="export-info">
           <h4>{t('pdfAnalyzer.export.infoTitle')}</h4>
           <ul>
-            <li dangerouslySetInnerHTML={{ __html: t('pdfAnalyzer.export.infoPDF') }} />
-            <li dangerouslySetInnerHTML={{ __html: t('pdfAnalyzer.export.infoWord') }} />
-            <li dangerouslySetInnerHTML={{ __html: t('pdfAnalyzer.export.infoText') }} />
-            <li dangerouslySetInnerHTML={{ __html: t('pdfAnalyzer.export.infoCSV') }} />
-            <li dangerouslySetInnerHTML={{ __html: t('pdfAnalyzer.export.infoAnki') }} />
+            <li dangerouslySetInnerHTML={{ __html: sanitizeHTML(t('pdfAnalyzer.export.infoPDF')) }} />
+            <li dangerouslySetInnerHTML={{ __html: sanitizeHTML(t('pdfAnalyzer.export.infoWord')) }} />
+            <li dangerouslySetInnerHTML={{ __html: sanitizeHTML(t('pdfAnalyzer.export.infoText')) }} />
+            <li dangerouslySetInnerHTML={{ __html: sanitizeHTML(t('pdfAnalyzer.export.infoCSV')) }} />
+            <li dangerouslySetInnerHTML={{ __html: sanitizeHTML(t('pdfAnalyzer.export.infoAnki')) }} />
           </ul>
         </div>
       </div>
