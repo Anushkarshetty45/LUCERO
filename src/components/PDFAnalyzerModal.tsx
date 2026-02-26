@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import './PDFAnalyzerModal.css'
+import { sanitizeHTML } from '../utils/security'
 
 // Set up PDF.js worker - use local file for reliability (updated)
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs'
@@ -180,7 +181,7 @@ FORMATTING RULES:
   }
 
   const formatText = (text: string) => {
-    return text
+    const formatted = text
       // Convert headings (###) to styled headings
       .replace(/### (.*?)(\n|$)/g, '<h4 class="section-heading">$1</h4>')
       // Convert bold text
@@ -195,6 +196,9 @@ FORMATTING RULES:
       .replace(/• /g, '<span class="bullet-point">• </span>')
       // Format sub-bullets with indentation
       .replace(/◦ /g, '<span class="sub-bullet">◦ </span>')
+
+    // Sanitize to prevent XSS attacks
+    return sanitizeHTML(formatted)
   }
 
   return (
