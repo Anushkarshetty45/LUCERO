@@ -1,10 +1,10 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../hooks/useAuth'
 import { useSubscription } from '../../hooks/useSubscription'
 import * as pdfjsLib from 'pdfjs-dist'
 import { uploadPDFToStorage, createPDFAnalysis } from '../../services/pdfAnalysisApi'
-import { recordDailyActivity } from '../../services/api'
+import { recordDailyActivity, startStudySession, endStudySession } from '../../services/api'
 import { generateAnalysisPrompt } from '../../services/aiPrompts'
 import AnalysisTab from './AnalysisTab'
 import HistoryTab from './HistoryTab'
@@ -45,20 +45,81 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
   const [title, setTitle] = useState('')
   const [pageCount, setPageCount] = useState(0)
   const [selectedCourseId, setSelectedCourseId] = useState<string | undefined>()
+  const sessionIdRef = useRef<string | null>(null)
+  const sessionStartRef = useRef<Date | null>(null)
+
+  // Track study time while PDF Analyzer is open
+  useEffect(() => {
+    if (!user) return
+    startStudySession(user.id)
+      .then(session => {
+        sessionIdRef.current = session.id
+        sessionStartRef.current = new Date()
+      })
+      .catch(err => console.error('Failed to start PDF study session:', err))
+
+    return () => {
+      if (sessionIdRef.current && sessionStartRef.current) {
+        const duration = Math.floor((Date.now() - sessionStartRef.current.getTime()) / 1000)
+        if (duration >= 60) {
+          endStudySession(sessionIdRef.current, duration, user.id)
+            .catch(err => console.error('Failed to end PDF study session:', err))
+        }
+      }
+    }
+  }, [user])
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0]
-    if (selectedFile && selectedFile.type === 'application/pdf') {
-      setFile(selectedFile)
-      setError('')
-      setTitle(selectedFile.name.replace('.pdf', ''))
-    } else {
-      setError(t('pdfAnalyzer.upload.errorInvalidFile'))
+
+    if (!selectedFile) {
+      return
     }
+
+    // Security: Validate file type
+    if (selectedFile.type !== 'application/pdf') {
+      setError(t('pdfAnalyzer.upload.errorInvalidFile'))
+      return
+    }
+
+    // Security: Validate file extension
+    const fileName = selectedFile.name.toLowerCase()
+    if (!fileName.endsWith('.pdf')) {
+      setError('Invalid file extension. Only PDF files are allowed.')
+      return
+    }
+
+    // Security: Validate file size (max 50MB)
+    const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB in bytes
+    if (selectedFile.size > MAX_FILE_SIZE) {
+      setError('File size too large. Maximum allowed size is 50MB.')
+      return
+    }
+
+    // Security: Validate minimum file size (at least 100 bytes)
+    if (selectedFile.size < 100) {
+      setError('File is too small or corrupted.')
+      return
+    }
+
+    setFile(selectedFile)
+    setError('')
+    setTitle(selectedFile.name.replace('.pdf', ''))
   }
 
   const extractTextFromPDF = async (file: File): Promise<string> => {
     const arrayBuffer = await file.arrayBuffer()
+
+    // Security: Validate PDF file signature (magic bytes)
+    // PDFs should start with "%PDF-" (hex: 25 50 44 46 2D)
+    const uint8Array = new Uint8Array(arrayBuffer)
+    const pdfSignature = '%PDF-'
+    const fileHeader = String.fromCharCode(...uint8Array.slice(0, 5))
+
+    if (fileHeader !== pdfSignature) {
+      throw new Error('Invalid PDF file signature. File may be corrupted or not a valid PDF.')
+    }
+
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
     const numPages = pdf.numPages
     setPageCount(numPages)
