@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { sanitizeHTML } from '../../utils/security'
 
 interface AnalysisTabProps {
   summary: string
@@ -9,7 +10,7 @@ interface AnalysisTabProps {
 export default function AnalysisTab({ summary, explanation, title }: AnalysisTabProps) {
   const { t } = useTranslation()
   const formatText = (text: string) => {
-    return text
+    const formatted = text
       .replace(/### (.*?)(\n|$)/g, '<h4 class="section-heading">$1</h4>')
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
@@ -17,6 +18,9 @@ export default function AnalysisTab({ summary, explanation, title }: AnalysisTab
       .replace(/\n/g, '<br/>')
       .replace(/• /g, '<span class="bullet-point">• </span>')
       .replace(/◦ /g, '<span class="sub-bullet">◦ </span>')
+
+    // Sanitize to prevent XSS attacks
+    return sanitizeHTML(formatted)
   }
 
   return (
