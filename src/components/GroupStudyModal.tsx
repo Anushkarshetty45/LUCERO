@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../hooks/useAuth'
-import { createStudySession, getStudySessionByCode, joinStudySession, recordDailyActivity } from '../services/api'
+import { createStudySession, getStudySessionByCode, joinStudySession, recordDailyActivity, startStudySession, endStudySession } from '../services/api'
 import type { StudySession } from '../services/api'
 import VideoRoom from './VideoRoom'
 import './GroupStudyModal.css'
@@ -22,6 +22,32 @@ export default function GroupStudyModal({ onClose }: GroupStudyModalProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [generatedCode, setGeneratedCode] = useState('')
+  const sessionIdRef = useRef<string | null>(null)
+  const sessionStartRef = useRef<Date | null>(null)
+
+  // Track study time only while in the video room
+  useEffect(() => {
+    if (!user || viewMode !== 'video') return
+
+    startStudySession(user.id)
+      .then(session => {
+        sessionIdRef.current = session.id
+        sessionStartRef.current = new Date()
+      })
+      .catch(err => console.error('Failed to start group study session:', err))
+
+    return () => {
+      if (sessionIdRef.current && sessionStartRef.current) {
+        const duration = Math.floor((Date.now() - sessionStartRef.current.getTime()) / 1000)
+        if (duration >= 60) {
+          endStudySession(sessionIdRef.current, duration, user.id)
+            .catch(err => console.error('Failed to end group study session:', err))
+        }
+        sessionIdRef.current = null
+        sessionStartRef.current = null
+      }
+    }
+  }, [user, viewMode])
 
   const handleCreateMeeting = async () => {
     if (!user) return
