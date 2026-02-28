@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { getCourses, getLessons, recordDailyActivity } from '../services/api'
+import { getCourses, getLessons, recordDailyActivity, startStudySession, endStudySession } from '../services/api'
 import type { Course, Lesson } from '../types'
 import './FlashcardsModal.css'
 
@@ -43,6 +43,29 @@ export default function FlashcardsModal({ onClose, userId }: FlashcardsModalProp
   const [isFlipping, setIsFlipping] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  const sessionIdRef = useRef<string | null>(null)
+  const sessionStartRef = useRef<Date | null>(null)
+
+  // Track study time while Flashcards modal is open
+  useEffect(() => {
+    startStudySession(userId)
+      .then(session => {
+        sessionIdRef.current = session.id
+        sessionStartRef.current = new Date()
+      })
+      .catch(err => console.error('Failed to start flashcards study session:', err))
+
+    return () => {
+      if (sessionIdRef.current && sessionStartRef.current) {
+        const duration = Math.floor((Date.now() - sessionStartRef.current.getTime()) / 1000)
+        if (duration >= 60) {
+          endStudySession(sessionIdRef.current, duration, userId)
+            .catch(err => console.error('Failed to end flashcards study session:', err))
+        }
+      }
+    }
+  }, [userId])
 
   useEffect(() => {
     loadCourses()
