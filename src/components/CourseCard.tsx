@@ -52,14 +52,6 @@ export default function CourseCard({ course, onUpdate }: CourseCardProps) {
             <span className="stat-label">{t('course.topics')}</span>
             <span className="stat-value">{course.total_lessons}</span>
           </div>
-          <div className="stat">
-            <span className="stat-label">{t('course.lastStudied')}</span>
-            <span className="stat-value stat-small">
-              {course.last_accessed
-                ? new Date(course.last_accessed).toLocaleDateString(i18n.language, { month: 'short', day: 'numeric' })
-                : t('course.notYet')}
-            </span>
-          </div>
         </div>
 
         <div className="course-footer-info">
