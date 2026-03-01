@@ -3,12 +3,27 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const PORT = 3002;
+const PORT = process.env.PORT || 3002;
 
-// Enable CORS for requests from your React app
+// Security: Environment-based CORS configuration
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : ['http://localhost:3000', 'http://localhost:3001'];
+
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001'],
-  credentials: true
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json({ limit: '50mb' }));
@@ -28,7 +43,8 @@ app.post('/api/claude', async (req, res) => {
     }
 
     // Try Groq first (free and fast)
-    const groqKey = process.env.REACT_APP_GROQ_API_KEY;
+    // Security: Use backend-specific env vars (not REACT_APP_)
+    const groqKey = process.env.GROQ_API_KEY || process.env.REACT_APP_GROQ_API_KEY;
 
     if (groqKey) {
       console.log('🚀 Forwarding request to Groq API (free)...');
@@ -95,7 +111,8 @@ app.post('/api/claude', async (req, res) => {
     }
 
     // Fallback to Claude if Groq fails or no key
-    const claudeKey = process.env.REACT_APP_ANTHROPIC_API_KEY;
+    // Security: Use backend-specific env vars (not REACT_APP_)
+    const claudeKey = process.env.ANTHROPIC_API_KEY || process.env.REACT_APP_ANTHROPIC_API_KEY;
 
     if (!claudeKey) {
       return res.status(500).json({
