@@ -121,11 +121,11 @@ export default function Home() {
   const faqs = [
     {
       question: "What are the limits of Lucero?",
-      answer: "The free plan includes 5 courses, 5 PDF uploads, and 30 AI chat messages per month. The Pro plan offers unlimited courses, uploads, AI chat, and access to advanced features like Live Study, Group Study, and Golden Notes for just $4.99/month (or $59.99/year with 50% savings)."
+      answer: "The free plan includes 5 courses, 5 PDF uploads, and 30 AI chat messages per month. The Pro plan offers unlimited courses, uploads, AI chat, and access to advanced features like Live Study, Group Study, and PDF Analyzer for just $4.99/month (or $59.99/year with 50% savings)."
     },
     {
       question: "How is Lucero AI different from other AI models?",
-      answer: "Lucero is built for students. It organizes your study materials into structured notes, creates quizzes, and builds a Golden Note that summarizes everything."
+      answer: "Lucero is built for students. It analyzes your PDFs, creates topics and courses, generates quizzes, and provides an AI chatbot for instant help with your studies."
     },
     {
       question: "What do I do if something doesn't work?",
@@ -201,14 +201,14 @@ export default function Home() {
 
           <div className="features-grid">
             <div className="feature-item animate-on-scroll delay-100">
-              <div className="feature-icon"><HiOutlineDocumentText /></div>
-              <h3>Smart Notes</h3>
-              <p>Auto-generated notes from your PDFs and materials</p>
-            </div>
-            <div className="feature-item animate-on-scroll delay-200">
               <div className="feature-icon"><HiOutlineArrowUpTray /></div>
               <h3>PDF Analyzer</h3>
               <p>Upload PDFs and get instant analysis, mind maps & study plans</p>
+            </div>
+            <div className="feature-item animate-on-scroll delay-200">
+              <div className="feature-icon"><HiOutlineSquare3Stack3D /></div>
+              <h3>Topics & Courses</h3>
+              <p>Create and organize your study materials into topics and courses</p>
             </div>
             <div className="feature-item animate-on-scroll delay-300">
               <div className="feature-icon"><HiOutlineQuestionMarkCircle /></div>
@@ -217,8 +217,8 @@ export default function Home() {
             </div>
             <div className="feature-item animate-on-scroll delay-100">
               <div className="feature-icon"><HiOutlineChatBubbleLeftRight /></div>
-              <h3>AI Tutor Chat</h3>
-              <p>Ask questions and get instant explanations</p>
+              <h3>AI Chatbot</h3>
+              <p>Ask questions and get instant AI-powered explanations</p>
             </div>
             <div className="feature-item animate-on-scroll delay-200">
               <div className="feature-icon"><HiOutlineBolt /></div>
@@ -226,9 +226,9 @@ export default function Home() {
               <p>Face detection & focus tracking with real-time analytics</p>
             </div>
             <div className="feature-item animate-on-scroll delay-300">
-              <div className="feature-icon"><HiOutlineChartBar /></div>
-              <h3>Progress Tracking</h3>
-              <p>Track study time, streaks & performance over time</p>
+              <div className="feature-icon"><HiOutlineUserGroup /></div>
+              <h3>Group Study</h3>
+              <p>Collaborate with peers in video rooms and study together</p>
             </div>
           </div>
         </section>
@@ -254,75 +254,74 @@ export default function Home() {
 
           <div className="benefits-grid">
             <div className="benefit-card animate-on-scroll delay-100">
-              <div className="benefit-icon"><HiOutlineBolt /></div>
-              <h3>Save Time</h3>
-              <p>Stop rewriting notes. Lucero does it for you.</p>
+              <div className="benefit-icon"><HiOutlineArrowUpTray /></div>
+              <h3>Analyze PDFs Instantly</h3>
+              <p>Upload any PDF and get mind maps, summaries, and study plans.</p>
             </div>
             <div className="benefit-card animate-on-scroll delay-200">
-              <div className="benefit-icon"><HiOutlineLightBulb /></div>
-              <h3>Remember More</h3>
-              <p>Spaced repetition and active recall built in.</p>
+              <div className="benefit-icon"><HiOutlineUserGroup /></div>
+              <h3>Study Together</h3>
+              <p>Join group study rooms with video chat and collaborate in real-time.</p>
             </div>
             <div className="benefit-card animate-on-scroll delay-300">
-              <div className="benefit-icon"><HiOutlineArrowTrendingUp /></div>
-              <h3>Track Progress</h3>
-              <p>See what you know and what needs work.</p>
+              <div className="benefit-icon"><HiOutlineBolt /></div>
+              <h3>Stay Focused</h3>
+              <p>Live study mode tracks your attention with face detection.</p>
             </div>
             <div className="benefit-card animate-on-scroll delay-100">
-              <div className="benefit-icon"><HiOutlineTrophy /></div>
-              <h3>Ace Your Exams</h3>
-              <p>Practice questions and instant feedback.</p>
+              <div className="benefit-icon"><HiOutlineChatBubbleLeftRight /></div>
+              <h3>AI-Powered Help</h3>
+              <p>Get instant answers to your questions with our AI chatbot.</p>
             </div>
           </div>
         </section>
 
-        {/* Golden Note Section */}
+        {/* Actual Features Section */}
         <section className="golden-note-section">
           <div className="golden-note-content">
             <div className="golden-note-text animate-on-scroll">
-              <h2>Meet the future of note-taking</h2>
+              <h2>Powerful features to study smarter</h2>
               <p className="golden-note-description">
-                Lucero refines your notes and connects topics into one structured summary
-                — the <strong>Golden Note</strong>.
+                Everything you need to organize your materials, collaborate with peers,
+                and stay focused on your goals.
               </p>
 
               <div className="golden-note-features">
                 <div className="gn-feature">
-                  <div className="gn-icon"><HiOutlineClipboardDocumentList /></div>
+                  <div className="gn-icon"><HiOutlineUserGroup /></div>
                   <div>
-                    <h4>Topics</h4>
-                    <p>Lucero organizes your material by easy to understand topics.</p>
+                    <h4>Group Study</h4>
+                    <p>Create or join study groups with video rooms and real-time collaboration.</p>
                   </div>
                 </div>
                 <div className="gn-feature">
-                  <div className="gn-icon"><HiOutlinePencilSquare /></div>
+                  <div className="gn-icon"><HiOutlineSquare3Stack3D /></div>
                   <div>
-                    <h4>Note refinement</h4>
-                    <p>Improve your messy notes with just one click.</p>
+                    <h4>Topics & Courses</h4>
+                    <p>Create custom topics and courses to organize all your study materials in one place.</p>
                   </div>
                 </div>
                 <div className="gn-feature">
-                  <div className="gn-icon"><HiOutlineSparkles /></div>
+                  <div className="gn-icon"><HiOutlineTimer /></div>
                   <div>
-                    <h4>Golden note</h4>
-                    <p>Lucero pulls all your notes and materials into one simple, structured "cheat-sheet" — the Golden Note.</p>
-                    <p className="gn-subtext">Share it with your study group, and everyone's notes combine into one Golden Note.</p>
+                    <h4>Live Study Mode</h4>
+                    <p>Track your focus with face detection, monitor study time, and get real-time analytics on your productivity.</p>
                   </div>
                 </div>
               </div>
             </div>
             <div className="golden-note-visual animate-on-scroll delay-200">
               <div className="gn-card gn-card-topics">
-                <div className="gn-card-header">Topics</div>
-                <div className="gn-card-body">Organized study material</div>
+                <div className="gn-card-header">PDF Analyzer</div>
+                <div className="gn-card-body">Extract insights from PDFs instantly</div>
               </div>
               <div className="gn-card gn-card-refinement">
-                <div className="gn-card-header">Note Refinement</div>
-                <div className="gn-card-body">Enhanced notes</div>
+                <div className="gn-card-header">AI Chatbot</div>
+                <div className="gn-card-body">Get instant answers to your questions</div>
               </div>
               <div className="gn-card gn-card-golden">
-                <div className="gn-card-header">Golden Note for Corporate Finance</div>
-                <div className="gn-card-body">Complete structured summary</div>
+                <div className="gn-card-header">Group Study Rooms</div>
+                <div className="gn-card-body">Collaborate with your study group live</div>
               </div>
             </div>
           </div>
@@ -349,12 +348,20 @@ export default function Home() {
               </thead>
               <tbody>
                 <tr>
-                  <td>Shared Notes</td>
+                  <td>PDF Analyzer</td>
+                  <td className="highlight-col"><span className="check">✔</span></td>
+                  <td><span className="check">✔</span></td>
+                  <td><span className="cross">✕</span></td>
+                  <td><span className="cross">✕</span></td>
+                  <td><span className="cross">✕</span></td>
+                </tr>
+                <tr>
+                  <td>Group Study Rooms</td>
                   <td className="highlight-col"><span className="check">✔</span></td>
                   <td><span className="cross">✕</span></td>
                   <td><span className="cross">✕</span></td>
                   <td><span className="cross">✕</span></td>
-                  <td><span className="check">✔</span></td>
+                  <td><span className="cross">✕</span></td>
                 </tr>
                 <tr>
                   <td>Quizzes / Flashcards</td>
@@ -365,12 +372,12 @@ export default function Home() {
                   <td><span className="cross">✕</span></td>
                 </tr>
                 <tr>
-                  <td>Course Overview</td>
+                  <td>Course & Topic Organization</td>
                   <td className="highlight-col"><span className="check">✔</span></td>
                   <td><span className="cross">✕</span></td>
                   <td><span className="cross">✕</span></td>
                   <td><span className="cross">✕</span></td>
-                  <td><span className="cross">✕</span></td>
+                  <td><span className="check">✔</span></td>
                 </tr>
                 <tr>
                   <td>AI Chat</td>
@@ -381,11 +388,11 @@ export default function Home() {
                   <td><span className="cross">✕</span></td>
                 </tr>
                 <tr>
-                  <td>Exam Simulator</td>
+                  <td>Live Study Mode</td>
                   <td className="highlight-col"><span className="check">✔</span></td>
                   <td><span className="cross">✕</span></td>
                   <td><span className="cross">✕</span></td>
-                  <td><span className="check">✔</span></td>
+                  <td><span className="cross">✕</span></td>
                   <td><span className="cross">✕</span></td>
                 </tr>
                 <tr>
@@ -486,10 +493,10 @@ export default function Home() {
               <ul className="features-list">
                 <li><span className="check-icon">✔</span> Everything in Starter, plus:</li>
                 <li><span className="check-icon">✔</span> Unlimited uploads & AI chat</li>
-                <li><span className="check-icon">✔</span> Advanced PDF Analyzer</li>
+                <li><span className="check-icon">✔</span> Advanced PDF Analyzer with mind maps</li>
                 <li><span className="check-icon">✔</span> Live Study Mode with face detection</li>
                 <li><span className="check-icon">✔</span> Group Study & Video Rooms</li>
-                <li><span className="check-icon">✔</span> Golden Note & Export features</li>
+                <li><span className="check-icon">✔</span> Unlimited Topics & Courses</li>
                 <li><span className="check-icon">✔</span> 15+ premium themes</li>
               </ul>
               <div className="card-illustration">
@@ -548,8 +555,8 @@ export default function Home() {
         {/* Footer CTA */}
         <section className="footer-cta">
           <div className="cta-content">
-            <h2>Meet the future <br />of note-taking</h2>
-            <p>Your notes, organized and refined into one structured summary.</p>
+            <h2>Study smarter, <br />not harder</h2>
+            <p>Everything you need to organize materials, collaborate with peers, and ace your exams.</p>
             <Link to="/auth?mode=register" className="cta-button-white">Get Started</Link>
           </div>
         </section>
