@@ -1,4 +1,4 @@
-# LUCERO 🌟
+# LUCERO 
 
 **An AI-Powered Intelligent Study Platform**
 
@@ -11,15 +11,15 @@ LUCERO is a modern web application that helps students organize their learning, 
 
 ---
 
-## ✨ Features
+## Features
 
-### 📚 Course Management
+### Course Management
 - Create and organize multiple courses
 - Add topics and study materials to each course
 - Color-coded organization for easy navigation
 - Track progress across all subjects
 
-### 🤖 AI-Powered PDF Analyzer
+### AI-Powered PDF Analyzer
 - **Smart Analysis**: Upload PDFs and get AI-generated summaries and explanations
 - **Interactive Chat**: Ask questions about your PDF content
 - **Auto Flashcards**: Automatically generate study flashcards
@@ -28,30 +28,30 @@ LUCERO is a modern web application that helps students organize their learning, 
 - **Mind Maps**: Visual diagrams showing concept relationships
 - **Export**: Download your analysis as PDF or Markdown
 
-### ⏱️ Study Timer
+### Study Timer
 - Track study time for each course
 - Floating timer that works across all pages
 - View detailed statistics and reports
 - Historical tracking of study sessions
 
-### 👁️ Focus Tracking (Live Study)
+### Focus Tracking (Live Study)
 - Uses AI-powered face detection to monitor attention
 - Alerts when you're distracted or looking away
 - Calculates focus percentage for each session
 - Detailed session reports with charts
 
-### 📝 Notes System
+### Notes System
 - Create notes linked to courses and topics
 - Rich text editing with formatting
 - Search and filter notes
 - Export notes functionality
 
-### 💬 AI Study Assistant
+### AI Study Assistant
 - Chat with AI tutor for study help
 - Get explanations and clarifications
 - Personalized study advice
 
-### 📊 Analytics & Reports
+### Analytics & Reports
 - Study time statistics
 - Focus metrics and trends
 - Course progress tracking
@@ -59,14 +59,14 @@ LUCERO is a modern web application that helps students organize their learning, 
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 | Category | Technology |
 |----------|-----------|
 | **Frontend** | React 19 with TypeScript |
 | **Routing** | React Router DOM v7 |
 | **Backend** | Supabase (PostgreSQL + Auth + Storage) |
-| **AI** | Google Gemini 1.5 Flash |
+| **AI** | Google Gemini 2.5 Flash |
 | **PDF Processing** | PDF.js |
 | **Face Detection** | face-api.js |
 | **3D Graphics** | Three.js + React Three Fiber |
@@ -76,7 +76,7 @@ LUCERO is a modern web application that helps students organize their learning, 
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Node.js 16+ installed
@@ -132,14 +132,14 @@ LUCERO is a modern web application that helps students organize their learning, 
 
 ---
 
-## 📖 Documentation
+## Documentation
 
 For detailed documentation about the architecture, features, and implementation, see:
 - **[PROJECT_DOCUMENTATION.md](./PROJECT_DOCUMENTATION.md)** - Complete technical documentation
 
 ---
 
-## 🎯 How to Use
+## How to Use
 
 ### 1. Sign Up / Login
 - Create an account or log in
@@ -171,19 +171,19 @@ For detailed documentation about the architecture, features, and implementation,
 
 ---
 
-## 🎨 Key Features Explained
+## Key Features Explained
 
 ### PDF Analyzer Tabs
 
-1. **📤 Upload**: Upload and analyze PDF documents
-2. **📊 Analysis**: View AI-generated summary and detailed explanation
-3. **📚 History**: Access previously analyzed PDFs
-4. **💬 Chat**: Ask questions about the PDF content
-5. **🎴 Flashcards**: Interactive study flashcards
-6. **✅ Quiz**: Multiple-choice questions with instant feedback
-7. **📅 Study Plan**: Personalized daily study schedule
-8. **🧠 Mind Map**: Visual concept relationships
-9. **💾 Export**: Download your analysis
+1. **Upload**: Upload and analyze PDF documents
+2. **Analysis**: View AI-generated summary and detailed explanation
+3. **History**: Access previously analyzed PDFs
+4. **Chat**: Ask questions about the PDF content
+5. **Flashcards**: Interactive study flashcards
+6. **Quiz**: Multiple-choice questions with instant feedback
+7. **Study Plan**: Personalized daily study schedule
+8. **Mind Map**: Visual concept relationships
+9. **Export**: Download your analysis
 
 ### Focus Tracking System
 
@@ -198,7 +198,7 @@ The Live Study feature uses your webcam to:
 
 ---
 
-## 🔒 Security & Privacy
+## Security & Privacy
 
 - **Authentication**: Secure password hashing via Supabase
 - **Data Privacy**: All user data stored in isolated database rows
@@ -209,7 +209,7 @@ The Live Study feature uses your webcam to:
 
 ---
 
-## 📊 Project Structure
+## Project Structure
 
 ```
 LUCERO/
@@ -231,7 +231,7 @@ LUCERO/
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### PDF Analysis Not Working
 - Verify your Gemini API key is correct
@@ -259,7 +259,7 @@ npm start
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Here's how:
 
@@ -271,13 +271,13 @@ Contributions are welcome! Here's how:
 
 ---
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 Built with amazing open-source tools:
 - **React** - UI framework
@@ -289,7 +289,9 @@ Built with amazing open-source tools:
 
 ---
 
-## 📧 Contact
+## Contact
+phone number:6361889565
+email id: anushkarshetty45@gmail.com
 
 Have questions or feedback? Open an issue on GitHub!
 
