@@ -114,7 +114,7 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
     // PDFs should start with "%PDF-" (hex: 25 50 44 46 2D)
     const uint8Array = new Uint8Array(arrayBuffer)
     const pdfSignature = '%PDF-'
-    const fileHeader = String.fromCharCode(...uint8Array.slice(0, 5))
+    const fileHeader = String.fromCharCode(...Array.from(uint8Array.slice(0, 5)))
 
     if (fileHeader !== pdfSignature) {
       throw new Error('Invalid PDF file signature. File may be corrupted or not a valid PDF.')
