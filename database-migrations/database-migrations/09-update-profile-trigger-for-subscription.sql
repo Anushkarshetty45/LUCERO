@@ -15,7 +15,6 @@ BEGIN
 
   INSERT INTO profiles (
     id,
-    email,
     username,
     first_name,
     last_name,
@@ -30,8 +29,7 @@ BEGIN
   )
   VALUES (
     NEW.id,
-    NEW.email,
-    NEW.raw_user_meta_data->>'username',
+    COALESCE(NEW.raw_user_meta_data->>'username', SPLIT_PART(NEW.email, '@', 1)),
     NEW.raw_user_meta_data->>'first_name',
     NEW.raw_user_meta_data->>'last_name',
     NEW.raw_user_meta_data->>'full_name',
