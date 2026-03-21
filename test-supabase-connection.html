@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supabase Connection Test</title>
+</head>
+<body>
+    <h1>Supabase Connection Diagnostic Test</h1>
+    <div id="results"></div>
+
+    <script>
+        const results = document.getElementById('results');
+        const supabaseUrl = 'https://pbszvegbxiczcfdpzatn.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBic3p2ZWdieGljemNmZHB6YXRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NTczNDYsImV4cCI6MjA3ODUzMzM0Nn0.8_yTg2xH8Wh6wWMWPcAouzSLa1CGS_APdgvhvtNajiU';
+
+        function log(message, color = 'black') {
+            const p = document.createElement('p');
+            p.style.color = color;
+            p.textContent = message;
+            results.appendChild(p);
+            console.log(message);
+        }
+
+        async function testConnection() {
+            log('Testing connection to Supabase...', 'blue');
+
+            try {
+                // Test 1: Simple fetch to health endpoint
+                log('\n1. Testing health endpoint...', 'blue');
+                const healthResponse = await fetch(`${supabaseUrl}/auth/v1/health`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': supabaseKey
+                    }
+                });
+                log(`✓ Health endpoint: ${healthResponse.status} ${healthResponse.statusText}`, 'green');
+
+                // Test 2: Try signup endpoint
+                log('\n2. Testing signup endpoint...', 'blue');
+                const signupResponse = await fetch(`${supabaseUrl}/auth/v1/signup`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': supabaseKey,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'test@example.com',
+                        password: 'TestPassword123!'
+                    })
+                });
+                log(`✓ Signup endpoint: ${signupResponse.status} ${signupResponse.statusText}`, 'green');
+                const data = await signupResponse.json();
+                log(`Response: ${JSON.stringify(data, null, 2)}`, 'gray');
+
+                log('\n✓ All tests passed! Supabase is reachable from browser.', 'green');
+
+            } catch (error) {
+                log(`\n✗ ERROR: ${error.message}`, 'red');
+                log(`Error type: ${error.name}`, 'red');
+                log('This indicates a browser-level blocking issue.', 'orange');
+
+                log('\nPossible causes:', 'orange');
+                log('- Browser extension blocking requests', 'orange');
+                log('- Antivirus/firewall blocking browser', 'orange');
+                log('- VPN interfering with connections', 'orange');
+                log('- Browser privacy settings too strict', 'orange');
+            }
+        }
+
+        // Run test on load
+        testConnection();
+    </script>
+</body>
+</html>
