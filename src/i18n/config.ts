@@ -1,33 +1,22 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
+
+// Only load English by default for fast initial load
 import en from './translations/en.json'
-import es from './translations/es.json'
-import fr from './translations/fr.json'
-import de from './translations/de.json'
-import pt from './translations/pt.json'
-import zh from './translations/zh.json'
-import ja from './translations/ja.json'
-import ko from './translations/ko.json'
-import ar from './translations/ar.json'
-import hi from './translations/hi.json'
-import kn from './translations/kn.json'
-import te from './translations/te.json'
-import ta from './translations/ta.json'
+
+// Lazy load other languages only when needed
+const loadLanguage = async (lang: string) => {
+  try {
+    const translation = await import(`./translations/${lang}.json`)
+    return translation.default
+  } catch (error) {
+    console.error(`Failed to load language: ${lang}`, error)
+    return null
+  }
+}
 
 const resources = {
-  en: { translation: en },
-  es: { translation: es },
-  fr: { translation: fr },
-  de: { translation: de },
-  pt: { translation: pt },
-  zh: { translation: zh },
-  ja: { translation: ja },
-  ko: { translation: ko },
-  ar: { translation: ar },
-  hi: { translation: hi },
-  kn: { translation: kn },
-  te: { translation: te },
-  ta: { translation: ta }
+  en: { translation: en }
 }
 
 i18n
@@ -38,7 +27,22 @@ i18n
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false
+    },
+    react: {
+      useSuspense: false // Disable suspense for faster initial render
     }
   })
+
+// Add lazy loading support for other languages
+const supportedLanguages = ['es', 'fr', 'de', 'pt', 'zh', 'ja', 'ko', 'ar', 'hi', 'kn', 'te', 'ta']
+
+i18n.on('languageChanged', async (lng) => {
+  if (lng !== 'en' && supportedLanguages.includes(lng) && !i18n.hasResourceBundle(lng, 'translation')) {
+    const translation = await loadLanguage(lng)
+    if (translation) {
+      i18n.addResourceBundle(lng, 'translation', translation)
+    }
+  }
+})
 
 export default i18n
