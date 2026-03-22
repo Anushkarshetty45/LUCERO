@@ -7,6 +7,7 @@ import { SettingsProvider } from './contexts/SettingsContext'
 import ParticleSystem from './components/BackgroundParticles/ParticleSystem'
 import LoadingScreen from './components/LoadingScreen'
 import Auth from './pages/Auth'
+import AuthCallback from './pages/AuthCallback'
 import Dashboard from './pages/Dashboard'
 import Course from './pages/Course'
 import Home from './pages/Home'
@@ -44,6 +45,7 @@ function App() {
               path="/auth"
               element={user ? <Navigate to="/dashboard" /> : <Auth />}
             />
+            <Route path="/auth/callback" element={<AuthCallback />} />
             <Route
               path="/dashboard"
               element={user ? <Dashboard /> : <Navigate to="/auth" />}
