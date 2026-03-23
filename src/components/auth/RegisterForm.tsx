@@ -9,9 +9,10 @@ interface RegisterFormProps {
 }
 
 export default function RegisterForm({ onToggle, selectedPlan }: RegisterFormProps) {
+  const [email, setEmail] = useState('')
+  const [showEmailForm, setShowEmailForm] = useState(false)
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
-  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [acceptTerms, setAcceptTerms] = useState(false)
@@ -101,6 +102,8 @@ export default function RegisterForm({ onToggle, selectedPlan }: RegisterFormPro
     setError('')
 
     try {
+      console.log('Starting signup with:', { email, firstName, lastName, selectedPlan })
+
       // Create user account - Supabase will send confirmation email automatically
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -116,11 +119,31 @@ export default function RegisterForm({ onToggle, selectedPlan }: RegisterFormPro
         }
       })
 
+      console.log('Signup response:', { data, error })
+
       if (error) {
+        // Log detailed error for debugging
+        console.error('Supabase error details:', {
+          message: error.message,
+          status: error.status,
+          name: error.name
+        })
+
         // Handle specific error cases with user-friendly messages
         let errorMessage = error.message
 
-        if (error.message.toLowerCase().includes('already registered') ||
+        // Database schema/constraint errors
+        if (error.message.includes('column') && error.message.includes('does not exist')) {
+          errorMessage = '⚠️ Database configuration error. Please contact support. (Code: DB_SCHEMA)'
+        } else if (error.message.includes('null value in column') ||
+                   error.message.includes('violates not-null constraint')) {
+          errorMessage = '⚠️ Required user information is missing. Please try again. (Code: NULL_CONSTRAINT)'
+        } else if (error.message.includes('duplicate key') ||
+                   error.message.includes('unique constraint')) {
+          errorMessage = '⚠️ This email is already registered. Please try logging in instead.'
+        }
+        // User-facing errors
+        else if (error.message.toLowerCase().includes('already registered') ||
             error.message.toLowerCase().includes('already exists') ||
             error.message.toLowerCase().includes('user already registered')) {
           errorMessage = '⚠️ This email is already registered. Please use a different email or try logging in.'
@@ -152,27 +175,73 @@ export default function RegisterForm({ onToggle, selectedPlan }: RegisterFormPro
       setLoading(false)
 
     } catch (err: any) {
-      // Security: Don't log sensitive error details in production
-      setError('An unexpected error occurred. Please try again.')
+      // Log detailed error for debugging
+      console.error('Signup error:', err)
+      console.error('Error details:', {
+        message: err?.message,
+        name: err?.name,
+        stack: err?.stack,
+        cause: err?.cause
+      })
+
+      // User-friendly error message based on error type
+      if (err?.message?.includes('fetch') || err?.name === 'TypeError') {
+        setError('⚠️ Cannot connect to authentication server. Please check your internet connection and try again.')
+      } else if (err?.message?.includes('network')) {
+        setError('⚠️ Network error. Please check your internet connection and try again.')
+      } else {
+        setError('⚠️ An unexpected error occurred. Please try again or contact support.')
+      }
       setLoading(false)
     }
   }
 
 
   const handleGoogleSignUp = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.origin + '/dashboard'
+    setLoading(true)
+    setError('')
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin + '/auth/callback',
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent'
+          }
+        }
+      })
+      if (error) {
+        console.error('Google OAuth error:', error)
+        setError('⚠️ ' + error.message)
+        setLoading(false)
       }
-    })
-    if (error) setError(error.message)
+      // Don't set loading to false on success - redirect happens
+    } catch (err: any) {
+      console.error('OAuth initialization error:', err)
+      setError('⚠️ Failed to initialize Google sign-in. Please try again.')
+      setLoading(false)
+    }
+  }
+
+  const handleContinueWithEmail = () => {
+    if (!email.trim()) {
+      setError('⚠️ Please enter your email address.')
+      return
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      setError('⚠️ Please enter a valid email address.')
+      return
+    }
+
+    setError('')
+    setShowEmailForm(true)
   }
 
   return (
     <div className="auth-form">
-      <h2>{success ? 'Check Your Email' : 'Create Account'}</h2>
-
       {error && <div className="error-message">{error}</div>}
 
       {success ? (
@@ -210,118 +279,139 @@ export default function RegisterForm({ onToggle, selectedPlan }: RegisterFormPro
             Didn't receive the email? Check your spam folder.
           </p>
         </div>
-      ) : (
+      ) : !showEmailForm ? (
+        // Initial signup view - Email or Google
         <>
-          <form onSubmit={handleSubmit}>
-            <div className="form-row">
+          <h2>Sign up to <span style={{ color: 'var(--accent-primary)' }}>get started</span></h2>
+
           <div className="form-group">
-            <label>First Name</label>
             <input
-              type="text"
-              placeholder="Luna"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              required
+              type="email"
+              placeholder="Enter your email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={{ padding: '16px', fontSize: '16px' }}
             />
           </div>
-          <div className="form-group">
-            <label>Last Name</label>
-            <input
-              type="text"
-              placeholder="Quinn"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              required
-            />
-          </div>
-        </div>
 
-        <div className="form-group">
-          <label>Email</label>
-          <input
-            type="email"
-            placeholder="lucero@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
+          <button
+            onClick={handleContinueWithEmail}
+            className="btn-primary"
+            disabled={loading}
+            style={{ width: '100%', marginBottom: '24px' }}
+          >
+            Continue with email
+          </button>
 
-        <div className="form-group">
-          <label>Password</label>
-          <div className="password-input">
-            <input
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Min 12 chars, uppercase, lowercase, number, special char"
-              value={password}
-              onChange={(e) => handlePasswordChange(e.target.value)}
-              required
-              minLength={12}
-            />
-            <button
-              type="button"
-              className="toggle-password"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? '👁️' : '👁️‍🗨️'}
+          <div className="divider">or continue with</div>
+
+          <div className="social-auth">
+            <button onClick={handleGoogleSignUp} className="btn-social" disabled={loading}>
+              <img src="/google-icon.svg" alt="Google" /> Google
             </button>
           </div>
-          {password && (
-            <div style={{
-              fontSize: '12px',
-              marginTop: '4px',
-              color: passwordStrength === 'Strong password' ? '#10b981' : '#f59e0b'
-            }}>
-              {passwordStrength}
+
+          <p className="toggle-form">
+            Already have an account? <button onClick={onToggle}>Log in</button>
+          </p>
+        </>
+      ) : (
+        // Full registration form
+        <>
+          <h2>Create Account</h2>
+
+          <form onSubmit={handleSubmit}>
+            <div className="form-row">
+              <div className="form-group">
+                <label>First Name</label>
+                <input
+                  type="text"
+                  placeholder="Luna"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Last Name</label>
+                <input
+                  type="text"
+                  placeholder="Quinn"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
+                />
+              </div>
             </div>
-          )}
-        </div>
 
-        <div className="checkbox-group">
-          <label>
-            <input
-              type="checkbox"
-              checked={acceptTerms}
-              onChange={(e) => setAcceptTerms(e.target.checked)}
-            />
-            I accept{' '}
-            <a href="/terms" target="_blank" rel="noopener noreferrer">
-              Terms of Use
-            </a>{' '}
-            and{' '}
-            <a href="/privacy" target="_blank" rel="noopener noreferrer">
-              Privacy Policy
-            </a>
-          </label>
-        </div>
+            <div className="form-group">
+              <label>Email</label>
+              <input
+                type="email"
+                placeholder="lucero@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled
+              />
+            </div>
 
-        <div className="checkbox-group">
-          <label>
-            <input
-              type="checkbox"
-              checked={subscribe}
-              onChange={(e) => setSubscribe(e.target.checked)}
-            />
-            Keep me up to date with new features & promotions
-          </label>
-        </div>
+            <div className="form-group">
+              <label>Password</label>
+              <div className="password-input">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Min 12 chars, uppercase, lowercase, number, special char"
+                  value={password}
+                  onChange={(e) => handlePasswordChange(e.target.value)}
+                  required
+                  minLength={12}
+                />
+                <button
+                  type="button"
+                  className="toggle-password"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? '👁️' : '👁️‍🗨️'}
+                </button>
+              </div>
+              {password && (
+                <div style={{
+                  fontSize: '12px',
+                  marginTop: '4px',
+                  color: passwordStrength === 'Strong password' ? '#10b981' : '#f59e0b'
+                }}>
+                  {passwordStrength}
+                </div>
+              )}
+            </div>
 
-        <button type="submit" className="btn-primary" disabled={loading}>
-          {loading ? 'Creating account...' : 'Get started'}
-        </button>
-      </form>
+            <div className="checkbox-group">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={acceptTerms}
+                  onChange={(e) => setAcceptTerms(e.target.checked)}
+                />
+                I accept{' '}
+                <a href="/terms" target="_blank" rel="noopener noreferrer">
+                  Terms of Use
+                </a>{' '}
+                and{' '}
+                <a href="/privacy" target="_blank" rel="noopener noreferrer">
+                  Privacy Policy
+                </a>
+              </label>
+            </div>
 
-      <div className="divider">or continue with</div>
+            <button type="submit" className="btn-primary" disabled={loading}>
+              {loading ? 'Creating account...' : 'Get started'}
+            </button>
+          </form>
 
-      <div className="social-auth">
-        <button onClick={handleGoogleSignUp} className="btn-social">
-          <img src="/google-icon.svg" alt="Google" /> Google
-        </button>
-      </div>
-
-      <p className="toggle-form">
-        Already have an account? <button onClick={onToggle}>Log in</button>
-      </p>
+          <p className="toggle-form">
+            Already have an account? <button onClick={onToggle}>Log in</button>
+          </p>
         </>
       )}
     </div>
