@@ -73,72 +73,89 @@ export default function LoginForm({ onToggle }: { onToggle: () => void }) {
   }
 
   const handleGoogleSignIn = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.origin + '/dashboard'
+    setLoading(true)
+    setError('')
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin + '/auth/callback',
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent'
+          }
+        }
+      })
+      if (error) {
+        console.error('Google OAuth error:', error)
+        setError('⚠️ ' + error.message)
+        setLoading(false)
       }
-    })
-    if (error) setError(error.message)
+      // Don't set loading to false on success - redirect happens
+    } catch (err: any) {
+      console.error('OAuth initialization error:', err)
+      setError('⚠️ Failed to initialize Google sign-in. Please try again.')
+      setLoading(false)
+    }
   }
 
   return (
     <div className="auth-form">
-      <h2>Welcome Back</h2>
-      
       {error && <div className="error-message">{error}</div>}
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Email</label>
           <input
             type="email"
-            placeholder="lucero@example.com"
+            placeholder="Enter your email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            style={{ padding: '16px', fontSize: '16px' }}
           />
         </div>
 
         <div className="form-group">
-          <label>Password</label>
           <div className="password-input">
             <input
               type={showPassword ? 'text' : 'password'}
-              placeholder="••••••••"
+              placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              style={{ padding: '16px', fontSize: '16px' }}
             />
             <button
               type="button"
               className="toggle-password"
               onClick={() => setShowPassword(!showPassword)}
+              aria-label="Toggle password visibility"
             >
               {showPassword ? '👁️' : '👁️‍🗨️'}
             </button>
           </div>
         </div>
 
-        <div className="forgot-password">
-          <Link to="/forgot-password">Forgot password?</Link>
-        </div>
-
-        <button type="submit" className="btn-primary" disabled={loading}>
-          {loading ? 'Signing in...' : 'Sign in'}
+        <button type="submit" className="btn-primary" disabled={loading} style={{ width: '100%', marginBottom: '16px' }}>
+          {loading ? 'Signing in...' : 'Log in'}
         </button>
       </form>
+
+      <div className="forgot-password" style={{ textAlign: 'center', marginBottom: '24px' }}>
+        <span style={{ color: 'var(--text-secondary)' }}>Forgot your password?</span>{' '}
+        <Link to="/forgot-password" style={{ color: 'var(--text-primary)', textDecoration: 'underline' }}>Reset password</Link>
+      </div>
 
       <div className="divider">or continue with</div>
 
       <div className="social-auth">
-        <button onClick={handleGoogleSignIn} className="btn-social">
+        <button onClick={handleGoogleSignIn} className="btn-social" disabled={loading}>
           <img src="/google-icon.svg" alt="Google" /> Google
         </button>
       </div>
 
       <p className="toggle-form">
-        Don't have an account? <button onClick={onToggle}>Sign up</button>
+        Don't have an account? <button onClick={onToggle}>Sign Up</button>
       </p>
     </div>
   )
