@@ -61,9 +61,18 @@ export default function VideoRoom({ session, userId, onLeave, onClose }: VideoRo
 
     const initializeJitsi = async () => {
       try {
-        await loadJitsiScript()
+        console.log('🚀 Initializing Jitsi video call...')
+        console.log('📝 User name:', userName)
+        console.log('🏠 Room name:', session.room_name)
+        console.log('🆔 Session ID:', session.id)
 
-        if (!jitsiContainerRef.current) return
+        await loadJitsiScript()
+        console.log('✅ Jitsi script loaded')
+
+        if (!jitsiContainerRef.current) {
+          console.error('❌ Jitsi container not found')
+          return
+        }
 
         const domain = 'meet.jit.si'
         const options = {
@@ -72,17 +81,25 @@ export default function VideoRoom({ session, userId, onLeave, onClose }: VideoRo
           height: '100%',
           parentNode: jitsiContainerRef.current,
           userInfo: {
-            displayName: userName
+            displayName: userName,
+            email: '' // Optional: can be left empty
           },
           configOverwrite: {
+            // Audio/Video settings - DO NOT mute by default
             startWithAudioMuted: false,
             startWithVideoMuted: false,
+
+            // Enable prejoin page so users can test audio/video before joining
+            prejoinPageEnabled: true,
+
+            // UI settings
             enableWelcomePage: false,
-            prejoinPageEnabled: false,
             disableInviteFunctions: false,
             enableClosePage: false,
+
             // Enable tile view by default (Google Meet style grid)
             startInTileView: true,
+
             // Ensure participants can see each other
             disableModeratorIndicator: false,
             // Optimized video quality settings for better performance and aspect ratio
@@ -125,7 +142,7 @@ export default function VideoRoom({ session, userId, onLeave, onClose }: VideoRo
                 high: 1500000
               }
             },
-            // Simplified toolbar for better performance
+            // Toolbar buttons - include essential controls
             toolbarButtons: [
               'microphone',
               'camera',
@@ -136,7 +153,8 @@ export default function VideoRoom({ session, userId, onLeave, onClose }: VideoRo
               'settings',
               'raisehand',
               'tileview',
-              'participants-pane'
+              'participants-pane',
+              'fodeviceselection' // Device selection for audio/video devices
             ]
           },
           interfaceConfigOverwrite: {
@@ -162,25 +180,37 @@ export default function VideoRoom({ session, userId, onLeave, onClose }: VideoRo
         }
 
         jitsiApiRef.current = new window.JitsiMeetExternalAPI(domain, options)
+        console.log('📡 Jitsi API created, waiting for connection...')
 
-        // Event handlers
-        jitsiApiRef.current.addEventListener('videoConferenceJoined', () => {
+        // Listen for when iframe is ready
+        jitsiApiRef.current.addEventListener('videoConferenceJoined', (event: any) => {
+          console.log('✅ Successfully joined video conference:', event)
           setLoading(false)
 
-          // Ensure tile view is enabled (grid layout for Google Meet style)
-          // Give it a small delay to ensure the API is fully ready
+          // Enable tile view (grid layout for Google Meet style)
           setTimeout(() => {
             try {
-              // Check if tile view is already enabled
-              jitsiApiRef.current.isVideoAvailable().then((available: boolean) => {
-                if (available) {
-                  console.log('Video is available, tile view should be active')
+              if (jitsiApiRef.current) {
+                // Execute command to enable tile view
+                jitsiApiRef.current.executeCommand('toggleTileView')
+                console.log('📹 Tile view enabled')
+
+                // Get initial participant list
+                const participants = jitsiApiRef.current.getParticipantsInfo()
+                console.log('👥 Initial participants:', participants)
+
+                if (participants && participants.length > 0) {
+                  const participantList = participants.map((p: any) => ({
+                    id: p.participantId,
+                    name: p.displayName || 'Guest'
+                  }))
+                  setParticipants(participantList)
                 }
-              })
+              }
             } catch (e) {
-              console.log('Error checking video availability:', e)
+              console.error('❌ Error enabling tile view:', e)
             }
-          }, 500)
+          }, 1000)
         })
 
         jitsiApiRef.current.addEventListener('readyToClose', () => {
@@ -188,43 +218,80 @@ export default function VideoRoom({ session, userId, onLeave, onClose }: VideoRo
         })
 
         // Track participants
-        jitsiApiRef.current.addEventListener('participantJoined', (participant: any) => {
-          console.log('Participant joined:', participant.displayName)
+        jitsiApiRef.current.addEventListener('participantJoined', (event: any) => {
+          const participantId = event.id
+          const participantName = event.displayName || 'Guest'
+
+          console.log('👋 Participant joined:', { id: participantId, name: participantName })
+
           setParticipants(prev => {
             // Check if participant already exists
-            if (prev.find(p => p.id === participant.id)) {
+            if (prev.find(p => p.id === participantId)) {
               return prev
             }
-            return [...prev, { id: participant.id, name: participant.displayName }]
+            return [...prev, { id: participantId, name: participantName }]
           })
 
           // Show notification
           const notification = document.createElement('div')
           notification.className = 'participant-notification'
-          notification.textContent = `${participant.displayName} joined`
+          notification.textContent = `${participantName} joined`
           document.body.appendChild(notification)
           setTimeout(() => notification.remove(), 3000)
         })
 
-        jitsiApiRef.current.addEventListener('participantLeft', (participant: any) => {
-          console.log('Participant left:', participant.displayName)
-          setParticipants(prev => prev.filter(p => p.id !== participant.id))
+        jitsiApiRef.current.addEventListener('participantLeft', (event: any) => {
+          const participantId = event.id
+          const participantName = event.displayName || 'Guest'
+
+          console.log('👋 Participant left:', { id: participantId, name: participantName })
+
+          setParticipants(prev => prev.filter(p => p.id !== participantId))
 
           // Show notification
           const notification = document.createElement('div')
           notification.className = 'participant-notification left'
-          notification.textContent = `${participant.displayName} left`
+          notification.textContent = `${participantName} left`
           document.body.appendChild(notification)
           setTimeout(() => notification.remove(), 3000)
         })
 
-        jitsiApiRef.current.addEventListener('videoConferenceLeft', () => {
-          console.log('Left conference')
+        // Track display name changes
+        jitsiApiRef.current.addEventListener('displayNameChange', (event: any) => {
+          console.log('📝 Display name changed:', event)
+          const participantId = event.id
+          const newName = event.displayname || 'Guest'
+
+          setParticipants(prev =>
+            prev.map(p => p.id === participantId ? { ...p, name: newName } : p)
+          )
         })
 
+        jitsiApiRef.current.addEventListener('videoConferenceLeft', () => {
+          console.log('👋 Left conference')
+          handleLeave()
+        })
+
+        // Listen for errors
+        jitsiApiRef.current.addEventListener('errorOccurred', (error: any) => {
+          console.error('❌ Jitsi error occurred:', error)
+        })
+
+        // Listen for audio/video mute events
+        jitsiApiRef.current.addEventListener('audioMuteStatusChanged', (event: any) => {
+          console.log('🎤 Audio mute status:', event.muted ? 'Muted' : 'Unmuted')
+        })
+
+        jitsiApiRef.current.addEventListener('videoMuteStatusChanged', (event: any) => {
+          console.log('📹 Video mute status:', event.muted ? 'Muted' : 'Unmuted')
+        })
+
+        console.log('✅ Jitsi API initialized successfully')
+
       } catch (error) {
-        console.error('Error initializing Jitsi:', error)
-        alert('Failed to initialize video call. Please try again.')
+        console.error('❌ Error initializing Jitsi:', error)
+        setLoading(false)
+        alert('Failed to initialize video call. Please check your internet connection and try again.')
         onLeave()
       }
     }
