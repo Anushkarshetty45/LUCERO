@@ -11,13 +11,14 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Supabase URL or Anonymous Key is not configured. Please check your .env file.')
 }
 
-// Log configuration (masked key for security)
-console.log('Supabase Config:', {
-  url: supabaseUrl,
-  keyPrefix: supabaseAnonKey?.substring(0, 20) + '...',
-  hasUrl: !!supabaseUrl,
-  hasKey: !!supabaseAnonKey
-})
+// Log configuration only in development (never log keys in production)
+if (process.env.NODE_ENV === 'development') {
+  console.log('Supabase Config:', {
+    hasUrl: !!supabaseUrl,
+    hasKey: !!supabaseAnonKey,
+    environment: process.env.NODE_ENV
+  })
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
@@ -30,10 +31,13 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 
 // Add global error handler for debugging auth state changes
 supabase.auth.onAuthStateChange((event, session) => {
-  console.log('Auth state changed:', event, {
-    hasSession: !!session,
-    userId: session?.user?.id,
-    userEmail: session?.user?.email
-  })
+  // Only log detailed info in development to protect user privacy
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Auth state changed:', event, {
+      hasSession: !!session,
+      userId: session?.user?.id
+      // Never log email or other PII even in development
+    })
+  }
 })
 
