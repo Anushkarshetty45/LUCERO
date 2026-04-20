@@ -43,3 +43,96 @@ export const stripHTML = (dirty: string): string => {
   })
 }
 
+/**
+ * Validate file upload security
+ * @param file - File object to validate
+ * @param maxSizeMB - Maximum file size in MB
+ * @param allowedTypes - Array of allowed MIME types
+ * @returns Validation result
+ */
+export const validateFileUpload = (
+  file: File,
+  maxSizeMB: number = 10,
+  allowedTypes: string[] = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg']
+): { valid: boolean; error?: string } => {
+  const maxSizeBytes = maxSizeMB * 1024 * 1024
+  if (file.size > maxSizeBytes) {
+    return { valid: false, error: `File size exceeds ${maxSizeMB}MB limit` }
+  }
+
+  if (!allowedTypes.includes(file.type)) {
+    return { valid: false, error: `File type not allowed` }
+  }
+
+  // Check for malicious file names
+  const dangerousPatterns = [/\.exe$/i, /\.bat$/i, /\.sh$/i, /\.cmd$/i, /\.\./]
+  if (dangerousPatterns.some(pattern => pattern.test(file.name))) {
+    return { valid: false, error: 'File name contains dangerous patterns' }
+  }
+
+  return { valid: true }
+}
+
+/**
+ * Sanitize input to prevent injection attacks
+ */
+export const sanitizeInput = (input: string): string => {
+  return input
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+=/gi, '')
+    .trim()
+}
+
+/**
+ * Validate email format securely
+ */
+export const validateEmail = (email: string): { valid: boolean; error?: string } => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) {
+    return { valid: false, error: 'Invalid email format' }
+  }
+  if (email.length > 254) {
+    return { valid: false, error: 'Email too long' }
+  }
+  return { valid: true }
+}
+
+/**
+ * Mask sensitive data for logging
+ */
+export const maskSensitiveData = (data: string, visibleChars: number = 4): string => {
+  if (data.length <= visibleChars) return '****'
+  return data.substring(0, visibleChars) + '*'.repeat(data.length - visibleChars)
+}
+
+/**
+ * Rate limiter using localStorage
+ */
+export const checkRateLimit = (
+  key: string,
+  maxAttempts: number = 5,
+  windowMs: number = 60000
+): { allowed: boolean; remainingAttempts: number } => {
+  const now = Date.now()
+  const storageKey = `ratelimit_${key}`
+
+  try {
+    const stored = localStorage.getItem(storageKey)
+    const data = stored ? JSON.parse(stored) : { attempts: [] }
+
+    data.attempts = data.attempts.filter((timestamp: number) => now - timestamp < windowMs)
+
+    if (data.attempts.length >= maxAttempts) {
+      return { allowed: false, remainingAttempts: 0 }
+    }
+
+    data.attempts.push(now)
+    localStorage.setItem(storageKey, JSON.stringify(data))
+
+    return { allowed: true, remainingAttempts: maxAttempts - data.attempts.length }
+  } catch {
+    return { allowed: true, remainingAttempts: maxAttempts }
+  }
+}
+
