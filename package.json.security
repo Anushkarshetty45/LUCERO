@@ -1,0 +1,24 @@
+{
+  "name": "lucero-security-scripts",
+  "description": "Security scripts and configurations for LUCERO",
+  "scripts": {
+    "security:audit": "npm audit --audit-level=moderate",
+    "security:audit:fix": "npm audit fix",
+    "security:scan": "npm run security:audit && npm run security:check-deps",
+    "security:check-deps": "npm outdated --long",
+    "security:update-deps": "npm update",
+    "security:check-secrets": "git diff --cached | grep -E '(sk-|pk_|AIza|eyJ|ghp_|gho_)' || echo 'No secrets detected'",
+    "security:check-env": "if [ -f .env ]; then echo '⚠️  .env file exists - make sure it is not committed'; else echo '✅ No .env file in root'; fi",
+    "security:verify-gitignore": "grep -q '.env' .gitignore && echo '✅ .env in .gitignore' || echo '⚠️  .env NOT in .gitignore'",
+    "security:pre-commit": "npm run security:check-secrets && npm run security:check-env",
+    "security:report": "npm audit --json > security-audit-report.json && echo 'Security audit report saved to security-audit-report.json'"
+  },
+  "devDependencies": {
+    "husky": "^8.0.3",
+    "eslint-plugin-security": "^1.7.1"
+  },
+  "notes": {
+    "usage": "Add these scripts to your main package.json file",
+    "setup": "1. npm install husky --save-dev  2. npx husky install  3. npx husky add .husky/pre-commit 'npm run security:pre-commit'"
+  }
+}
