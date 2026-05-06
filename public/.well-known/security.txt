@@ -1,0 +1,25 @@
+# Security Policy
+# Report security vulnerabilities responsibly
+
+Contact: mailto:security@lucero.app
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: en
+Canonical: https://lucero.app/.well-known/security.txt
+
+# Security Hall of Fame
+# Thank you to all security researchers who help keep LUCERO secure!
+
+# Reporting Guidelines:
+# 1. Provide detailed steps to reproduce the vulnerability
+# 2. Include the impact and severity assessment
+# 3. Do not publicly disclose until we've had time to address
+# 4. Allow 90 days for remediation before public disclosure
+
+# Out of Scope:
+# - Social engineering attacks
+# - Physical attacks
+# - Denial of Service (DoS/DDoS)
+# - Spam or social media issues
+# - Issues in third-party dependencies (report to the maintainers)
+
+# Policy: https://lucero.app/security
