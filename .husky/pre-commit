@@ -1,0 +1,39 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# LUCERO Security Pre-Commit Hook
+# Prevents committing sensitive data
+
+echo "🔒 Running security checks..."
+
+# Check for sensitive files
+SENSITIVE_FILES=".env .env.local .env.production .env.development *.pem *.key *.p12 credentials.json"
+for file in $SENSITIVE_FILES; do
+  if git diff --cached --name-only | grep -q "$file"; then
+    echo "❌ ERROR: Attempting to commit sensitive file: $file"
+    echo "   Remove it from the commit or add to .gitignore"
+    exit 1
+  fi
+done
+
+# Check for hardcoded secrets in staged files
+if git diff --cached | grep -qE "(sk-[a-zA-Z0-9]{32,}|pk_[a-zA-Z0-9]{32,}|AIza[a-zA-Z0-9_-]{35}|ghp_[a-zA-Z0-9]{36}|gho_[a-zA-Z0-9]{36})"; then
+  echo "❌ ERROR: Potential API key found in staged changes"
+  echo "   Remove hardcoded secrets before committing"
+  exit 1
+fi
+
+# Check for Supabase keys
+if git diff --cached | grep -qE "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"; then
+  echo "❌ ERROR: Supabase JWT token found in staged changes"
+  echo "   Never commit real Supabase keys!"
+  exit 1
+fi
+
+# Check for common password patterns
+if git diff --cached | grep -qiE "(password|passwd|pwd)\\s*=\\s*['\"][^'\"]{1,}['\"]"; then
+  echo "⚠️  WARNING: Potential hardcoded password detected"
+  echo "   Please review your changes carefully"
+fi
+
+echo "✅ Security checks passed"
