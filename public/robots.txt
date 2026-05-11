@@ -1,3 +1,29 @@
+# LUCERO Robots.txt
 # https://www.robotstxt.org/robotstxt.html
+
 User-agent: *
-Disallow:
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /*.json$
+Disallow: /*.env$
+
+# Allow public pages
+Allow: /
+Allow: /auth
+Allow: /privacy
+Allow: /terms
+
+# Security - block sensitive paths
+Disallow: /test/
+Disallow: /temp/
+Disallow: /.git/
+Disallow: /node_modules/
+Disallow: /.env
+Disallow: /config/
+
+# Crawl delay (seconds)
+Crawl-delay: 10
+
+# Sitemap
+Sitemap: https://lucero.app/sitemap.xml
