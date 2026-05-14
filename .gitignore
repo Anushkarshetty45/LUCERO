@@ -6,8 +6,16 @@ build
 .env.development.local
 .env.test.local
 .env.production.local
+.env.save
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .idea
 .vscode
+
+# Security: Never commit files with secrets
+*.key
+*.pem
+*.p12
+secrets/
+credentials.json
