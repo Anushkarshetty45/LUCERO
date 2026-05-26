@@ -269,13 +269,6 @@ Contributions are welcome! Here's how:
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
----
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
 
 ## Acknowledgments
 
@@ -293,10 +286,4 @@ Built with amazing open-source tools:
 phone number:6361889565
 email id: anushkarshetty45@gmail.com
 
-Have questions or feedback? Open an issue on GitHub!
-
 ---
-
-**Made with ❤️ for students who want to study smarter, not harder.**
-
-⭐ Star this repo if you find it helpful!
