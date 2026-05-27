@@ -249,13 +249,7 @@ LUCERO/
 - Check that all tables are created
 - Ensure Row Level Security policies are set up
 
-### Build Failures
-```bash
-# Clear and reinstall
-rm -rf node_modules package-lock.json
-npm install
-npm start
-```
+
 
 ---
 
