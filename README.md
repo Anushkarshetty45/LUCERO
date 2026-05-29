@@ -244,11 +244,6 @@ LUCERO/
 - Check lighting - face detection needs adequate light
 - Try Chrome/Firefox (better webcam support)
 
-### Database Errors
-- Verify Supabase credentials in `.env`
-- Check that all tables are created
-- Ensure Row Level Security policies are set up
-
 
 
 ---
