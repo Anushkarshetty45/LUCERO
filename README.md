@@ -231,19 +231,6 @@ LUCERO/
 
 ---
 
-## Troubleshooting
-
-### PDF Analysis Not Working
-- Verify your Gemini API key is correct
-- Check that the PDF has selectable text (not scanned images)
-- Try with a smaller PDF first
-
-### Face Detection Issues
-- Allow camera permissions in browser
-- Ensure models are downloaded to `/public/models/`
-- Check lighting - face detection needs adequate light
-- Try Chrome/Firefox (better webcam support)
-
 
 
 ---
