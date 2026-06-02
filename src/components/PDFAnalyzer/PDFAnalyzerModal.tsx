@@ -278,7 +278,8 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
     setTitle(data.title)
     setSummary(data.summary)
     setExplanation(data.explanation)
-    setPdfContent('') // We don't store full content
+    // Use stored summary + explanation as content context for flashcards/quiz/mindmap
+    setPdfContent(`${data.summary}\n\n${data.explanation}`)
     setPageCount(data.page_count)
     setActiveTab('analysis')
   }

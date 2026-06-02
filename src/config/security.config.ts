@@ -56,7 +56,6 @@ export const CONTENT_SECURITY_POLICY = {
     "'self'",
     "'unsafe-inline'", // Required for React
     "'unsafe-eval'", // Required for development
-    'https://meet.jit.si',
     'https://generativelanguage.googleapis.com'
   ],
   'style-src': ["'self'", "'unsafe-inline'"],
@@ -65,16 +64,16 @@ export const CONTENT_SECURITY_POLICY = {
   'connect-src': [
     "'self'",
     'https://*.supabase.co',
+    'wss://*.supabase.co',
     'https://generativelanguage.googleapis.com',
-    'https://meet.jit.si',
+    'https://0.peerjs.com',
+    'wss://0.peerjs.com',
+    'https://*.peerjs.com',
+    'wss://*.peerjs.com',
     'https://api.pwnedpasswords.com'
   ],
-  'frame-src': [
-    "'self'",
-    'https://meet.jit.si',
-    'https://*.supabase.co'
-  ],
-  'media-src': ["'self'", 'blob:', 'https://meet.jit.si'],
+  'frame-src': ["'self'", 'https://*.supabase.co'],
+  'media-src': ["'self'", 'blob:'],
   'object-src': ["'none'"],
   'base-uri': ["'self'"],
   'form-action': ["'self'"],
