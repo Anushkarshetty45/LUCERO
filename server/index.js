@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const Stripe = require('stripe');
 require('dotenv').config();
 
 const app = express();
@@ -160,7 +161,147 @@ app.post('/api/claude', async (req, res) => {
   }
 });
 
+// ── Stripe ────────────────────────────────────────────────────────────────────
+const stripe = process.env.STRIPE_SECRET_KEY ? Stripe(process.env.STRIPE_SECRET_KEY) : null;
+
+// Create Stripe checkout session
+app.post('/api/stripe/create-checkout-session', async (req, res) => {
+  if (!stripe) return res.status(500).json({ error: 'Stripe is not configured on the server.' });
+
+  const { priceId, userId, email } = req.body;
+  if (!priceId || !userId || !email) {
+    return res.status(400).json({ error: 'priceId, userId, and email are required.' });
+  }
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      customer_email: email,
+      line_items: [{ price: priceId, quantity: 1 }],
+      metadata: { userId },
+      success_url: `${process.env.CLIENT_URL || 'http://localhost:3000'}/dashboard?payment=success`,
+      cancel_url: `${process.env.CLIENT_URL || 'http://localhost:3000'}/?payment=cancelled`,
+    });
+
+    res.json({ sessionId: session.id });
+  } catch (err) {
+    console.error('Stripe checkout error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Open Stripe customer portal (manage subscription / cancel)
+app.post('/api/stripe/create-portal-session', async (req, res) => {
+  if (!stripe) return res.status(500).json({ error: 'Stripe is not configured on the server.' });
+
+  const { userId } = req.body;
+  if (!userId) return res.status(400).json({ error: 'userId is required.' });
+
+  try {
+    // Look up the Stripe customer ID from your database
+    const { createClient } = require('@supabase/supabase-js');
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('stripe_customer_id')
+      .eq('id', userId)
+      .single();
+
+    if (error || !data?.stripe_customer_id) {
+      return res.status(404).json({ error: 'No billing account found for this user.' });
+    }
+
+    const portalSession = await stripe.billingPortal.sessions.create({
+      customer: data.stripe_customer_id,
+      return_url: `${process.env.CLIENT_URL || 'http://localhost:3000'}/settings`,
+    });
+
+    res.json({ url: portalSession.url });
+  } catch (err) {
+    console.error('Stripe portal error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Stripe webhook — update user subscription status in Supabase
+app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  if (!stripe) return res.status(500).json({ error: 'Stripe not configured.' });
+
+  const sig = req.headers['stripe-signature'];
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+  } catch (err) {
+    console.error('Webhook signature error:', err.message);
+    return res.status(400).json({ error: `Webhook error: ${err.message}` });
+  }
+
+  const { createClient } = require('@supabase/supabase-js');
+  const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  );
+
+  try {
+    switch (event.type) {
+      case 'checkout.session.completed': {
+        const session = event.data.object;
+        const userId = session.metadata?.userId;
+        const customerId = session.customer;
+        if (userId && customerId) {
+          await supabase.from('profiles').update({
+            stripe_customer_id: customerId,
+            subscription_plan: 'pro',
+            subscription_status: 'active',
+          }).eq('id', userId);
+        }
+        break;
+      }
+      case 'customer.subscription.updated': {
+        const sub = event.data.object;
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('stripe_customer_id', sub.customer)
+          .single();
+        if (profile) {
+          await supabase.from('profiles').update({
+            subscription_status: sub.status === 'active' ? 'active' : 'inactive',
+          }).eq('id', profile.id);
+        }
+        break;
+      }
+      case 'customer.subscription.deleted': {
+        const sub = event.data.object;
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('stripe_customer_id', sub.customer)
+          .single();
+        if (profile) {
+          await supabase.from('profiles').update({
+            subscription_plan: 'free',
+            subscription_status: 'inactive',
+          }).eq('id', profile.id);
+        }
+        break;
+      }
+    }
+  } catch (err) {
+    console.error('Webhook handler error:', err);
+  }
+
+  res.json({ received: true });
+});
+
 app.listen(PORT, () => {
-  console.log(`\n🚀 Claude API Proxy Server running on http://localhost:${PORT}`);
-  console.log(`📡 Ready to proxy requests from http://localhost:3001\n`);
+  console.log(`\n🚀 Server running on http://localhost:${PORT}`);
+  console.log(`📡 Stripe integration: ${stripe ? 'enabled' : 'disabled (no STRIPE_SECRET_KEY)'}\n`);
 });
