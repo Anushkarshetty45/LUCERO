@@ -154,8 +154,7 @@ export default function Home() {
         <div className="nav-content">
           <h1 className="logo">LUCERO</h1>
           <div className="nav-links">
-            <Link to="/auth?mode=login" className="nav-link">Log In</Link>
-            <Link to="/auth?mode=register" className="nav-button">Start Now</Link>
+            <Link to="/auth" className="nav-button">Log In</Link>
           </div>
         </div>
       </nav>

@@ -109,10 +109,10 @@ export default function Dashboard() {
           return {
             id: user!.id,
             email: user!.email || '',
-            first_name: user!.user_metadata?.first_name || user!.email?.split('@')[0] || 'there',
-            last_name: user!.user_metadata?.last_name || '',
-            full_name: user!.user_metadata?.full_name || user!.email?.split('@')[0] || 'User',
-            avatar_url: user!.user_metadata?.avatar_url || '',
+            first_name: user!.user_metadata?.given_name || user!.user_metadata?.first_name || user!.user_metadata?.name?.split(' ')[0] || localStorage.getItem('lucero-signup-name')?.split(' ')[0] || user!.email?.split('@')[0] || 'there',
+            last_name: user!.user_metadata?.family_name || user!.user_metadata?.last_name || localStorage.getItem('lucero-signup-name')?.split(' ').slice(1).join(' ') || '',
+            full_name: user!.user_metadata?.full_name || user!.user_metadata?.name || localStorage.getItem('lucero-signup-name') || user!.email?.split('@')[0] || 'User',
+            avatar_url: user!.user_metadata?.avatar_url || user!.user_metadata?.picture || '',
             subscription_plan: 'free' as const,
             subscription_status: 'active' as const,
             monthly_pdf_uploads: 0,
@@ -130,6 +130,7 @@ export default function Dashboard() {
 
       setProfile(profileResult)
       setTodayStudyTime(studyTime)
+      localStorage.removeItem('lucero-signup-name')
 
       // Show courses immediately with basic data (no spinner waiting for progress)
       setCourses(coursesData.map(course => ({ ...course, total_lessons: 0, last_accessed: null })))
@@ -233,7 +234,7 @@ export default function Dashboard() {
     )
   }
 
-  const firstName = profile?.first_name || 'there'
+  const firstName = profile?.first_name || user?.user_metadata?.given_name || user?.user_metadata?.name?.split(' ')[0] || 'there'
   const greeting = getGreeting(firstName)
   const quote = getMotivationalQuote()
 

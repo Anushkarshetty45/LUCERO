@@ -34,6 +34,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   const { user } = useAuth()
   const currentSeason = useSeason()
 
+  // Start with midnight-cosmos — the effect will apply the user's saved theme once auth resolves
   const [currentTheme, setCurrentTheme] = useState<ThemeName>('midnight-cosmos')
   const [particlesEnabled, setParticlesEnabledState] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
@@ -77,7 +78,10 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
         setIsLoading(true)
 
         // If user is NOT logged in, always use midnight-cosmos (for Home, Auth pages)
+        // Also clear any saved theme so it doesn't bleed through on next load
         if (!user) {
+          localStorage.removeItem('lucero-theme')
+          localStorage.removeItem('lucero-particles')
           setCurrentTheme('midnight-cosmos')
           applyTheme('midnight-cosmos')
           setIsLoading(false)
