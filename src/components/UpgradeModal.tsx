@@ -1,29 +1,41 @@
 import { useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
-import { redirectToCheckout, redirectToCustomerPortal, PLANS } from '../services/stripe'
+import { openRazorpayCheckout, openCustomerPortal, PLANS } from '../services/razorpay'
 import './UpgradeModal.css'
 
 interface UpgradeModalProps {
   onClose: () => void
+  onSuccess?: () => void
 }
 
-export default function UpgradeModal({ onClose }: UpgradeModalProps) {
+export default function UpgradeModal({ onClose, onSuccess }: UpgradeModalProps) {
   const { user } = useAuth()
   const [isAnnual, setIsAnnual] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const handleUpgrade = async () => {
+  const handleUpgrade = () => {
     if (!user?.email) return
     setLoading(true)
     setError('')
-    try {
-      const plan = isAnnual ? PLANS.pro_annual : PLANS.pro_monthly
-      await redirectToCheckout(plan.priceId, user.id, user.email)
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong. Please try again.')
-      setLoading(false)
-    }
+
+    const plan = isAnnual ? PLANS.pro_annual : PLANS.pro_monthly
+
+    openRazorpayCheckout({
+      planId: plan.planId,
+      userId: user.id,
+      name: user.user_metadata?.full_name || user.user_metadata?.name || 'Student',
+      email: user.email,
+      onSuccess: (_paymentId, _subscriptionId) => {
+        setLoading(false)
+        onSuccess?.()
+        onClose()
+      },
+      onError: (err) => {
+        if (err !== 'Payment cancelled') setError(err)
+        setLoading(false)
+      },
+    })
   }
 
   const handleManageBilling = async () => {
@@ -31,12 +43,14 @@ export default function UpgradeModal({ onClose }: UpgradeModalProps) {
     setLoading(true)
     setError('')
     try {
-      await redirectToCustomerPortal(user.id)
+      await openCustomerPortal(user.id)
     } catch (err: any) {
       setError(err.message || 'Could not open billing portal.')
-      setLoading(false)
     }
+    setLoading(false)
   }
+
+  const plan = isAnnual ? PLANS.pro_annual : PLANS.pro_monthly
 
   return (
     <div className="upgrade-overlay" onClick={onClose}>
@@ -65,14 +79,14 @@ export default function UpgradeModal({ onClose }: UpgradeModalProps) {
 
         <div className="upgrade-price">
           <span className="upgrade-amount">
-            ${isAnnual ? PLANS.pro_annual.monthlyEquivalent : PLANS.pro_monthly.price}
+            {isAnnual ? PLANS.pro_annual.monthlyEquivalent : PLANS.pro_monthly.priceDisplay}
           </span>
           <span className="upgrade-period">/month</span>
         </div>
         <p className="upgrade-billing">
           {isAnnual
-            ? `$${PLANS.pro_annual.price} billed annually`
-            : `$${PLANS.pro_monthly.price} billed monthly`}
+            ? `${PLANS.pro_annual.priceDisplay} billed annually`
+            : `${PLANS.pro_monthly.priceDisplay} billed monthly`}
         </p>
 
         <ul className="upgrade-features">
@@ -80,7 +94,7 @@ export default function UpgradeModal({ onClose }: UpgradeModalProps) {
           <li>Unlimited AI chat messages</li>
           <li>Advanced quizzes, flashcards & mind maps</li>
           <li>Live Study Mode with face detection</li>
-          <li>Group Study & Video Rooms</li>
+          <li>Group Study & Video Rooms with screen share</li>
           <li>Unlimited Courses & Topics</li>
           <li>All premium themes</li>
           <li>Priority support</li>
@@ -93,7 +107,7 @@ export default function UpgradeModal({ onClose }: UpgradeModalProps) {
           onClick={handleUpgrade}
           disabled={loading}
         >
-          {loading ? 'Redirecting to payment…' : `Upgrade to Pro — $${isAnnual ? PLANS.pro_annual.monthlyEquivalent : PLANS.pro_monthly.price}/mo`}
+          {loading ? 'Opening payment…' : `Pay ${plan.priceDisplay}${isAnnual ? '/year' : '/month'}`}
         </button>
 
         <button
@@ -105,7 +119,7 @@ export default function UpgradeModal({ onClose }: UpgradeModalProps) {
         </button>
 
         <p className="upgrade-footer">
-          Secured by Stripe · Cancel anytime · No hidden fees
+          Secured by Razorpay · UPI, Cards, NetBanking accepted · Cancel anytime
         </p>
       </div>
     </div>

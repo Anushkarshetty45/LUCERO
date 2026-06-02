@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const Stripe = require('stripe');
+const Razorpay = require('razorpay');
+const crypto = require('crypto');
 require('dotenv').config();
 
 const app = express();
@@ -161,147 +162,159 @@ app.post('/api/claude', async (req, res) => {
   }
 });
 
-// ── Stripe ────────────────────────────────────────────────────────────────────
-const stripe = process.env.STRIPE_SECRET_KEY ? Stripe(process.env.STRIPE_SECRET_KEY) : null;
+// ── Razorpay ─────────────────────────────────────────────────────────────────
+const razorpay = process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET
+  ? new Razorpay({ key_id: process.env.RAZORPAY_KEY_ID, key_secret: process.env.RAZORPAY_KEY_SECRET })
+  : null;
 
-// Create Stripe checkout session
-app.post('/api/stripe/create-checkout-session', async (req, res) => {
-  if (!stripe) return res.status(500).json({ error: 'Stripe is not configured on the server.' });
+const getSupabase = () => {
+  const { createClient } = require('@supabase/supabase-js');
+  return createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+};
 
-  const { priceId, userId, email } = req.body;
-  if (!priceId || !userId || !email) {
-    return res.status(400).json({ error: 'priceId, userId, and email are required.' });
+// Create a Razorpay subscription
+app.post('/api/razorpay/create-subscription', async (req, res) => {
+  if (!razorpay) return res.status(500).json({ error: 'Razorpay is not configured on the server.' });
+
+  const { planId, userId, email } = req.body;
+  if (!planId || !userId || !email) {
+    return res.status(400).json({ error: 'planId, userId, and email are required.' });
   }
 
   try {
-    const session = await stripe.checkout.sessions.create({
-      mode: 'subscription',
-      payment_method_types: ['card'],
-      customer_email: email,
-      line_items: [{ price: priceId, quantity: 1 }],
-      metadata: { userId },
-      success_url: `${process.env.CLIENT_URL || 'http://localhost:3000'}/dashboard?payment=success`,
-      cancel_url: `${process.env.CLIENT_URL || 'http://localhost:3000'}/?payment=cancelled`,
+    const subscription = await razorpay.subscriptions.create({
+      plan_id: planId,
+      customer_notify: 1,
+      quantity: 1,
+      total_count: 12, // 12 billing cycles (1 year for monthly, 12 years for annual — Razorpay handles this)
+      notes: { userId, email },
     });
 
-    res.json({ sessionId: session.id });
+    res.json({ subscriptionId: subscription.id, keyId: process.env.RAZORPAY_KEY_ID });
   } catch (err) {
-    console.error('Stripe checkout error:', err);
-    res.status(500).json({ error: err.message });
+    console.error('Razorpay create-subscription error:', err);
+    res.status(500).json({ error: err.error?.description || err.message });
   }
 });
 
-// Open Stripe customer portal (manage subscription / cancel)
-app.post('/api/stripe/create-portal-session', async (req, res) => {
-  if (!stripe) return res.status(500).json({ error: 'Stripe is not configured on the server.' });
+// Verify payment signature and activate Pro in database
+app.post('/api/razorpay/verify-payment', async (req, res) => {
+  const { razorpay_payment_id, razorpay_subscription_id, razorpay_signature, userId } = req.body;
 
-  const { userId } = req.body;
-  if (!userId) return res.status(400).json({ error: 'userId is required.' });
+  if (!razorpay_payment_id || !razorpay_subscription_id || !razorpay_signature || !userId) {
+    return res.status(400).json({ error: 'Missing required payment verification fields.' });
+  }
+
+  // Verify signature
+  const body = `${razorpay_payment_id}|${razorpay_subscription_id}`;
+  const expectedSignature = crypto
+    .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+    .update(body)
+    .digest('hex');
+
+  if (expectedSignature !== razorpay_signature) {
+    return res.status(400).json({ error: 'Invalid payment signature. Payment could not be verified.' });
+  }
+
+  // Update user to Pro in Supabase
+  try {
+    const supabase = getSupabase();
+    await supabase.from('profiles').update({
+      subscription_plan: 'pro',
+      subscription_status: 'active',
+      razorpay_subscription_id,
+    }).eq('id', userId);
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Supabase update error after payment:', err);
+    res.status(500).json({ error: 'Payment verified but failed to activate subscription. Contact support.' });
+  }
+});
+
+// Razorpay webhook — handle subscription lifecycle events
+app.post('/api/razorpay/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  const signature = req.headers['x-razorpay-signature'];
+  const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+
+  const expectedSignature = crypto
+    .createHmac('sha256', webhookSecret)
+    .update(req.body)
+    .digest('hex');
+
+  if (expectedSignature !== signature) {
+    return res.status(400).json({ error: 'Invalid webhook signature.' });
+  }
+
+  const event = JSON.parse(req.body.toString());
+  const supabase = getSupabase();
 
   try {
-    // Look up the Stripe customer ID from your database
-    const { createClient } = require('@supabase/supabase-js');
-    const supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
-    );
+    const subscriptionId = event.payload?.subscription?.entity?.id;
+    if (!subscriptionId) return res.json({ received: true });
 
-    const { data, error } = await supabase
+    const { data: profile } = await supabase
       .from('profiles')
-      .select('stripe_customer_id')
-      .eq('id', userId)
+      .select('id')
+      .eq('razorpay_subscription_id', subscriptionId)
       .single();
 
-    if (error || !data?.stripe_customer_id) {
-      return res.status(404).json({ error: 'No billing account found for this user.' });
-    }
+    if (!profile) return res.json({ received: true });
 
-    const portalSession = await stripe.billingPortal.sessions.create({
-      customer: data.stripe_customer_id,
-      return_url: `${process.env.CLIENT_URL || 'http://localhost:3000'}/settings`,
-    });
-
-    res.json({ url: portalSession.url });
-  } catch (err) {
-    console.error('Stripe portal error:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Stripe webhook — update user subscription status in Supabase
-app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-  if (!stripe) return res.status(500).json({ error: 'Stripe not configured.' });
-
-  const sig = req.headers['stripe-signature'];
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
-  let event;
-  try {
-    event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
-  } catch (err) {
-    console.error('Webhook signature error:', err.message);
-    return res.status(400).json({ error: `Webhook error: ${err.message}` });
-  }
-
-  const { createClient } = require('@supabase/supabase-js');
-  const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-  );
-
-  try {
-    switch (event.type) {
-      case 'checkout.session.completed': {
-        const session = event.data.object;
-        const userId = session.metadata?.userId;
-        const customerId = session.customer;
-        if (userId && customerId) {
-          await supabase.from('profiles').update({
-            stripe_customer_id: customerId,
-            subscription_plan: 'pro',
-            subscription_status: 'active',
-          }).eq('id', userId);
-        }
+    switch (event.event) {
+      case 'subscription.activated':
+        await supabase.from('profiles').update({
+          subscription_plan: 'pro',
+          subscription_status: 'active',
+        }).eq('id', profile.id);
         break;
-      }
-      case 'customer.subscription.updated': {
-        const sub = event.data.object;
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('stripe_customer_id', sub.customer)
-          .single();
-        if (profile) {
-          await supabase.from('profiles').update({
-            subscription_status: sub.status === 'active' ? 'active' : 'inactive',
-          }).eq('id', profile.id);
-        }
+
+      case 'subscription.cancelled':
+      case 'subscription.completed':
+        await supabase.from('profiles').update({
+          subscription_plan: 'free',
+          subscription_status: 'inactive',
+        }).eq('id', profile.id);
         break;
-      }
-      case 'customer.subscription.deleted': {
-        const sub = event.data.object;
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('stripe_customer_id', sub.customer)
-          .single();
-        if (profile) {
-          await supabase.from('profiles').update({
-            subscription_plan: 'free',
-            subscription_status: 'inactive',
-          }).eq('id', profile.id);
-        }
+
+      case 'subscription.charged':
+        await supabase.from('profiles').update({
+          subscription_status: 'active',
+        }).eq('id', profile.id);
         break;
-      }
     }
   } catch (err) {
-    console.error('Webhook handler error:', err);
+    console.error('Razorpay webhook handler error:', err);
   }
 
   res.json({ received: true });
 });
 
+// Open billing management (Razorpay doesn't have a hosted portal, so we link to support/cancel page)
+app.post('/api/razorpay/portal', async (req, res) => {
+  const { userId } = req.body;
+  if (!userId) return res.status(400).json({ error: 'userId is required.' });
+
+  try {
+    const supabase = getSupabase();
+    const { data } = await supabase
+      .from('profiles')
+      .select('razorpay_subscription_id')
+      .eq('id', userId)
+      .single();
+
+    if (!data?.razorpay_subscription_id) {
+      return res.status(404).json({ error: 'No active subscription found.' });
+    }
+
+    // Link to Razorpay's subscription management page
+    res.json({ url: `https://dashboard.razorpay.com` });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`\n🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📡 Stripe integration: ${stripe ? 'enabled' : 'disabled (no STRIPE_SECRET_KEY)'}\n`);
+  console.log(`📡 Razorpay integration: ${razorpay ? 'enabled' : 'disabled (add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET)'}\n`);
 });

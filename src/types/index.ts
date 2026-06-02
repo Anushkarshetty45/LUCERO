@@ -14,7 +14,7 @@ export interface Profile {
   subscription_status: SubscriptionStatus
   subscription_started_at?: string
   subscription_expires_at?: string
-  stripe_customer_id?: string
+  razorpay_subscription_id?: string
   monthly_pdf_uploads: number
   monthly_ai_messages: number
   usage_reset_date: string
