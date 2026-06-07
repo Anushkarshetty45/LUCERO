@@ -16,11 +16,11 @@
     <!-- Content Security Policy -->
     <meta http-equiv="Content-Security-Policy" content="
       default-src 'self';
-      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://generativelanguage.googleapis.com;
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://generativelanguage.googleapis.com https://checkout.razorpay.com;
+      connect-src 'self' https://*.supabase.co wss://*.supabase.co https://generativelanguage.googleapis.com https://0.peerjs.com wss://0.peerjs.com https://*.peerjs.com wss://*.peerjs.com https://pbszvegbxiczcfdpzatn.supabase.co https://api.razorpay.com https://lumberjack.razorpay.com;
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
       font-src 'self' https://fonts.gstatic.com data:;
       img-src 'self' data: https: blob:;
-      connect-src 'self' https://*.supabase.co wss://*.supabase.co https://generativelanguage.googleapis.com https://0.peerjs.com wss://0.peerjs.com https://*.peerjs.com wss://*.peerjs.com https://pbszvegbxiczcfdpzatn.supabase.co;
       media-src 'self' blob:;
       frame-src 'self';
       worker-src 'self' blob:;
@@ -51,6 +51,8 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>LUCERO - AI-Powered Study Platform</title>
+    <!-- Razorpay Checkout -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

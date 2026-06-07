@@ -18,10 +18,11 @@ export const sanitizeHTML = (dirty: string): string => {
       'hr', 'abbr', 'cite', 'time'
     ],
     ALLOWED_ATTR: [
-      'href', 'target', 'rel', 'class', 'id', 
+      'href', 'target', 'rel', 'class', 'id',
       'title', 'alt', 'datetime', 'colspan', 'rowspan'
     ],
-    ADD_ATTR: ['target', 'rel']
+    ADD_ATTR: ['target', 'rel'],
+    ALLOWED_URI_REGEXP: /^https?:\/\//i,
   })
 }
 

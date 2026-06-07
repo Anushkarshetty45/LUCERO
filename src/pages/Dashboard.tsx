@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { useSubscription } from '../hooks/useSubscription'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { getProfile, getCourses, getTodayStudyTime, getCourseWithProgress, recordDailyActivity } from '../services/api'
 import { supabase } from '../services/supabase'
@@ -16,6 +16,7 @@ import ChatbotModal from '../components/ChatbotModal'
 import PDFAnalyzerModal from '../components/PDFAnalyzer/PDFAnalyzerModal'
 import FlashcardsModal from '../components/FlashcardsModal'
 import GroupStudyModal from '../components/GroupStudyModal'
+import UpgradeModal from '../components/UpgradeModal'
 import { useTimerContext } from '../contexts/TimerContext'
 import { useLiveStudy } from '../contexts/LiveStudyContext'
 import { useStudyReminder } from '../hooks/useStudyReminder'
@@ -26,6 +27,9 @@ export default function Dashboard() {
   const { t } = useTranslation()
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const [paymentBanner, setPaymentBanner] = useState<'success' | 'cancelled' | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [courses, setCourses] = useState<CourseWithProgress[]>([])
   const [todayStudyTime, setTodayStudyTime] = useState(0)
@@ -54,6 +58,20 @@ export default function Dashboard() {
       console.log('💡 Tip: Type testNotification() in console to test notifications!')
     }
   }, [testNotification])
+
+  // Handle Stripe redirect back to dashboard
+  useEffect(() => {
+    const payment = searchParams.get('payment')
+    if (payment === 'success') {
+      setPaymentBanner('success')
+      navigate('/dashboard', { replace: true })
+      setTimeout(() => setPaymentBanner(null), 6000)
+    } else if (payment === 'cancelled') {
+      setPaymentBanner('cancelled')
+      navigate('/dashboard', { replace: true })
+      setTimeout(() => setPaymentBanner(null), 4000)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (user) {
@@ -252,6 +270,23 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-container">
+      {/* Payment banners */}
+      {paymentBanner === 'success' && (
+        <div className="payment-banner payment-banner--success">
+          🎉 Welcome to Pro! Your subscription is now active.
+          <button onClick={() => setPaymentBanner(null)}>✕</button>
+        </div>
+      )}
+      {paymentBanner === 'cancelled' && (
+        <div className="payment-banner payment-banner--cancelled">
+          Payment cancelled. You can upgrade anytime.
+          <button onClick={() => setPaymentBanner(null)}>✕</button>
+        </div>
+      )}
+
+      {/* Upgrade modal */}
+      {showUpgradeModal && <UpgradeModal onClose={() => setShowUpgradeModal(false)} />}
+
       {/* Sidebar */}
       <aside className="dashboard-sidebar">
         <div className="sidebar-header">

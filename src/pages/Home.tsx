@@ -121,7 +121,7 @@ export default function Home() {
   const faqs = [
     {
       question: "What are the limits of Lucero?",
-      answer: "The free plan includes 5 courses, 5 PDF uploads, and 30 AI chat messages per month. The Pro plan offers unlimited courses, uploads, AI chat, and access to advanced features like Live Study, Group Study, and PDF Analyzer for just $4.99/month (or $59.99/year with 50% savings)."
+      answer: "The free plan includes 5 PDF uploads and 30 AI chat messages per month with basic quizzes and flashcards. The Pro plan offers unlimited uploads, AI chat, and access to all advanced features like Live Study, Group Study, and PDF Analyzer for $8.99/month — or $5.99/month billed annually (save 33%)."
     },
     {
       question: "How is Lucero AI different from other AI models?",
@@ -443,7 +443,7 @@ export default function Home() {
                 className={`toggle-option ${isAnnual ? 'active' : ''}`}
                 onClick={() => setIsAnnual(true)}
               >
-                Annual 50% off
+                Annual — save 33%
               </span>
               <span
                 className={`toggle-option ${!isAnnual ? 'active' : ''}`}
@@ -482,11 +482,11 @@ export default function Home() {
               </div>
               <div className="price-display">
                 <span className="currency">$</span>
-                <span className="amount">{isAnnual ? '4.99' : '9.99'}</span>
+                <span className="amount">{isAnnual ? '5.99' : '8.99'}</span>
                 <span className="period">/month</span>
               </div>
               <p className="billing-info">
-                {isAnnual ? '$59.99 billed annually' : '$9.99 billed monthly'}
+                {isAnnual ? '$71.88 billed annually' : '$8.99 billed monthly'}
               </p>
               <Link to="/auth?mode=register&plan=pro" className="pricing-button solid">Get started</Link>
               <ul className="features-list">

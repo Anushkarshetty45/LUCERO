@@ -1,5 +1,5 @@
 export type SubscriptionPlan = 'free' | 'pro'
-export type SubscriptionStatus = 'active' | 'cancelled' | 'expired'
+export type SubscriptionStatus = 'active' | 'inactive' | 'cancelled' | 'expired'
 
 export interface Profile {
   id: string
@@ -14,9 +14,21 @@ export interface Profile {
   subscription_status: SubscriptionStatus
   subscription_started_at?: string
   subscription_expires_at?: string
+  razorpay_subscription_id?: string
+  is_admin?: boolean
   monthly_pdf_uploads: number
   monthly_ai_messages: number
   usage_reset_date: string
+  // daily usage counters (reset each day)
+  daily_usage_date?: string
+  daily_notes?: number
+  daily_flashcards?: number
+  daily_quizzes?: number
+  daily_pdf_uploads?: number
+  daily_ai_messages?: number
+  // one-time trial flags
+  has_tried_group_study?: boolean
+  has_tried_live_study?: boolean
   created_at: string
   updated_at: string
 }

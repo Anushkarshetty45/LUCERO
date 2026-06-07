@@ -1,4 +1,5 @@
-// Utility to translate user-generated content using Gemini API
+// Utility to translate user-generated content using Gemini API (via backend proxy)
+import { callGemini } from '../services/gemini'
 
 const LANGUAGE_NAMES: Record<string, string> = {
   'en': 'English',
@@ -52,50 +53,18 @@ export async function translateText(text: string, targetLanguage: string): Promi
   }
 
   try {
-    const apiKey = process.env.REACT_APP_GEMINI_API_KEY
-    if (!apiKey) {
-      console.warn('Translation API key not found, returning original text')
-      return text
-    }
-
     const targetLanguageName = LANGUAGE_NAMES[targetLanguage] || targetLanguage
+    const prompt = `Translate the following text to ${targetLanguageName}. Only provide the translation, nothing else:\n\n${text}`
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{
-            role: 'user',
-            parts: [{
-              text: `Translate the following text to ${targetLanguageName}. Only provide the translation, nothing else:\n\n${text}`
-            }]
-          }],
-          generationConfig: {
-            temperature: 0.3,
-            maxOutputTokens: 1024
-          }
-        })
-      }
-    )
+    const translatedText = await callGemini(prompt, {
+      model: 'gemini-2.0-flash-exp',
+      generationConfig: { temperature: 0.3, maxOutputTokens: 1024 }
+    })
 
-    if (!response.ok) {
-      console.error('Translation API error:', response.status)
-      return text
-    }
-
-    const data = await response.json()
-    const translatedText = data.candidates[0]?.content?.parts[0]?.text?.trim() || text
-
-    // Cache the translation
-    translationCache[cacheKey] = translatedText
-
-    return translatedText
+    const result = translatedText.trim() || text
+    translationCache[cacheKey] = result
+    return result
   } catch (error) {
-    console.error('Error translating text:', error)
     return text
   }
 }
