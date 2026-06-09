@@ -1019,3 +1019,220 @@
   from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
+
+/* ── Daily Usage Widget ─────────────────────────────────────────────────── */
+.sidebar-usage {
+  margin-bottom: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.sidebar-usage-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.sidebar-usage-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sidebar-usage-upgrade {
+  background: var(--accent-primary);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.sidebar-usage-upgrade:hover { opacity: 0.85; }
+
+.usage-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.usage-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.usage-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.usage-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent-primary);
+}
+
+.usage-exhausted {
+  color: #ef4444;
+}
+
+.usage-trial {
+  color: #f59e0b;
+}
+
+.plan-badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: none;
+  white-space: nowrap;
+}
+
+.plan-badge-pro {
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.plan-badge-pro:hover {
+  opacity: 0.88;
+}
+
+/* ── Pro plan dropdown ──────────────────────────────────────────────────── */
+.plan-menu {
+  position: relative;
+}
+
+.plan-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow-hover);
+  min-width: 220px;
+  padding: 4px 0 8px;
+  z-index: 1000;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.plan-dropdown-header {
+  padding: 14px 16px 10px;
+}
+
+.plan-dropdown-badge {
+  font-size: 13px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.plan-dropdown-sub {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.plan-dropdown-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 4px 0;
+}
+
+.plan-dropdown-cancel {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: #ef4444;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.plan-dropdown-cancel:hover {
+  background: var(--bg-card-hover);
+}
+
+.plan-dropdown-confirm {
+  padding: 10px 16px;
+}
+.plan-dropdown-confirm p {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+.plan-dropdown-confirm small {
+  opacity: 0.8;
+}
+.plan-dropdown-confirm-actions {
+  display: flex;
+  gap: 8px;
+}
+.plan-btn-confirm-yes {
+  flex: 1;
+  padding: 7px 0;
+  border-radius: 8px;
+  border: none;
+  background: #ef4444;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.plan-btn-confirm-yes:hover:not(:disabled) {
+  background: #dc2626;
+}
+.plan-btn-confirm-yes:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.plan-btn-confirm-no {
+  flex: 1;
+  padding: 7px 0;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: none;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.plan-btn-confirm-no:hover:not(:disabled) {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+.plan-dropdown-msg {
+  padding: 10px 16px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.plan-badge-free {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.plan-badge-free:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
