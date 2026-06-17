@@ -108,11 +108,11 @@ export const INPUT_LIMITS = {
 export const SECURITY_HEADERS = {
   CSP_DIRECTIVES: {
     'default-src': ["'self'"],
-    'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://meet.jit.si', 'https://generativelanguage.googleapis.com'],
+    'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://meet.jit.si'],
     'style-src': ["'self'", "'unsafe-inline'"],
     'img-src': ["'self'", 'data:', 'https:', 'blob:'],
     'font-src': ["'self'", 'data:'],
-    'connect-src': ["'self'", 'https://*.supabase.co', 'https://generativelanguage.googleapis.com', 'https://meet.jit.si', 'https://api.pwnedpasswords.com'],
+    'connect-src': ["'self'", 'https://*.supabase.co', 'https://meet.jit.si', 'https://api.pwnedpasswords.com'],
     'frame-src': ["'self'", 'https://meet.jit.si', 'https://*.supabase.co'],
     'media-src': ["'self'", 'blob:', 'https://meet.jit.si'],
     'object-src': ["'none'"],
