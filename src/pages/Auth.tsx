@@ -7,6 +7,7 @@ import RegisterForm from '../components/auth/RegisterForm'
 export default function Auth() {
   const [searchParams] = useSearchParams()
   const mode = searchParams.get('mode')
+  const plan = searchParams.get('plan')
   const [isLogin, setIsLogin] = useState(mode !== 'register')
 
   useEffect(() => {
@@ -14,12 +15,19 @@ export default function Auth() {
     else if (mode === 'register') setIsLogin(false)
   }, [mode])
 
+  // Store pro intent so Dashboard can open payment modal after login
+  useEffect(() => {
+    if (plan === 'pro') {
+      localStorage.setItem('lucero-pending-plan', 'pro')
+    }
+  }, [plan])
+
   return (
     <AuthLayout>
       {isLogin ? (
         <LoginForm onToggle={() => setIsLogin(false)} />
       ) : (
-        <RegisterForm onToggle={() => setIsLogin(true)} selectedPlan="free" />
+        <RegisterForm onToggle={() => setIsLogin(true)} selectedPlan={plan === 'pro' ? 'pro' : 'free'} />
       )}
     </AuthLayout>
   )
