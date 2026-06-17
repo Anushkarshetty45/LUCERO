@@ -10,6 +10,7 @@ import LessonItem from '../components/LessonItem'
 import './Course.css'
 import NotesModal from '../components/NotesModal'
 import { sanitizeHTML } from '../utils/security'
+import { callGeminiMultiTurn } from '../services/gemini'
 
 interface ChatMessage {
   id: string
@@ -246,16 +247,8 @@ export default function Course() {
     setChatMessages(newMessages)
 
     try {
-      const apiKey = process.env.REACT_APP_GEMINI_API_KEY
-
-      if (!apiKey) {
-        throw new Error('Gemini API key not found')
-      }
-
-      // Create context from the lesson content (strip HTML for cleaner context)
       const lessonContext = selectedLesson.content?.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() || ''
 
-      // Build conversation history with system context
       const systemPrompt = `You are a friendly, enthusiastic AI tutor who loves teaching! 🌟
 
 PERSONALITY:
@@ -286,58 +279,19 @@ RESPONSE STYLE:
 
 Be the tutor every student wishes they had - knowledgeable, patient, and genuinely excited to help! 😊`
 
-      // Build the full conversation with history
       const contents = [
-        {
-          role: 'user',
-          parts: [{ text: systemPrompt }]
-        },
-        {
-          role: 'model',
-          parts: [{ text: "Hi! I'm so excited to help you learn! 🎓 I'll remember everything we discuss and build on our conversation. What would you like to explore first?" }]
-        }
-      ]
-
-      // Add all previous messages to maintain context
-      chatMessages.forEach(msg => {
-        contents.push({
+        { role: 'user', parts: [{ text: systemPrompt }] },
+        { role: 'model', parts: [{ text: "Hi! I'm so excited to help you learn! 🎓 I'll remember everything we discuss and build on our conversation. What would you like to explore first?" }] },
+        ...chatMessages.map(msg => ({
           role: msg.role === 'user' ? 'user' : 'model',
           parts: [{ text: msg.content }]
-        })
+        })),
+        { role: 'user', parts: [{ text: userMessage }] }
+      ]
+
+      const aiResponse = await callGeminiMultiTurn(contents, {
+        generationConfig: { temperature: 0.8, topK: 40, topP: 0.95, maxOutputTokens: 2048 }
       })
-
-      // Add the current user message
-      contents.push({
-        role: 'user',
-        parts: [{ text: userMessage }]
-      })
-
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            contents: contents,
-            generationConfig: {
-              temperature: 0.8,
-              topK: 40,
-              topP: 0.95,
-              maxOutputTokens: 2048,
-            }
-          })
-        }
-      )
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error?.message || 'Failed to get AI response')
-      }
-
-      const data = await response.json()
-      const aiResponse = data.candidates[0].content.parts[0].text
 
       // Add AI response with unique ID
       setChatMessages([
