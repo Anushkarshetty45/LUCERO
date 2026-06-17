@@ -4,6 +4,7 @@ import { useFaceDetection } from '../hooks/useFaceDetection'
 import { useTabVisibility } from '../hooks/useTabVisibility'
 import { playWarningSound, playTabSwitchWarning, playLoudAlarm, getWarningLevel, getWarningMessage } from '../utils/warningSystem'
 import { useAuth } from '../hooks/useAuth'
+import { useSubscriptionContext } from './SubscriptionContext'
 import {
     createFocusEvent,
     createSessionAnalytics,
@@ -70,6 +71,7 @@ const LiveStudyContext = createContext<LiveStudyContextType | undefined>(undefin
 
 export function LiveStudyProvider({ children }: { children: ReactNode }) {
     const { user } = useAuth()
+    const { limits, markTrialUsed } = useSubscriptionContext()
     const [isActive, setIsActive] = useState(false)
     const [isMinimized, setIsMinimized] = useState(false)
     const [showLiveStudy, setShowLiveStudy] = useState(false)
@@ -144,6 +146,11 @@ export function LiveStudyProvider({ children }: { children: ReactNode }) {
         // Reset all tracking state
         setIsActive(true)
         setSessionTime(0)
+
+        // Consume free trial on first real session start
+        if (!limits.isPro && limits.canTryLiveStudy) {
+            markTrialUsed('live_study')
+        }
 
         // Record DB study session
         if (user) {
