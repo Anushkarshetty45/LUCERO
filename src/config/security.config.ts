@@ -56,7 +56,6 @@ export const CONTENT_SECURITY_POLICY = {
     "'self'",
     "'unsafe-inline'", // Required for React
     "'unsafe-eval'", // Required for development
-    'https://generativelanguage.googleapis.com'
   ],
   'style-src': ["'self'", "'unsafe-inline'"],
   'img-src': ["'self'", 'data:', 'https:', 'blob:'],
@@ -65,7 +64,6 @@ export const CONTENT_SECURITY_POLICY = {
     "'self'",
     'https://*.supabase.co',
     'wss://*.supabase.co',
-    'https://generativelanguage.googleapis.com',
     'https://0.peerjs.com',
     'wss://0.peerjs.com',
     'https://*.peerjs.com',
