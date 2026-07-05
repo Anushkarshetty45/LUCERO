@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { getQuiz, createQuiz, createQuizAttempt } from '../../services/pdfAnalysisApi'
 import { recordDailyActivity } from '../../services/api'
 import { generateQuizPrompt } from '../../services/aiPrompts'
+import { useSubscription } from '../../hooks/useSubscription'
+import { callGemini } from '../../services/gemini'
 import type { PDFQuiz, GenerateQuizResponse } from '../../types/pdfAnalysis'
 
 interface QuizTabProps {
@@ -13,6 +15,7 @@ interface QuizTabProps {
 
 export default function QuizTab({ analysisId, pdfContent, userId }: QuizTabProps) {
   const { t } = useTranslation()
+  const { limits, incrementUsage } = useSubscription()
   const [quiz, setQuiz] = useState<PDFQuiz[]>([])
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState('')
@@ -84,15 +87,11 @@ export default function QuizTab({ analysisId, pdfContent, userId }: QuizTabProps
   }
 
   const generateQuizQuestions = async (count: number) => {
-    setGenerating(true)
-
-    const apiKey = process.env.REACT_APP_GEMINI_API_KEY
-
-    if (!apiKey) {
-      alert(t('pdfAnalyzer.common.errorNoApiKey'))
-      setGenerating(false)
+    if (!limits.canGenerateQuiz) {
+      alert(`📝 Free plan limit: 3 quizzes per day. Upgrade to Pro for unlimited quizzes!`)
       return
     }
+    setGenerating(true)
 
     if (!pdfContent || pdfContent.trim().length === 0) {
       alert(t('pdfAnalyzer.common.errorNoPDFContent'))
@@ -105,36 +104,7 @@ export default function QuizTab({ analysisId, pdfContent, userId }: QuizTabProps
 
 IMPORTANT: Generate EXACTLY ${count} questions. No more, no less.`
 
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: prompt
-              }]
-            }],
-            generationConfig: {
-              temperature: 0.7,
-              topK: 40,
-              topP: 0.95,
-              maxOutputTokens: 8192
-            }
-          })
-        }
-      )
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error?.message || t('pdfAnalyzer.quiz.errorGenerate'))
-      }
-
-      const aiResponse = data.candidates[0].content.parts[0].text
+      const aiResponse = await callGemini(prompt)
 
       const jsonMatch = aiResponse.match(/\{[\s\S]*\}/)
       if (jsonMatch) {
@@ -145,6 +115,7 @@ IMPORTANT: Generate EXACTLY ${count} questions. No more, no less.`
         setQuiz(savedQuiz)
         setTimeRemaining(timePerQuestion)
         setTimerActive(true)
+        await incrementUsage('quiz')
       }
     } catch (err) {
       console.error('Generate quiz error:', err)
