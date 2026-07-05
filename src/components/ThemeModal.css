@@ -418,3 +418,43 @@
 .theme-grid::-webkit-scrollbar-thumb:hover {
   background: var(--accent-primary);
 }
+
+.theme-card-wrapper {
+  position: relative;
+}
+
+.theme-locked {
+  opacity: 0.55;
+}
+
+.theme-lock-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--accent-primary);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 20px;
+  pointer-events: none;
+  letter-spacing: 0.05em;
+}
+
+.theme-pro-notice {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.theme-pro-link {
+  background: none;
+  border: none;
+  color: var(--accent-primary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
