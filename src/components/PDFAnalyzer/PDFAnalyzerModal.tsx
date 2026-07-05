@@ -6,6 +6,7 @@ import * as pdfjsLib from 'pdfjs-dist'
 import { uploadPDFToStorage, createPDFAnalysis } from '../../services/pdfAnalysisApi'
 import { recordDailyActivity, startStudySession, endStudySession } from '../../services/api'
 import { generateAnalysisPrompt } from '../../services/aiPrompts'
+import { callGemini } from '../../services/gemini'
 import AnalysisTab from './AnalysisTab'
 import HistoryTab from './HistoryTab'
 import FlashcardsTab from './FlashcardsTab'
@@ -139,12 +140,6 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
   }
 
   const analyzeWithAI = async (text: string) => {
-    const apiKey = process.env.REACT_APP_GEMINI_API_KEY
-
-    if (!apiKey) {
-      throw new Error(t('pdfAnalyzer.common.errorNoApiKey'))
-    }
-
     const maxLength = 30000
     const truncatedText = text.length > maxLength ? text.substring(0, maxLength) + '...' : text
 
@@ -152,38 +147,9 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
 
     setProgress(60)
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: prompt
-            }]
-          }],
-          generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 8192
-          }
-        })
-      }
-    )
+    const aiResponse = await callGemini(prompt)
 
     setProgress(80)
-
-    if (!response.ok) {
-      const error = await response.json()
-      throw new Error(error.error?.message || t('pdfAnalyzer.common.errorAnalysisFailed'))
-    }
-
-    const data = await response.json()
-    const aiResponse = data.candidates[0].content.parts[0].text
 
     setProgress(100)
 
@@ -199,16 +165,10 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
   const handleAnalyze = async () => {
     if (!file || !user) return
 
-    // Subscription limits temporarily disabled - all users have full access
-    // if (!limits.canUploadPDF) {
-    //   setError(
-    //     `📊 Upload Limit Reached!\n\n` +
-    //     `Free plan: 5 PDF uploads/month\n` +
-    //     `You've used all your uploads this month.\n\n` +
-    //     `Upgrade to Pro for unlimited uploads!`
-    //   )
-    //   return
-    // }
+    if (!limits.canUploadPDF) {
+      setError(`📊 You've used all 3 free PDF uploads for today.\n\nUpgrade to Pro for unlimited PDF uploads!`)
+      return
+    }
 
     setExtracting(true)
     setAnalyzing(false)
@@ -258,8 +218,7 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
       // Record PDF analysis activity for streak
       await recordDailyActivity(user.id, 'pdf_analysis')
 
-      // Subscription usage tracking temporarily disabled
-      // await incrementUsage('pdf_upload')
+      await incrementUsage('pdf_upload')
 
       // Auto-navigate to Analysis tab after successful analysis
       setActiveTab('analysis')
