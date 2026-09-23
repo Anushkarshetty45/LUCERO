@@ -5,24 +5,16 @@ import { Points, PointMaterial, Sphere, MeshDistortMaterial } from '@react-three
 import * as THREE from 'three'
 import './Home.css'
 import {
-  HiOutlineDocumentText,
-  HiOutlineQuestionMarkCircle,
-  HiOutlineSquare3Stack3D,
-  HiOutlineChartBar,
-  HiOutlineChatBubbleLeftRight,
-  HiOutlineUserGroup,
-  HiOutlineBolt,
-  HiOutlineLightBulb,
-  HiOutlineArrowTrendingUp,
-  HiOutlineTrophy,
-  HiOutlineClipboardDocumentList,
-  HiOutlinePencilSquare,
-  HiOutlineSparkles,
-  HiOutlineArrowUpTray,
-  HiOutlineBookOpen,
-  HiOutlineChartBarSquare
-} from 'react-icons/hi2'
-import { IoTimer as HiOutlineTimer } from 'react-icons/io5'
+  UploadIcon,
+  LayersIcon,
+  QuestionCircleIcon,
+  ChatIcon,
+  BoltIcon,
+  UsersIcon,
+  TimerIcon,
+  BookOpenIcon,
+  ChartBarIcon,
+} from '../components/Icons'
 
 // Particle Field Background
 function ParticleField({ count = 1500 }: { count?: number }) {
@@ -200,48 +192,41 @@ export default function Home() {
 
           <div className="features-grid">
             <div className="feature-item animate-on-scroll delay-100">
-              <div className="feature-icon"><HiOutlineArrowUpTray /></div>
+              <div className="feature-icon"><UploadIcon /></div>
               <h3>PDF Analyzer</h3>
               <p>Upload PDFs and get instant analysis, mind maps & study plans</p>
             </div>
             <div className="feature-item animate-on-scroll delay-200">
-              <div className="feature-icon"><HiOutlineSquare3Stack3D /></div>
+              <div className="feature-icon"><LayersIcon /></div>
               <h3>Topics & Courses</h3>
               <p>Create and organize your study materials into topics and courses</p>
             </div>
             <div className="feature-item animate-on-scroll delay-300">
-              <div className="feature-icon"><HiOutlineQuestionMarkCircle /></div>
+              <div className="feature-icon"><QuestionCircleIcon /></div>
               <h3>Quizzes & Flashcards</h3>
               <p>Practice questions and spaced repetition to remember more</p>
             </div>
             <div className="feature-item animate-on-scroll delay-100">
-              <div className="feature-icon"><HiOutlineChatBubbleLeftRight /></div>
+              <div className="feature-icon"><ChatIcon /></div>
               <h3>AI Chatbot</h3>
               <p>Ask questions and get instant AI-powered explanations</p>
             </div>
             <div className="feature-item animate-on-scroll delay-200">
-              <div className="feature-icon"><HiOutlineBolt /></div>
+              <div className="feature-icon"><BoltIcon /></div>
               <h3>Live Study Mode</h3>
               <p>Face detection & focus tracking with real-time analytics</p>
             </div>
             <div className="feature-item animate-on-scroll delay-300">
-              <div className="feature-icon"><HiOutlineUserGroup /></div>
+              <div className="feature-icon"><UsersIcon /></div>
               <h3>Group Study</h3>
               <p>Collaborate with peers in video rooms and study together</p>
             </div>
           </div>
         </section>
 
-        {/* University Logos Section */}
+        {/* Students Section */}
         <section className="universities-section">
-          <p className="universities-label">Over 100,000 students use Lucero</p>
-          <div className="universities-logos">
-            <div className="university-logo">Berkeley</div>
-            <div className="university-logo">Oxford</div>
-            <div className="university-logo">MIT</div>
-            <div className="university-logo">Stanford</div>
-            <div className="university-logo">Harvard</div>
-          </div>
+          <p className="universities-label">Trusted by students around the world</p>
         </section>
 
         {/* Benefits Section */}
@@ -253,22 +238,22 @@ export default function Home() {
 
           <div className="benefits-grid">
             <div className="benefit-card animate-on-scroll delay-100">
-              <div className="benefit-icon"><HiOutlineArrowUpTray /></div>
+              <div className="benefit-icon"><UploadIcon /></div>
               <h3>Analyze PDFs Instantly</h3>
               <p>Upload any PDF and get mind maps, summaries, and study plans.</p>
             </div>
             <div className="benefit-card animate-on-scroll delay-200">
-              <div className="benefit-icon"><HiOutlineUserGroup /></div>
+              <div className="benefit-icon"><UsersIcon /></div>
               <h3>Study Together</h3>
               <p>Join group study rooms with video chat and collaborate in real-time.</p>
             </div>
             <div className="benefit-card animate-on-scroll delay-300">
-              <div className="benefit-icon"><HiOutlineBolt /></div>
+              <div className="benefit-icon"><BoltIcon /></div>
               <h3>Stay Focused</h3>
               <p>Live study mode tracks your attention with face detection.</p>
             </div>
             <div className="benefit-card animate-on-scroll delay-100">
-              <div className="benefit-icon"><HiOutlineChatBubbleLeftRight /></div>
+              <div className="benefit-icon"><ChatIcon /></div>
               <h3>AI-Powered Help</h3>
               <p>Get instant answers to your questions with our AI chatbot.</p>
             </div>
@@ -287,21 +272,21 @@ export default function Home() {
 
               <div className="golden-note-features">
                 <div className="gn-feature">
-                  <div className="gn-icon"><HiOutlineUserGroup /></div>
+                  <div className="gn-icon"><UsersIcon /></div>
                   <div>
                     <h4>Group Study</h4>
                     <p>Create or join study groups with video rooms and real-time collaboration.</p>
                   </div>
                 </div>
                 <div className="gn-feature">
-                  <div className="gn-icon"><HiOutlineSquare3Stack3D /></div>
+                  <div className="gn-icon"><LayersIcon /></div>
                   <div>
                     <h4>Topics & Courses</h4>
                     <p>Create custom topics and courses to organize all your study materials in one place.</p>
                   </div>
                 </div>
                 <div className="gn-feature">
-                  <div className="gn-icon"><HiOutlineTimer /></div>
+                  <div className="gn-icon"><TimerIcon /></div>
                   <div>
                     <h4>Live Study Mode</h4>
                     <p>Track your focus with face detection, monitor study time, and get real-time analytics on your productivity.</p>
@@ -421,15 +406,15 @@ export default function Home() {
           <div className="steps-grid">
             <div className="step-card animate-on-scroll delay-100">
               <h3>1. Upload PDF</h3>
-              <div className="step-image upload-image"><HiOutlineArrowUpTray /></div>
+              <div className="step-image upload-image"><UploadIcon /></div>
             </div>
             <div className="step-card animate-on-scroll delay-200">
               <h3>2. Study</h3>
-              <div className="step-image study-image"><HiOutlineBookOpen /></div>
+              <div className="step-image study-image"><BookOpenIcon /></div>
             </div>
             <div className="step-card animate-on-scroll delay-300">
               <h3>3. Improve</h3>
-              <div className="step-image improve-image"><HiOutlineChartBarSquare /></div>
+              <div className="step-image improve-image"><ChartBarIcon /></div>
             </div>
           </div>
         </section>
@@ -535,21 +520,7 @@ export default function Home() {
           <Link to="/auth?mode=register" className="cta-button-large">Get Started</Link>
         </section>
 
-        {/* Testimonial Section */}
-        <section className="testimonial-section">
-          <div className="testimonial-content">
-            <blockquote>
-              "It's actually kind of become an inside joke in our study group that
-              no one ever studies alone — it's always with <span className="highlight-orange">Lucero</span>."
-            </blockquote>
-            <div className="testimonial-author">
-              <p>Student at Copenhagen Business School</p>
-              <div className="bunny-friends">
-                <img src="/lucero-new-logo.png" alt="Horse" className="horse-friend" />
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* Removed testimonial section */}
 
         {/* Footer CTA */}
         <section className="footer-cta">
