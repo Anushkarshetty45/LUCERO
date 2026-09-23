@@ -131,8 +131,8 @@ export default function Settings() {
       return
     }
 
-    if (newPassword.length < 6) {
-      alert('Password must be at least 6 characters')
+    if (newPassword.length < 8) {
+      alert('Password must be at least 8 characters')
       return
     }
 
@@ -358,11 +358,21 @@ export default function Settings() {
     try {
       setSaving(true)
 
-      // Delete all user data
+      // Delete all PDF files from storage for this user
+      const { data: storageFiles } = await supabase.storage
+        .from('pdf-files')
+        .list(user!.id)
+      if (storageFiles && storageFiles.length > 0) {
+        const filePaths = storageFiles.map(f => `${user!.id}/${f.name}`)
+        await supabase.storage.from('pdf-files').remove(filePaths)
+      }
+
+      // Delete all user data from the database
       await Promise.all([
         supabase.from('courses').delete().eq('user_id', user!.id),
         supabase.from('user_notes').delete().eq('user_id', user!.id),
         supabase.from('study_sessions').delete().eq('user_id', user!.id),
+        supabase.from('pdf_analyses').delete().eq('user_id', user!.id),
         supabase.from('profiles').delete().eq('id', user!.id),
         supabase.from('user_settings').delete().eq('user_id', user!.id)
       ])
