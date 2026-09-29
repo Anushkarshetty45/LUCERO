@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { IoClose, IoFlame, IoTrophy, IoCheckmarkCircle, IoWarning, IoTimer, IoEye } from 'react-icons/io5'
+import { CloseIcon, FlameIcon, TrophyIcon, CheckCircleIcon, WarningIcon, TimerIcon, EyeIcon } from './Icons'
 import './SessionReportModal.css'
 
 interface SessionAnalytics {
@@ -97,7 +97,7 @@ export default function SessionReportModal({
     <div className="modal-overlay" onClick={onClose}>
       <div className="session-report-modal" onClick={(e) => e.stopPropagation()}>
         <button className="btn-close-modal" onClick={onClose}>
-          <IoClose />
+          <CloseIcon />
         </button>
 
         {/* Header */}
@@ -126,7 +126,7 @@ export default function SessionReportModal({
         <div className="stats-grid">
           <div className="stat-item">
             <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>
-              <IoCheckmarkCircle />
+              <CheckCircleIcon />
             </div>
             <div className="stat-content">
               <div className="stat-value">{formatTime(analytics.totalFocusedTime)}</div>
@@ -137,7 +137,7 @@ export default function SessionReportModal({
 
           <div className="stat-item">
             <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b' }}>
-              <IoFlame />
+              <FlameIcon />
             </div>
             <div className="stat-content">
               <div className="stat-value">{formatTime(analytics.longestFocusStreak)}</div>
@@ -148,7 +148,7 @@ export default function SessionReportModal({
 
           <div className="stat-item">
             <div className="stat-icon" style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6' }}>
-              <IoTimer />
+              <TimerIcon />
             </div>
             <div className="stat-content">
               <div className="stat-value">{formatTime(analytics.averageFocusStreak)}</div>
@@ -159,7 +159,7 @@ export default function SessionReportModal({
 
           <div className="stat-item">
             <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}>
-              <IoWarning />
+              <WarningIcon />
             </div>
             <div className="stat-content">
               <div className="stat-value">{analytics.distractionCount}</div>
@@ -172,7 +172,7 @@ export default function SessionReportModal({
         {/* Achievements */}
         {achievements.length > 0 && (
           <div className="achievements-section">
-            <h3><IoTrophy /> {t('sessionReport.achievementsUnlocked')}</h3>
+            <h3><TrophyIcon /> {t('sessionReport.achievementsUnlocked')}</h3>
             <div className="achievements-grid">
               {achievements.map((achievement) => (
                 <div key={achievement.id} className={`achievement-card rarity-${achievement.rarity}`}>
@@ -191,7 +191,7 @@ export default function SessionReportModal({
         {/* Insights */}
         {insights.length > 0 && (
           <div className="insights-section">
-            <h3><IoEye /> {t('sessionReport.insightsRecommendations')}</h3>
+            <h3><EyeIcon /> {t('sessionReport.insightsRecommendations')}</h3>
             <div className="insights-list">
               {insights.map((insight, index) => (
                 <div key={index} className={`insight-item insight-${insight.type}`}>
