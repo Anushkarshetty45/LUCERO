@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../hooks/useAuth'
 import { useSubscription } from '../../hooks/useSubscription'
 import * as pdfjsLib from 'pdfjs-dist'
-import { uploadPDFToStorage, createPDFAnalysis } from '../../services/pdfAnalysisApi'
+import { uploadPDFToStorage, createPDFAnalysis, deletePDFFromStorage } from '../../services/pdfAnalysisApi'
 import { recordDailyActivity, startStudySession, endStudySession } from '../../services/api'
 import { generateAnalysisPrompt } from '../../services/aiPrompts'
 import { callGemini } from '../../services/gemini'
@@ -195,7 +195,7 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
       setProgress(100)
       setAnalyzing(false)
 
-      // Upload PDF to storage
+      // Upload PDF to storage temporarily for URL reference
       const { fileName, url } = await uploadPDFToStorage(file, user.id)
 
       // Save analysis to database
@@ -211,6 +211,13 @@ export default function PDFAnalyzerModal({ onClose }: PDFAnalyzerModalProps) {
         keyTerms: [],
         pageCount,
         analyzedPages: 'all'
+      })
+
+      // Delete the uploaded file from storage — analysis text is saved in the DB,
+      // so the file itself is no longer needed and should not be retained.
+      deletePDFFromStorage(fileName).catch(() => {
+        // Non-fatal: log but don't fail the analysis if cleanup fails
+        console.warn('PDF cleanup failed — file may remain in storage temporarily')
       })
 
       setAnalysisId(analysis.id)
