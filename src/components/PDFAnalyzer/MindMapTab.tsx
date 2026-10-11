@@ -4,6 +4,7 @@ import ReactFlow, { Node, Edge, Background, Controls } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { getMindMap, createMindMap } from '../../services/pdfAnalysisApi'
 import { generateMindMapPrompt } from '../../services/aiPrompts'
+import { callGemini } from '../../services/gemini'
 import type { PDFMindMap, GenerateMindMapResponse } from '../../types/pdfAnalysis'
 
 interface MindMapTabProps {
@@ -148,14 +149,6 @@ export default function MindMapTab({ analysisId, pdfContent }: MindMapTabProps) 
   const generateMindMapData = async () => {
     setGenerating(true)
 
-    const apiKey = process.env.REACT_APP_GEMINI_API_KEY
-
-    if (!apiKey) {
-      alert(t('pdfAnalyzer.common.errorNoApiKey'))
-      setGenerating(false)
-      return
-    }
-
     if (!pdfContent || pdfContent.trim().length === 0) {
       alert(t('pdfAnalyzer.common.errorNoPDFContent'))
       setGenerating(false)
@@ -164,37 +157,7 @@ export default function MindMapTab({ analysisId, pdfContent }: MindMapTabProps) 
 
     try {
       const prompt = generateMindMapPrompt(pdfContent.substring(0, 10000))
-
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: prompt
-              }]
-            }],
-            generationConfig: {
-              temperature: 0.7,
-              topK: 40,
-              topP: 0.95,
-              maxOutputTokens: 8192
-            }
-          })
-        }
-      )
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error?.message || t('pdfAnalyzer.mindmap.errorGenerate'))
-      }
-
-      const aiResponse = data.candidates[0].content.parts[0].text
+      const aiResponse = await callGemini(prompt)
 
       const jsonMatch = aiResponse.match(/\{[\s\S]*\}/)
       if (jsonMatch) {
