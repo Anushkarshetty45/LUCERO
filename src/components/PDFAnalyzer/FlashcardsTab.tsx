@@ -4,6 +4,8 @@ import { getFlashcards, createFlashcards } from '../../services/pdfAnalysisApi'
 import { recordDailyActivity } from '../../services/api'
 import { generateFlashcardsPrompt } from '../../services/aiPrompts'
 import { useAuth } from '../../hooks/useAuth'
+import { useSubscription } from '../../hooks/useSubscription'
+import { callGemini } from '../../services/gemini'
 import type { PDFFlashcard, GenerateFlashcardsResponse } from '../../types/pdfAnalysis'
 
 interface FlashcardsTabProps {
@@ -14,6 +16,7 @@ interface FlashcardsTabProps {
 export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabProps) {
   const { t } = useTranslation()
   const { user } = useAuth()
+  const { limits, incrementUsage } = useSubscription()
   const [flashcards, setFlashcards] = useState<PDFFlashcard[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isFlipped, setIsFlipped] = useState(false)
@@ -39,16 +42,12 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
   }
 
   const generateFlashcards = async () => {
-    setGenerating(true)
-    setError('')
-
-    const apiKey = process.env.REACT_APP_GEMINI_API_KEY
-
-    if (!apiKey) {
-      setError(t('pdfAnalyzer.common.errorNoApiKey'))
-      setGenerating(false)
+    if (!limits.canGenerateFlashcards) {
+      setError(`🃏 Free plan limit: 3 flashcard sets per day. Upgrade to Pro for unlimited flashcards!`)
       return
     }
+    setGenerating(true)
+    setError('')
 
     if (!pdfContent || pdfContent.trim().length === 0) {
       setError(t('pdfAnalyzer.common.errorNoPDFContent'))
@@ -58,37 +57,7 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
 
     try {
       const prompt = generateFlashcardsPrompt(pdfContent.substring(0, 15000))
-
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: prompt
-              }]
-            }],
-            generationConfig: {
-              temperature: 0.7,
-              topK: 40,
-              topP: 0.95,
-              maxOutputTokens: 8192
-            }
-          })
-        }
-      )
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error?.message || t('pdfAnalyzer.flashcards.errorGenerate'))
-      }
-
-      const aiResponse = data.candidates[0].content.parts[0].text
+      const aiResponse = await callGemini(prompt)
 
       // Parse JSON response
       const jsonMatch = aiResponse.match(/\{[\s\S]*\}/)
@@ -100,10 +69,10 @@ export default function FlashcardsTab({ analysisId, pdfContent }: FlashcardsTabP
         setFlashcards(savedCards)
         setError('')
 
-        // Record flashcard activity for streak
         if (user) {
           await recordDailyActivity(user.id, 'flashcard')
         }
+        await incrementUsage('flashcard')
       } else {
         throw new Error(t('pdfAnalyzer.flashcards.errorParse'))
       }
