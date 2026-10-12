@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSubscription } from '../hooks/useSubscription'
+import { callGeminiMultiTurn } from '../services/gemini'
 import './ChatbotModal.css'
 
 interface Message {
@@ -82,6 +83,23 @@ When students ask about support, help, or contact information, provide these SPE
 - Be direct and helpful, not vague
 - Think about what they REALLY need and provide that
 
+**Mental Health & Crisis Response (CRITICAL):**
+If a student expresses thoughts of self-harm, suicide, harming others, or any mental health crisis, you MUST:
+1. Respond with warmth and without judgment
+2. Acknowledge what they shared and let them know you care
+3. Direct them immediately to crisis resources:
+   - **International Association for Suicide Prevention:** https://www.iasp.info/resources/Crisis_Centres/
+   - **Crisis Text Line (US):** Text HOME to 741741
+   - **National Suicide Prevention Lifeline (US):** Call or text 988
+   - **Samaritans (UK/Ireland):** 116 123
+   - **iCall (India):** 9152987821
+4. Encourage them to reach out to a trusted person, counselor, or emergency services if they are in immediate danger
+5. Do NOT attempt to provide therapy or diagnose — your role is to connect them with real help
+6. Never dismiss, minimize, or ignore any mention of self-harm or crisis
+
+Example response for crisis messages:
+"I hear you, and I'm really glad you reached out. What you're going through sounds incredibly hard. Please know that support is available right now — you can text HOME to 741741 (Crisis Text Line) or call/text 988 (US) to talk to someone who can help. If you're in immediate danger, please call emergency services (911 or your local number). You matter, and there are people who want to help you through this."
+
 Always be helpful, positive, and make learning fun! 🌟`
 
 // Helper function to format AI responses
@@ -129,17 +147,16 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
     const handleSend = async () => {
         if (!input.trim() || loading) return
 
-        // Subscription limits temporarily disabled - all users have full access
-        // if (!limits.canSendAIMessage) {
-        //     const errorMessage: Message = {
-        //         id: `assistant-limit-${Date.now()}`,
-        //         role: 'assistant',
-        //         content: `💬 Chat Limit Reached!\n\nFree plan: 30 AI messages/month\nYou've used all your messages this month.\n\nUpgrade to Pro for unlimited AI chat!`,
-        //         timestamp: new Date()
-        //     }
-        //     setMessages(prev => [...prev, errorMessage])
-        //     return
-        // }
+        if (!limits.canSendAIMessage) {
+            const errorMessage: Message = {
+                id: `assistant-limit-${Date.now()}`,
+                role: 'assistant',
+                content: `💬 You've used all 10 free AI chats for today.\n\nUpgrade to Pro for unlimited AI chat access!`,
+                timestamp: new Date()
+            }
+            setMessages(prev => [...prev, errorMessage])
+            return
+        }
 
         const userMessage: Message = {
             id: `user-${Date.now()}`,
@@ -153,73 +170,19 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
         setLoading(true)
 
         try {
-            const apiKey = process.env.REACT_APP_GEMINI_API_KEY
-            if (!apiKey) {
-                console.error('❌ Gemini API key not found in environment variables')
-                throw new Error('Gemini API key not found')
-            }
-
-            console.log('🔑 API Key found, making request...')
-
-            // Build conversation history for context
             const conversationHistory = [
-                // System prompt first
-                {
-                    role: 'user',
-                    parts: [{ text: LUCERO_SYSTEM_PROMPT }]
-                },
-                {
-                    role: 'model',
-                    parts: [{ text: 'I understand! I\'m LUCERO AI, ready to help with studies and answer questions about LUCERO features!' }]
-                },
-                // Then add all previous messages
+                { role: 'user', parts: [{ text: LUCERO_SYSTEM_PROMPT }] },
+                { role: 'model', parts: [{ text: 'I understand! I\'m LUCERO AI, ready to help with studies and answer questions about LUCERO features!' }] },
                 ...messages.slice(1).map(msg => ({
                     role: msg.role === 'user' ? 'user' : 'model',
                     parts: [{ text: msg.content }]
                 })),
-                // Finally the current user message
-                {
-                    role: 'user',
-                    parts: [{ text: input }]
-                }
+                { role: 'user', parts: [{ text: input }] }
             ]
 
-            const response = await fetch(
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        contents: conversationHistory,
-                        generationConfig: {
-                            temperature: 0.8,
-                            topK: 40,
-                            topP: 0.95,
-                            maxOutputTokens: 2048
-                        }
-                    })
-                }
-            )
-
-            console.log('📡 Response status:', response.status)
-
-            if (!response.ok) {
-                const errorData = await response.json()
-                console.error('❌ API Error Response:', errorData)
-
-                // Check for quota exceeded error
-                if (errorData.error?.message?.includes('quota') || errorData.error?.message?.includes('billing')) {
-                    throw new Error('QUOTA_EXCEEDED')
-                }
-
-                throw new Error(`API Error: ${errorData.error?.message || 'Unknown error'}`)
-            }
-
-            const data = await response.json()
-            console.log('✅ API Response received:', data)
-            const rawResponse = data.candidates[0]?.content?.parts[0]?.text || 'Sorry, I couldn\'t generate a response.'
+            const rawResponse = await callGeminiMultiTurn(conversationHistory, {
+                generationConfig: { temperature: 0.8, topK: 40, topP: 0.95, maxOutputTokens: 2048 }
+            })
 
             // Format the response to remove markdown and organize it
             const formattedResponse = formatResponse(rawResponse)
@@ -233,8 +196,7 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
 
             setMessages(prev => [...prev, assistantMessage])
 
-            // Subscription usage tracking temporarily disabled
-            // await incrementUsage('ai_message')
+            await incrementUsage('ai_message')
         } catch (error: any) {
             console.error('❌ Error getting AI response:', error)
 
