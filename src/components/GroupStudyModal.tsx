@@ -8,11 +8,12 @@ import './GroupStudyModal.css'
 
 interface GroupStudyModalProps {
   onClose: () => void
+  onSessionStarted?: () => void
 }
 
 type ViewMode = 'menu' | 'create' | 'join' | 'video'
 
-export default function GroupStudyModal({ onClose }: GroupStudyModalProps) {
+export default function GroupStudyModal({ onClose, onSessionStarted }: GroupStudyModalProps) {
   const { t } = useTranslation()
   const { user } = useAuth()
   const [viewMode, setViewMode] = useState<ViewMode>('menu')
@@ -98,10 +99,8 @@ export default function GroupStudyModal({ onClose }: GroupStudyModalProps) {
 
       await joinStudySession(session.id, user.id)
       setCurrentSession(session)
-
-      // Record group study activity for streak
       await recordDailyActivity(user.id, 'group_study')
-
+      onSessionStarted?.()
       setViewMode('video')
     } catch (err: any) {
       console.error('Join meeting error:', err)
@@ -113,9 +112,9 @@ export default function GroupStudyModal({ onClose }: GroupStudyModalProps) {
 
   const handleStartVideo = async () => {
     if (user) {
-      // Record group study activity for streak
       await recordDailyActivity(user.id, 'group_study')
     }
+    onSessionStarted?.()
     setViewMode('video')
   }
 
