@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getCourses, getLessons, recordDailyActivity, startStudySession, endStudySession } from '../services/api'
+import { useSubscription } from '../hooks/useSubscription'
+import { callGemini } from '../services/gemini'
 import type { Course, Lesson } from '../types'
 import './FlashcardsModal.css'
 
@@ -28,6 +30,7 @@ type ViewMode = 'select-course' | 'select-topics' | 'generating' | 'study' | 'ge
 
 export default function FlashcardsModal({ onClose, userId }: FlashcardsModalProps) {
   const { t } = useTranslation()
+  const { limits, incrementUsage } = useSubscription()
   const [viewMode, setViewMode] = useState<ViewMode>('select-course')
   const [courses, setCourses] = useState<Course[]>([])
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
@@ -118,6 +121,11 @@ export default function FlashcardsModal({ onClose, userId }: FlashcardsModalProp
       return
     }
 
+    if (!limits.canGenerateFlashcards) {
+      setError(`🃏 Free plan limit: 3 flashcard sets per day. You've reached today's limit. Upgrade to Pro for unlimited flashcards!`)
+      return
+    }
+
     setViewMode('generating')
     setError('')
 
@@ -153,42 +161,7 @@ Return ONLY this JSON (no code blocks, no extra text):
   ]
 }`
 
-      const apiKey = process.env.REACT_APP_GEMINI_API_KEY
-
-      if (!apiKey) {
-        throw new Error(t('flashcardsModal.errorNoApiKey'))
-      }
-
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: prompt
-              }]
-            }],
-            generationConfig: {
-              temperature: 0.7,
-              topK: 40,
-              topP: 0.95,
-              maxOutputTokens: 8000
-            }
-          })
-        }
-      )
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error?.message || t('flashcardsModal.errorGenerateFlashcards'))
-      }
-
-      const aiResponse = data.candidates[0].content.parts[0].text
+      const aiResponse = await callGemini(prompt, { generationConfig: { temperature: 0.7, topK: 40, topP: 0.95, maxOutputTokens: 8000 } })
 
       // Parse JSON response - handle markdown code blocks and plain JSON
       let jsonStr = aiResponse.trim()
@@ -277,8 +250,8 @@ Return ONLY this JSON (no code blocks, no extra text):
         setFlashcards(generatedCards)
         setViewMode('study')
 
-        // Record flashcard activity for streak
         await recordDailyActivity(userId, 'flashcard')
+        await incrementUsage('flashcard')
       } catch (parseError: any) {
         console.error('Error processing flashcards:', parseError)
         throw new Error(parseError.message || t('flashcardsModal.errorProcessFlashcards'))
@@ -291,6 +264,11 @@ Return ONLY this JSON (no code blocks, no extra text):
   }
 
   const generateQuiz = async () => {
+    if (!limits.canGenerateQuiz) {
+      setError(`📝 Free plan limit: 3 quizzes per day. You've reached today's limit. Upgrade to Pro for unlimited quizzes!`)
+      return
+    }
+
     setViewMode('generating-quiz')
     setError('')
 
@@ -335,42 +313,7 @@ Return ONLY this JSON (no code blocks, no extra text):
 
 Note: correctAnswer is the index (0-3) of the correct option.`
 
-      const apiKey = process.env.REACT_APP_GEMINI_API_KEY
-
-      if (!apiKey) {
-        throw new Error(t('flashcardsModal.errorNoApiKey'))
-      }
-
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: prompt
-              }]
-            }],
-            generationConfig: {
-              temperature: 0.7,
-              topK: 40,
-              topP: 0.95,
-              maxOutputTokens: 6000
-            }
-          })
-        }
-      )
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error?.message || t('flashcardsModal.errorGenerateQuiz'))
-      }
-
-      const aiResponse = data.candidates[0].content.parts[0].text
+      const aiResponse = await callGemini(prompt, { generationConfig: { temperature: 0.7, topK: 40, topP: 0.95, maxOutputTokens: 6000 } })
 
       // Parse JSON response
       let jsonStr = aiResponse.trim()
@@ -414,6 +357,7 @@ Note: correctAnswer is the index (0-3) of the correct option.`
         setShowQuizResults(false)
         setCurrentQuizIndex(0)
         setViewMode('quiz')
+        await incrementUsage('quiz')
       } catch (parseError) {
         console.error('Error parsing quiz:', parseError)
         throw new Error(t('flashcardsModal.errorParseQuiz'))
