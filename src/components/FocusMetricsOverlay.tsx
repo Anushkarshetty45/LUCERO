@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { IoFlame, IoEye, IoCheckmarkCircle, IoWarning } from 'react-icons/io5'
+import { FlameIcon, EyeIcon, CheckCircleIcon, WarningIcon } from './Icons'
 import './FocusMetricsOverlay.css'
 
 interface FocusMetrics {
@@ -39,10 +39,10 @@ export default function FocusMetricsOverlay({
   }
 
   const getFocusQuality = (score: number) => {
-    if (score >= 90) return { label: 'Excellent', color: '#10b981', icon: <IoCheckmarkCircle /> }
-    if (score >= 75) return { label: 'Good', color: '#3b82f6', icon: <IoEye /> }
-    if (score >= 50) return { label: 'Fair', color: '#f59e0b', icon: <IoWarning /> }
-    return { label: 'Needs Focus', color: '#ef4444', icon: <IoWarning /> }
+    if (score >= 90) return { label: 'Excellent', color: '#10b981', icon: <CheckCircleIcon /> }
+    if (score >= 75) return { label: 'Good', color: '#3b82f6', icon: <EyeIcon /> }
+    if (score >= 50) return { label: 'Fair', color: '#f59e0b', icon: <WarningIcon /> }
+    return { label: 'Needs Focus', color: '#ef4444', icon: <WarningIcon /> }
   }
 
   const quality = getFocusQuality(metrics.focusScore)
@@ -115,7 +115,7 @@ export default function FocusMetricsOverlay({
         {/* Current Streak */}
         <div className={`metric-card ${pulseStreak ? 'pulse' : ''}`}>
           <div className="metric-icon streak-icon">
-            <IoFlame />
+            <FlameIcon />
           </div>
           <div className="metric-content">
             <div className="metric-value">{formatTime(metrics.currentStreak)}</div>
