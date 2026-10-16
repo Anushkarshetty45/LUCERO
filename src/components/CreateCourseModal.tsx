@@ -30,16 +30,10 @@ export default function CreateCourseModal({ onClose, onSuccess, currentCourseCou
       return
     }
 
-    // Subscription limits temporarily disabled - all users have full access
-    // if (!limits.isPro && currentCourseCount >= 5) {
-    //   setError(
-    //     '📚 Course Limit Reached!\n\n' +
-    //     'Free plan: 5 courses maximum\n' +
-    //     `You currently have ${currentCourseCount} courses.\n\n` +
-    //     'Upgrade to Pro for unlimited courses!'
-    //   )
-    //   return
-    // }
+    if (!limits.canCreateCourse) {
+      setError(`📚 Free plan limit: 3 courses maximum. You have ${currentCourseCount}. Upgrade to Pro for unlimited courses!`)
+      return
+    }
 
     setLoading(true)
     setError('')
